@@ -11,9 +11,10 @@ extern char *soundQuality;
 extern char *userId;
 
 /* cURL Handles*/
-char *curl_get(char *endpoint, char *data, int returnHeader); /* BaseAPI cURL Handle */
-char *curl_post(char *endpoint, char *data); /* BaseAPI cURL Handle */
-char *curl_delete(char *endpoint, char *data); /* BaseAPI cURL Handle  */
+char *curl_get(char *endpoint, char *data); /* BaseAPI cURL Handle */
+char *curl_post(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle */
+char *curl_delete(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle  */
+char *curl_head(char *endpoint, char *data);
 char *curl_post_auth(char *endpoint, char *data); /* AuthAPI URL & Different Handle with HTTP AUTH */
 void curl_exit(); /* Close BaseAPI Handle */
 void curl_exit_auth(); /* Close AuthAPI Handle */
@@ -65,8 +66,9 @@ int delete_user_video(size_t userid, size_t videoid);
 playlist_model get_playlist(char *playlistid);
 items_model get_playlist_items(char *playlistid);
 
+char *get_playlist_etag(char *playlistid);
 int delete_playlist(char *playlistid);
-int delete_playlist_item(char *playlistid, int index);
+int delete_playlist_item(char *playlistid, int index, char *eTag);
 
 /* Album Endpoints */
 album_model get_album(size_t albumid);

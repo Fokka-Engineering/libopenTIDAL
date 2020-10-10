@@ -8,7 +8,7 @@ artist_model get_artist(size_t artistid)
   artist_model Value;
   char *endpoint = url_cat("artists/", artistid, "", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -36,7 +36,7 @@ artist_link_model get_artist_link(size_t artistid)
   artist_link_model Value;
   char *endpoint = url_cat("artists/", artistid, "/links", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -73,7 +73,7 @@ artist_mix_model get_artist_mix(size_t artistid)
   artist_mix_model Value;
   char *endpoint = url_cat("artists/", artistid, "/mix", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -99,7 +99,7 @@ items_model get_artist_toptracks(size_t artistid)
   items_model Value;
   char *endpoint = url_cat("artists/", artistid, "/toptracks", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -125,7 +125,7 @@ items_model get_artist_videos(size_t artistid)
   items_model Value;
   char *endpoint = url_cat("artists/", artistid, "/videos", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -151,7 +151,7 @@ album_model get_artist_albums(size_t artistid)
   album_model Value;
   char *endpoint = url_cat("artists/", artistid, "/albums", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);

@@ -34,6 +34,11 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
+size_t WriteMemoryCallbackHeader(void *contents, size_t size, size_t nmemb, void *userp)
+{
+   return size * nmemb;
+}
+
 int curl_init = 0;
 CURL *curl;
 
@@ -49,7 +54,7 @@ void curl_exit()
 }
 
 /* Persistent cURL Handle for API GET Requests */
-char *curl_get(char *endpoint, char *data, int returnHeader)
+char *curl_get(char *endpoint, char *data)
 {
   if(curl_init == 0)
     {
@@ -62,11 +67,6 @@ char *curl_get(char *endpoint, char *data, int returnHeader)
   response.memory = malloc(1);  /* will be grown as needed by the realloc above */
   response.size = 0;    /* no data at this point */
   
-  if (returnHeader != 0)
-  {
-    headerResponse.memory = malloc(1);
-    headerResponse.size = 0;
-  }
   /*Char concatenation*/
   char *url;
   url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
@@ -88,11 +88,6 @@ char *curl_get(char *endpoint, char *data, int returnHeader)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     
-    if (returnHeader != 0)
-    { 
-      curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
-      curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerResponse); 
-    }
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
@@ -104,14 +99,7 @@ char *curl_get(char *endpoint, char *data, int returnHeader)
   }
   else
   {
-    if (returnHeader != 0)
-    {
-      return headerResponse.memory;
-    }
-    else
-    {
-      return response.memory;
-    }
+    return response.memory;
   }
 
   free(url);
@@ -119,7 +107,7 @@ char *curl_get(char *endpoint, char *data, int returnHeader)
 }
 
 /* Persistent cURL Handle for API POST Requests */
-char *curl_post(char *endpoint, char *data)
+char *curl_post(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
     {
@@ -146,6 +134,7 @@ char *curl_post(char *endpoint, char *data)
   if(curl_init == 1) {
     struct curl_slist *chunk = NULL;
     chunk = curl_slist_append(chunk, header); /*POST Header*/
+    chunk = curl_slist_append(chunk, optHeader);
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); /*Append POST Header*/
@@ -166,7 +155,7 @@ char *curl_post(char *endpoint, char *data)
 }
 
 /* Persistent cURL Handle for API DELETE Requests */
-char *curl_delete(char *endpoint, char *data)
+char *curl_delete(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
     {
@@ -176,8 +165,8 @@ char *curl_delete(char *endpoint, char *data)
   CURLcode res;
   struct MemoryStruct response;
 
-  response.memory = malloc(1);  /* will be grown as needed by the realloc above */
-  response.size = 0;    /* no data at this point */
+  response.memory = malloc(1);   /* will be grown as needed by the realloc above */
+  response.size = 0;     /* no data at this point */
 
   /*Char concatenation*/
   char *url;
@@ -194,13 +183,13 @@ char *curl_delete(char *endpoint, char *data)
   if(curl_init == 1) {
     struct curl_slist *chunk = NULL;
     chunk = curl_slist_append(chunk, header);
+    chunk = curl_slist_append(chunk, optHeader);
     curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data); /*Append (x-www-form-urlencoded) parameter*/
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallbackHeader);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
     curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     res = curl_easy_perform(curl);
     curl_slist_free_all(chunk);
 
@@ -212,12 +201,58 @@ char *curl_delete(char *endpoint, char *data)
   {
     return response.memory;
   }
-
   free(url);
   free(header);
 }
 
+/* Persistent cURL Handle for API HEAD Requests */
+char *curl_head(char *endpoint, char *data)
+{
+  if(curl_init == 0)
+    {
+      curl = curl_session();
+      curl_init = 1;
+    }
+  CURLcode res;
+  struct MemoryStruct headerResponse;
+  
+  headerResponse.memory = malloc(1);
+  headerResponse.size = 0;
+  /*Char concatenation*/
+  char *url;
+  url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
+  strcpy(url, baseUrl);
+  strcat(url, endpoint);
+  strcat(url, "?");
+  strcat(url, data);
 
+  /* Create authorization header */
+  char *header;
+  header = malloc(strlen(access_token)+23+1);
+  strcpy(header, "authorization: Bearer ");
+  strcat(header, access_token);
+
+  if(curl_init == 1) {
+    struct curl_slist *chunk = NULL;
+    chunk = curl_slist_append(chunk, header);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerResponse); 
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    res = curl_easy_perform(curl);
+    curl_slist_free_all(chunk);
+
+  }
+  if (res != CURLE_OK) {
+    return 0;
+  }
+  else
+  {
+    return headerResponse.memory;
+  }
+}
 /* AUTH Handle */
 
 int curl_init_auth = 0;

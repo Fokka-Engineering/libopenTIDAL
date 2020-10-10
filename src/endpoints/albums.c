@@ -6,7 +6,7 @@ album_model get_album(size_t albumid)
 {
   char *endpoint = url_cat("albums/", albumid, "", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
@@ -31,7 +31,7 @@ items_model get_album_items(size_t albumid)
 {
   char *endpoint = url_cat("albums/", albumid, "/items", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);

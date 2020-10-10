@@ -9,7 +9,7 @@ search_model get_search(char *term, char *limit)
   char *encodedTerm = url_encode(term);
   char *endpoint = "search/";
   char *baseparams = param_cat(limit, encodedTerm, "");
-  char *req = curl_get(endpoint, baseparams, 0);
+  char *req = curl_get(endpoint, baseparams);
   if (req != 0)
   {
     cJSON *input_json = json_parse(req);
