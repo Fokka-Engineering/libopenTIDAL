@@ -1,5 +1,13 @@
 #pragma once
 
+typedef struct curl_models
+{
+  int status;
+  size_t statusCode;
+  char *body;
+  char *header;
+} curl_model;
+
 typedef struct login_code_models
 {
   char deviceCode[37]; /* deviceCode is always 36 Chars long */
@@ -67,7 +75,10 @@ typedef struct items_models
   size_t duration[100];
   int allowStreaming[100];
   int streamReady[100];
-  int popularity[100];
+  size_t popularity[100];
+  size_t trackNumber[100];
+  size_t volumeNumber[100];
+  char version[100][50];
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
   size_t albumId[100];
@@ -198,9 +209,25 @@ typedef struct artist_links_models
   char source[25];
 } artist_link_model;
 
-typedef struct artist_mix_models
+typedef struct mix_models
 {
   int status;
   char id[32]; /* Always 31 Chars Long  */
-} artist_mix_model;
+} mix_model;
 
+typedef struct tracks_contributors_models
+{
+  int status;
+  char name[50][50];
+  char role[50][25];
+} tracks_contributor_model;
+
+typedef struct stream_models
+{
+  int status;
+  char url[256];
+  size_t trackId;
+  char soundQuality[10];
+  char videoQuality[10];
+  char codec[5];
+} stream_model;

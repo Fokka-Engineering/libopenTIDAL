@@ -54,7 +54,7 @@ void curl_exit()
 }
 
 /* Persistent cURL Handle for API GET Requests */
-char *curl_get(char *endpoint, char *data)
+curl_model curl_get(char *endpoint, char *data)
 {
   if(curl_init == 0)
     {
@@ -62,8 +62,9 @@ char *curl_get(char *endpoint, char *data)
       curl_init = 1;
     }
   CURLcode res;
+  curl_model model;
+
   struct MemoryStruct response;
-  struct MemoryStruct headerResponse;
   response.memory = malloc(1);  /* will be grown as needed by the realloc above */
   response.size = 0;    /* no data at this point */
   
@@ -99,7 +100,8 @@ char *curl_get(char *endpoint, char *data)
   }
   else
   {
-    return response.memory;
+    model.body = response.memory;
+    return model;
   }
 
   free(url);
@@ -107,7 +109,7 @@ char *curl_get(char *endpoint, char *data)
 }
 
 /* Persistent cURL Handle for API POST Requests */
-char *curl_post(char *endpoint, char *data, char *optHeader)
+curl_model curl_post(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
     {
@@ -115,8 +117,9 @@ char *curl_post(char *endpoint, char *data, char *optHeader)
       curl_init = 1;
     }
   CURLcode res;
-  struct MemoryStruct response;
+  curl_model model;
 
+  struct MemoryStruct response;
   response.memory = malloc(1);  /* will be grown as needed by the realloc above */
   response.size = 0;    /* no data at this point */
 
@@ -150,12 +153,13 @@ char *curl_post(char *endpoint, char *data, char *optHeader)
   }
   else
   {
-   return response.memory;
+    model.body = response.memory;
+   return model;
   }
 }
 
 /* Persistent cURL Handle for API DELETE Requests */
-char *curl_delete(char *endpoint, char *data, char *optHeader)
+curl_model curl_delete(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
     {
@@ -163,6 +167,8 @@ char *curl_delete(char *endpoint, char *data, char *optHeader)
       curl_init = 1;
     }
   CURLcode res;
+  curl_model model;
+
   struct MemoryStruct response;
 
   response.memory = malloc(1);   /* will be grown as needed by the realloc above */
@@ -199,14 +205,15 @@ char *curl_delete(char *endpoint, char *data, char *optHeader)
   }
   else
   {
-    return response.memory;
+    model.body = response.memory;
+    return model;
   }
   free(url);
   free(header);
 }
 
 /* Persistent cURL Handle for API HEAD Requests */
-char *curl_head(char *endpoint, char *data)
+curl_model curl_head(char *endpoint, char *data)
 {
   if(curl_init == 0)
     {
@@ -214,6 +221,7 @@ char *curl_head(char *endpoint, char *data)
       curl_init = 1;
     }
   CURLcode res;
+  curl_model model;
   struct MemoryStruct headerResponse;
   
   headerResponse.memory = malloc(1);
@@ -250,7 +258,8 @@ char *curl_head(char *endpoint, char *data)
   }
   else
   {
-    return headerResponse.memory;
+    model.header = headerResponse.memory;
+    return model;
   }
 }
 /* AUTH Handle */
@@ -269,7 +278,7 @@ void curl_exit_auth()
   curl_easy_cleanup(curl_auth);
 }
 
-char *curl_post_auth(char *endpoint, char *data)
+curl_model curl_post_auth(char *endpoint, char *data)
 {
   if(curl_init_auth == 0)
     {
@@ -277,6 +286,7 @@ char *curl_post_auth(char *endpoint, char *data)
       curl_init_auth = 1;
     }
   CURLcode res;
+  curl_model model;
   struct MemoryStruct response;
 
   response.memory = malloc(1);  /* will be grown as needed by the realloc above */
@@ -299,5 +309,6 @@ char *curl_post_auth(char *endpoint, char *data)
     res = curl_easy_perform(curl_auth);
   }
   free(url);
-  return response.memory;
+  model.body = response.memory;
+  return model;
 }

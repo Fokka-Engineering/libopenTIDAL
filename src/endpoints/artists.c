@@ -68,9 +68,9 @@ artist_link_model get_artist_link(size_t artistid)
   free(req);
 }
 
-artist_mix_model get_artist_mix(size_t artistid)
+mix_model get_artist_mix(size_t artistid)
 {
-  artist_mix_model Value;
+  mix_model Value;
   char *endpoint = url_cat("artists/", artistid, "/mix", 0);
   char *baseparams = param_cat("100", "", "");
   char *req = curl_get(endpoint, baseparams);

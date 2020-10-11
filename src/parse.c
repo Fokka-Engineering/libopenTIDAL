@@ -20,6 +20,38 @@ cJSON *json_parse(const char * input)
   return input_json;
 }
 
+items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain/peak  */
+{
+  items_model Value;
+  const cJSON *album = NULL;
+  const cJSON *artistItems = NULL;
+  const cJSON *artistItem = NULL;
+  int artistCounter = 0;
+
+  Value.id[0] = cJSON_GetObjectItem(input_json, "id")->valueint;
+  strcpy(Value.title[0], cJSON_GetObjectItemCaseSensitive(input_json, "title")->valuestring);
+  Value.duration[0] = cJSON_GetObjectItem(input_json, "duration")->valueint;
+  Value.popularity[0] = cJSON_GetObjectItem(input_json, "popularity")->valueint;
+  Value.trackNumber[0] = cJSON_GetObjectItem(input_json, "trackNumber")->valueint;
+  Value.volumeNumber[0] = cJSON_GetObjectItem(input_json, "volumeNumber")->valueint;
+  strcpy(Value.version[0], cJSON_GetObjectItemCaseSensitive(input_json, "version")->valuestring);
+  artistItems = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
+  Value.subArraySize[0] = cJSON_GetArraySize(artistItems);
+  cJSON_ArrayForEach(artistItem, artistItems)
+  {
+    Value.artistId[0][artistCounter] = cJSON_GetObjectItem(artistItem, "id")->valueint;
+    strcpy(Value.artistName[0][artistCounter], cJSON_GetObjectItemCaseSensitive(artistItem, "name")->valuestring);
+    artistCounter = artistCounter + 1;
+  }
+  album = cJSON_GetObjectItemCaseSensitive(input_json, "album");
+  Value.albumId[0] = cJSON_GetObjectItem(album, "id")->valueint;
+  strcpy(Value.albumTitle[0], cJSON_GetObjectItemCaseSensitive(album, "title")->valuestring);
+  strcpy(Value.albumTitle[0], cJSON_GetObjectItemCaseSensitive(album, "title")->valuestring);
+  strcpy(Value.cover[0], cJSON_GetObjectItemCaseSensitive(album, "cover")->valuestring);
+
+  return Value;
+}
+
 items_model parse_items(cJSON *input_json, int version, int video) /* TODO: Add bool types */
 {
   items_model Value;

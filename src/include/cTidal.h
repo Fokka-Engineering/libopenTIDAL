@@ -11,11 +11,11 @@ extern char *soundQuality;
 extern char *userId;
 
 /* cURL Handles*/
-char *curl_get(char *endpoint, char *data); /* BaseAPI cURL Handle */
-char *curl_post(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle */
-char *curl_delete(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle  */
-char *curl_head(char *endpoint, char *data);
-char *curl_post_auth(char *endpoint, char *data); /* AuthAPI URL & Different Handle with HTTP AUTH */
+curl_model curl_get(char *endpoint, char *data); /* BaseAPI cURL Handle */
+curl_model curl_post(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle */
+curl_model curl_delete(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle  */
+curl_model curl_head(char *endpoint, char *data);
+curl_model curl_post_auth(char *endpoint, char *data); /* AuthAPI URL & Different Handle with HTTP AUTH */
 void curl_exit(); /* Close BaseAPI Handle */
 void curl_exit_auth(); /* Close AuthAPI Handle */
 
@@ -29,6 +29,7 @@ char *url_encode(char *str);
 cJSON *json_parse(const char * input);
 
 items_model parse_items(cJSON *input_json, int version, int video);
+items_model parse_tracks(cJSON *input_json);
 playlist_model parse_playlist(cJSON *input_json, int version);
 album_model parse_album(cJSON *input_json, int version);
 artist_model parse_artist(cJSON *input_json, int version);
@@ -77,9 +78,15 @@ items_model get_album_items(size_t albumid);
 /* Artist Endpoints */
 artist_model get_artist(size_t artistid);
 artist_link_model get_artist_link(size_t artistid);
-artist_mix_model get_artist_mix(size_t artistid);
+mix_model get_artist_mix(size_t artistid);
 items_model get_artist_toptracks(size_t artistid);
 items_model get_artist_videos(size_t artistid);
 album_model get_artist_albums(size_t artistid);
+
+/* Track Endpoints  */
+tracks_contributor_model get_track_contributors(size_t trackid);
+mix_model get_track_mix(size_t trackid);
+stream_model get_track_streamUrl(size_t trackid);
+items_model get_track(size_t trackid);
 
 search_model get_search(char *term, char *limit);
