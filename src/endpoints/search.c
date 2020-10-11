@@ -9,10 +9,10 @@ search_model get_search(char *term, char *limit)
   char *encodedTerm = url_encode(term);
   char *endpoint = "search/";
   char *baseparams = param_cat(limit, encodedTerm, "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_search(input_json);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -27,6 +27,6 @@ search_model get_search(char *term, char *limit)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
   free(encodedTerm);
 }

@@ -34,11 +34,6 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
-size_t WriteMemoryCallbackHeader(void *contents, size_t size, size_t nmemb, void *userp)
-{
-   return size * nmemb;
-}
-
 int curl_init = 0;
 CURL *curl;
 
@@ -90,17 +85,20 @@ curl_model curl_get(char *endpoint, char *data)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
     curl_slist_free_all(chunk);
 
   }
-  if (res != CURLE_OK) {
-    return 0;
+  if (res != CURLE_OK) 
+  {
+    model.status = -1;
+    return model;
   }
   else
   {
     model.body = response.memory;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
 
@@ -143,19 +141,22 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); /*Append POST Header*/
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data); /*Append (x-www-form-urlencoded) parameter*/
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
   }
-  free(url);
-  free(header);
-  if (res != CURLE_OK) {
-    return 0;
+  if (res != CURLE_OK)
+  {
+    model.status = -1;
+    return model;
   }
   else
   {
     model.body = response.memory;
-   return model;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+    return model;
   }
+  free(url);
+  free(header);
 }
 
 /* Persistent cURL Handle for API DELETE Requests */
@@ -192,7 +193,7 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     chunk = curl_slist_append(chunk, optHeader);
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallbackHeader);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
     curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -200,12 +201,15 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_slist_free_all(chunk);
 
   }
-  if (res != CURLE_OK) {
-    return 0;
+  if (res != CURLE_OK)
+  {
+    model.status = -1;
+    return model;
   }
   else
   {
     model.body = response.memory;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
   free(url);
@@ -248,19 +252,24 @@ curl_model curl_head(char *endpoint, char *data)
     curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerResponse); 
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
     curl_slist_free_all(chunk);
 
   }
-  if (res != CURLE_OK) {
-    return 0;
+  if (res != CURLE_OK)
+  {
+    model.status = -1;
+    return model;
   }
   else
   {
     model.header = headerResponse.memory;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
+  free(url);
+  free(header);
 }
 /* AUTH Handle */
 

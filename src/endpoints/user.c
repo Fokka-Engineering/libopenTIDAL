@@ -8,10 +8,10 @@ user_model get_user(size_t userid) /* TODO: Remove email or check if != NULL  */
   user_model Value;
   char *endpoint = url_cat("users/", userid, "", 0); /*concatenate endpoint url*/
   char *baseparams = param_cat("", "", "");
-  char *req = curl_get(endpoint, baseparams); /*send request and pipe response into json parser*/
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams); /*send request and pipe response into json parser*/
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     Value.status = 1;
     Value.id = cJSON_GetObjectItemCaseSensitive(input_json, "id")->valueint; /*parse JSON objects into data structure*/
     strcpy(Value.username, cJSON_GetObjectItemCaseSensitive(input_json, "username")->valuestring);
@@ -36,20 +36,17 @@ user_model get_user(size_t userid) /* TODO: Remove email or check if != NULL  */
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_user_album(size_t userid)
 {
   char *endpoint = url_cat("users/", userid, "/favorites/albums", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 0, 1);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -61,16 +58,20 @@ items_model get_user_album(size_t userid)
     Value.status = -1;
     return Value;
   }
+  /*Cleanup*/
+  free(endpoint);
+  free(baseparams);
+  free(req.body);
 }
 
 artist_model get_user_artist(size_t userid)
 {
   char *endpoint = url_cat("users/", userid, "/favorites/artists", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_artist(input_json, 1);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -85,17 +86,17 @@ artist_model get_user_artist(size_t userid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 playlist_model get_user_playlist(size_t userid)
 {
   char *endpoint = url_cat("users/", userid, "/playlistsAndFavoritePlaylists", 0);
   char *baseparams = param_cat("50", "", ""); /* API Limit is 50 */
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_playlist(input_json, 2);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -110,17 +111,17 @@ else
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_user_tracks(size_t userid)
 {
   char *endpoint = url_cat("users/", userid, "/favorites/tracks", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 2, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -135,17 +136,17 @@ items_model get_user_tracks(size_t userid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_user_videos(size_t userid)
 {
   char *endpoint = url_cat("users/", userid, "/favorites/videos", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 2, 1);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -160,7 +161,7 @@ items_model get_user_videos(size_t userid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 /* Create/Manipulate/Delete favorites */
@@ -172,8 +173,8 @@ int add_user_album(size_t userid, size_t albumid)
   char buffer[60];
   snprintf(buffer, 60, "albumIds=%zu&onArtifactNotFound=FAIL", albumid);
 
-  char *req = curl_post(endpoint, buffer, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, buffer, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -183,7 +184,7 @@ int add_user_album(size_t userid, size_t albumid)
   }
   /*Cleanup*/
   free(endpoint);
-  free(req);
+  free(req.body);
 }
 
 int add_user_artist(size_t userid, size_t artistid)
@@ -193,8 +194,8 @@ int add_user_artist(size_t userid, size_t artistid)
   char buffer[60];
   snprintf(buffer, 60, "artistIds=%zu&onArtifactNotFound=FAIL", artistid);
 
-  char *req = curl_post(endpoint, buffer, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, buffer, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -204,7 +205,7 @@ int add_user_artist(size_t userid, size_t artistid)
   }
   /*Cleanup*/
   free(endpoint);
-  free(req);
+  free(req.body);
 }
 
 int add_user_playlist(size_t userid, char *playlistid)
@@ -216,8 +217,8 @@ int add_user_playlist(size_t userid, char *playlistid)
   strcat(data, playlistid);
   strcat(data, "&onArtifactNotFound=FAIL");
 
-  char *req = curl_post(endpoint, data, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, data, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -228,7 +229,7 @@ int add_user_playlist(size_t userid, char *playlistid)
   /*Cleanup*/
   free(endpoint);
   free(data);
-  free(req);
+  free(req.body);
 }
 
 int add_user_track(size_t userid, size_t trackid)
@@ -238,8 +239,8 @@ int add_user_track(size_t userid, size_t trackid)
   char buffer[60];
   snprintf(buffer, 60, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
 
-  char *req = curl_post(endpoint, buffer, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, buffer, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -249,7 +250,7 @@ int add_user_track(size_t userid, size_t trackid)
   }
   /*Cleanup*/
   free(endpoint);
-  free(req);
+  free(req.body);
 }
 
 int add_user_video(size_t userid, size_t videoid)
@@ -259,8 +260,8 @@ int add_user_video(size_t userid, size_t videoid)
   char buffer[60];
   snprintf(buffer, 60, "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
   
-  char *req = curl_post(endpoint, buffer, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, buffer, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -270,7 +271,7 @@ int add_user_video(size_t userid, size_t videoid)
   }
   /*Cleanup*/
   free(endpoint);
-  free(req);
+  free(req.body);
 }
 
 playlist_model create_user_playlist(size_t userid, char *title, char *description)
@@ -284,10 +285,10 @@ playlist_model create_user_playlist(size_t userid, char *title, char *descriptio
   strcat(data, "&description=");
   strcat(data, description);
 
-  char *req = curl_post(endpoint, data, "");
-  if (req != 0)
+  curl_model req = curl_post(endpoint, data, "");
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_playlist(input_json, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -302,7 +303,7 @@ playlist_model create_user_playlist(size_t userid, char *title, char *descriptio
   /*Cleanup*/
   free(endpoint);
   free(data);
-  free(req);
+  free(req.body);
 }
 
 /* DELETE */
@@ -312,8 +313,8 @@ int delete_user_album(size_t userid, size_t albumid)
   char buffer[80];
   snprintf(buffer, 80, "users/%zu/favorites/albums/%zu?countryCode=%s", userid, albumid, countryCode); /* Similar to url_cat */
   
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -322,7 +323,7 @@ int delete_user_album(size_t userid, size_t albumid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int delete_user_artist(size_t userid, size_t artistid)
@@ -330,8 +331,8 @@ int delete_user_artist(size_t userid, size_t artistid)
   char buffer[80];
   snprintf(buffer, 80, "users/%zu/favorites/artists/%zu?countryCode=%s", userid, artistid, countryCode);
 
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -340,7 +341,7 @@ int delete_user_artist(size_t userid, size_t artistid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int delete_user_playlist(size_t userid, char *playlistid)
@@ -348,8 +349,8 @@ int delete_user_playlist(size_t userid, char *playlistid)
   char buffer[80];
   snprintf(buffer, 80, "users/%zu/favorites/playlists/%s?countryCode=%s", userid, playlistid, countryCode);
 
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -358,7 +359,7 @@ int delete_user_playlist(size_t userid, char *playlistid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int delete_user_track(size_t userid, size_t trackid)
@@ -366,8 +367,8 @@ int delete_user_track(size_t userid, size_t trackid)
   char buffer[80];
   snprintf(buffer, 80, "users/%zu/favorites/tracks/%zu?countryCode=%s", userid, trackid, countryCode);
 
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -376,7 +377,7 @@ int delete_user_track(size_t userid, size_t trackid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int delete_user_video(size_t userid, size_t videoid)
@@ -384,8 +385,8 @@ int delete_user_video(size_t userid, size_t videoid)
   char buffer[80];
   snprintf(buffer, 80, "users/%zu/favorites/videos/%zu?countryCode=%s", userid, videoid, countryCode);
 
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -394,5 +395,5 @@ int delete_user_video(size_t userid, size_t videoid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }

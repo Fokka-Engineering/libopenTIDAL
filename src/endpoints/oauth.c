@@ -14,8 +14,8 @@ login_code_model login_create_code()
   strcat(str, client_id);
   strcat(str, "&scope=r_usr+w_usr+w_sub");
   /* POST Request */
-  char *req = curl_post_auth("oauth2/device_authorization", str);
-  cJSON *input_json = json_parse(req);
+  curl_model req = curl_post_auth("oauth2/device_authorization", str);
+  cJSON *input_json = json_parse(req.body);
   /* Copy JSON Response */
   strcpy(Value.deviceCode, cJSON_GetObjectItemCaseSensitive(input_json, "deviceCode")->valuestring);
   strcpy(Value.userCode, cJSON_GetObjectItemCaseSensitive(input_json, "userCode")->valuestring);
@@ -23,7 +23,7 @@ login_code_model login_create_code()
   /* Cleanup */
   cJSON_Delete(input_json);
   free(str);
-  free(req);
+  free(req.body);
 }
 
 login_token_model login_create_token(char *device_code)
@@ -37,8 +37,8 @@ login_token_model login_create_token(char *device_code)
   strcat(str, device_code);
   strcat(str, "&grant_type=urn:ietf:params:oauth:grant-type:device_code");
   strcat(str, "&scope=r_usr+w_usr+w_sub");
-  char *req = curl_post_auth("oauth2/token", str);
-  cJSON *input_json = json_parse(req);
+  curl_model req = curl_post_auth("oauth2/token", str);
+  cJSON *input_json = json_parse(req.body);
 
   const cJSON * check_status = cJSON_GetObjectItemCaseSensitive(input_json, "status");
   const cJSON * check_error = cJSON_GetObjectItemCaseSensitive(input_json, "error");
@@ -71,7 +71,7 @@ login_token_model login_create_token(char *device_code)
   /* Cleanup */
   cJSON_Delete(input_json);
   free(str);
-  free(req);
+  free(req.body);
 }
 
 login_token_model login_refresh_token(char *refresh_token)
@@ -85,8 +85,8 @@ login_token_model login_refresh_token(char *refresh_token)
   strcat(str, "&refresh_token=");
   strcat(str, refresh_token);
   strcat(str, "&scope=r_usr+w_usr+w_sub");
-  char *req = curl_post_auth("oauth2/token", str);
-  cJSON *input_json = json_parse(req);
+  curl_model req = curl_post_auth("oauth2/token", str);
+  cJSON *input_json = json_parse(req.body);
 
   strcpy(Value.access_token, cJSON_GetObjectItemCaseSensitive(input_json, "access_token")->valuestring);
   Value.expires_in = cJSON_GetObjectItemCaseSensitive(input_json, "expires_in")->valueint;
@@ -112,6 +112,6 @@ login_token_model login_refresh_token(char *refresh_token)
   /* Cleanup */
   cJSON_Delete(input_json);
   free(str);
-  free(req);
+  free(req.body);
   return Value;
 }

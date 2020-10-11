@@ -6,10 +6,10 @@ album_model get_album(size_t albumid)
 {
   char *endpoint = url_cat("albums/", albumid, "", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_album(input_json, 1);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -24,17 +24,17 @@ album_model get_album(size_t albumid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_album_items(size_t albumid)
 {
   char *endpoint = url_cat("albums/", albumid, "/items", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 2, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -49,5 +49,5 @@ items_model get_album_items(size_t albumid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }

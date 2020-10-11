@@ -8,10 +8,10 @@ artist_model get_artist(size_t artistid)
   artist_model Value;
   char *endpoint = url_cat("artists/", artistid, "", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_artist(input_json, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -25,7 +25,7 @@ artist_model get_artist(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 artist_link_model get_artist_link(size_t artistid)
@@ -36,10 +36,10 @@ artist_link_model get_artist_link(size_t artistid)
   artist_link_model Value;
   char *endpoint = url_cat("artists/", artistid, "/links", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     Value.status = 1;
     Value.totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems")->valueint;
     strcpy(Value.source, cJSON_GetObjectItemCaseSensitive(input_json, "source")->valuestring);
@@ -65,7 +65,7 @@ artist_link_model get_artist_link(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 mix_model get_artist_mix(size_t artistid)
@@ -73,10 +73,10 @@ mix_model get_artist_mix(size_t artistid)
   mix_model Value;
   char *endpoint = url_cat("artists/", artistid, "/mix", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     strcpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring);
     return Value;
     /* always cleanup */
@@ -91,7 +91,7 @@ mix_model get_artist_mix(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_artist_toptracks(size_t artistid)
@@ -99,10 +99,10 @@ items_model get_artist_toptracks(size_t artistid)
   items_model Value;
   char *endpoint = url_cat("artists/", artistid, "/toptracks", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 1, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -117,7 +117,7 @@ items_model get_artist_toptracks(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_artist_videos(size_t artistid)
@@ -125,10 +125,10 @@ items_model get_artist_videos(size_t artistid)
   items_model Value;
   char *endpoint = url_cat("artists/", artistid, "/videos", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 1, 1);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -143,7 +143,7 @@ items_model get_artist_videos(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 album_model get_artist_albums(size_t artistid)
@@ -151,10 +151,10 @@ album_model get_artist_albums(size_t artistid)
   album_model Value;
   char *endpoint = url_cat("artists/", artistid, "/albums", 0);
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_album(input_json, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -169,5 +169,5 @@ album_model get_artist_albums(size_t artistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }

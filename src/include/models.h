@@ -2,8 +2,8 @@
 
 typedef struct curl_models
 {
-  int status;
-  size_t statusCode;
+  size_t status;
+  size_t responseCode;
   char *body;
   char *header;
 } curl_model;
@@ -16,7 +16,7 @@ typedef struct login_code_models
 
 typedef struct login_token_models
 {
-  int status;
+  size_t status;
   size_t expires_in;
   char access_token[1000];
   char refresh_token[1000];
@@ -32,7 +32,7 @@ typedef struct login_token_models
 
 typedef struct user_models
 {
-  int status;
+  size_t status;
   size_t id;
   char username[50];
   char firstName[25];
@@ -47,7 +47,7 @@ typedef struct user_models
 
 typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
 {
-  int status;
+  size_t status;
   int arraySize; /*ArraySize from cJSON Parser*/
   int totalNumberOfItems;
   int numberOfTracks[100];
@@ -64,7 +64,7 @@ typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
 
 typedef struct items_models
 {
-  int status;
+  size_t status;
   int offset;
   int totalNumberOfItems;
   int arraySize;
@@ -91,7 +91,7 @@ typedef struct items_models
 
 typedef struct search_models
 {
-  int status;
+  size_t status;
   int offsetArtist;
   int offsetAlbum;
   int offsetPlaylist;
@@ -147,7 +147,7 @@ typedef struct search_models
 
 typedef struct albums_models
 {
-  int status;
+  size_t status;
   int arraySize;
   int subArraySize[100]; /* 2nd ArraySize of Artist Array */
   int explicit[100];
@@ -170,7 +170,7 @@ typedef struct albums_models
 
 typedef struct items_credits_models
 {
-  int status;
+  size_t status;
   int arraySize;
   int subArraySize;
   int offset;
@@ -182,14 +182,14 @@ typedef struct items_credits_models
 
 typedef struct album_credits_models
 {
-  int status;
+  size_t status;
   int arraySize;
   char type[50][30];
 } album_credits_model;
 
 typedef struct artists_models
 {
-  int status;
+  size_t status;
   int arraySize;
   int offset;
   int totalNumberOfItems;
@@ -201,7 +201,7 @@ typedef struct artists_models
 
 typedef struct artist_links_models
 {
-  int status;
+  size_t status;
   int arraySize;
   int totalNumberOfItems;
   char url[20][80];
@@ -211,20 +211,20 @@ typedef struct artist_links_models
 
 typedef struct mix_models
 {
-  int status;
+  size_t status;
   char id[32]; /* Always 31 Chars Long  */
 } mix_model;
 
 typedef struct tracks_contributors_models
 {
-  int status;
+  size_t status;
   char name[50][50];
   char role[50][25];
 } tracks_contributor_model;
 
 typedef struct stream_models
 {
-  int status;
+  size_t status;
   char url[256];
   size_t trackId;
   char soundQuality[10];

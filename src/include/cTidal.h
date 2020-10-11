@@ -27,7 +27,8 @@ char *url_encode(char *str);
 
 /* Parse Functions */
 cJSON *json_parse(const char * input);
-
+size_t parse_unauthorized(cJSON *input_json, size_t id);
+size_t parse_notfound(cJSON *input_json, size_t id, char *uuid);
 items_model parse_items(cJSON *input_json, int version, int video);
 items_model parse_tracks(cJSON *input_json);
 playlist_model parse_playlist(cJSON *input_json, int version);

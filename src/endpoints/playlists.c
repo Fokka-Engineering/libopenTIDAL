@@ -7,10 +7,10 @@ playlist_model get_playlist(char *playlistid)
 {
   char *endpoint = url_cat_str("playlists/", playlistid, "");
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_playlist(input_json, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -25,17 +25,17 @@ playlist_model get_playlist(char *playlistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 items_model get_playlist_items(char *playlistid)
 {
   char *endpoint = url_cat_str("playlists/", playlistid, "/items");
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_get(endpoint, baseparams);
-  if (req != 0)
+  curl_model req = curl_get(endpoint, baseparams);
+  if (req.status != -1)
   {
-    cJSON *input_json = json_parse(req);
+    cJSON *input_json = json_parse(req.body);
     return parse_items(input_json, 2, 0);
     /* always cleanup */
     cJSON_Delete(input_json);
@@ -50,7 +50,7 @@ items_model get_playlist_items(char *playlistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.body);
 }
 
 char *get_playlist_etag(char *playlistid)
@@ -58,10 +58,10 @@ char *get_playlist_etag(char *playlistid)
   /* Request playlist endpoint to scrape eTag Header  */
   char *endpoint = url_cat_str("playlists/", playlistid, "");
   char *baseparams = param_cat("100", "", "");
-  char *req = curl_head(endpoint, baseparams); /* Returns Header with eTag */
+  curl_model req = curl_head(endpoint, baseparams); /* Returns Header with eTag */
   int i = 0; /* Counter for Buffer (Header) Splitter  */
   int e; /* Counter for ETag-String Extraction  */
-  char *p = strtok (req, "\n"); 
+  char *p = strtok (req.header, "\n"); 
   char *array[30]; /* Buffer for splitted HTTP-Header  */
   char *eTag = malloc(20);
   while (p != NULL)
@@ -89,7 +89,7 @@ char *get_playlist_etag(char *playlistid)
   /*Cleanup*/
   free(endpoint);
   free(baseparams);
-  free(req);
+  free(req.header);
   return eTag;  
 }
 
@@ -98,8 +98,8 @@ int delete_playlist(char *playlistid)
   char buffer[80];
   snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
 
-  char *req = curl_delete(buffer, "", "");
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -108,7 +108,7 @@ int delete_playlist(char *playlistid)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int delete_playlist_item(char *playlistid, int index, char *eTag)
@@ -118,8 +118,8 @@ int delete_playlist_item(char *playlistid, int index, char *eTag)
   strcat(eTagHeader, eTag);
   char buffer[80];
   snprintf(buffer, 80, "playlists/%s/items/%d?countryCode=%s", playlistid, index, countryCode);
-  char *req = curl_delete(buffer, "", eTagHeader);
-  if (req != 0)
+  curl_model req = curl_delete(buffer, "", eTagHeader);
+  if (req.status != -1)
   {
     return 1;
   }
@@ -129,7 +129,7 @@ int delete_playlist_item(char *playlistid, int index, char *eTag)
   }
   /*Cleanup*/
   free(eTagHeader);
-  free(req);
+  free(req.body);
 }
 
 int move_playlist_item(char *playlistid, int index, int toIndex, char *eTag)
@@ -143,8 +143,8 @@ int move_playlist_item(char *playlistid, int index, int toIndex, char *eTag)
 
   char bufferTwo[20];
   snprintf(bufferTwo, 20, "toIndex=%d", toIndex);
-  char *req = curl_post(buffer, bufferTwo, eTagHeader);
-  if (req != 0)
+  curl_model req = curl_post(buffer, bufferTwo, eTagHeader);
+  if (req.status != -1)
   {
     return 1;
   }
@@ -154,7 +154,7 @@ int move_playlist_item(char *playlistid, int index, int toIndex, char *eTag)
   }
   /*Cleanup*/
   free(eTagHeader);
-  free(req);
+  free(req.body);
 }
 
 int add_playlist_item(char *playlistid, size_t trackid, char *onDupes) /* onDupes = ADD or SKIP  */
@@ -165,8 +165,8 @@ int add_playlist_item(char *playlistid, size_t trackid, char *onDupes) /* onDupe
   char bufferTwo[60];
   snprintf(bufferTwo, 60, "trackIds=%zu&onDupes=%s&onArtifactNotFound=FAIL", trackid, onDupes);
 
-  char *req = curl_post(buffer, bufferTwo, "");
-  if (req != 0)
+  curl_model req = curl_post(buffer, bufferTwo, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -175,7 +175,7 @@ int add_playlist_item(char *playlistid, size_t trackid, char *onDupes) /* onDupe
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
 
 int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
@@ -186,8 +186,8 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
   char bufferTwo[60];
   snprintf(bufferTwo, 60, "trackIds=%s&onDupes=%s&onArtifactNotFound=FAIL", trackids, onDupes);
 
-  char *req = curl_post(buffer, bufferTwo, "");
-  if (req != 0)
+  curl_model req = curl_post(buffer, bufferTwo, "");
+  if (req.status != -1)
   {
     return 1;
   }
@@ -196,5 +196,5 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
     return -1;
   }
   /*Cleanup*/
-  free(req);
+  free(req.body);
 }
