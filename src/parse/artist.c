@@ -26,8 +26,8 @@ artist_model parse_artist(cJSON *input_json, int version)
       cJSON *popularity = cJSON_GetObjectItemCaseSensitive(innerItem, "popularity");
       
       Value.id[i] = id->valueint;
-      strcpy(Value.name[i], name->valuestring);
-      strcpy(Value.picture[i], picture->valuestring);
+      strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
+      strncpy(Value.picture[i], picture->valuestring, sizeof(Value.picture[i]));
       Value.popularity[i] = popularity->valueint;
       i = i + 1;
     }
@@ -41,8 +41,8 @@ artist_model parse_artist(cJSON *input_json, int version)
     cJSON *popularity = cJSON_GetObjectItemCaseSensitive(input_json, "popularity");
 
     Value.id[0] = id->valueint;
-    strcpy(Value.name[0], name->valuestring);
-    strcpy(Value.picture[0], picture->valuestring);
+    strncpy(Value.name[0], name->valuestring, sizeof(Value.name[0]));
+    strncpy(Value.picture[0], picture->valuestring, sizeof(Value.picture[0]));
     Value.popularity[0] = popularity->valueint;
     return Value;
   }

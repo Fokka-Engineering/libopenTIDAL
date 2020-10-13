@@ -3,33 +3,36 @@
 
 extern char *client_id;
 extern char *client_secret;
-//extern char *refresh_token;
 extern char *access_token;
 
 extern char *countryCode;
 extern char *soundQuality;
 extern char *userId;
 
-/* cURL Handles*/
-curl_model curl_get(char *endpoint, char *data); /* BaseAPI cURL Handle */
-curl_model curl_post(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle */
-curl_model curl_delete(char *endpoint, char *data, char *optHeader); /* BaseAPI cURL Handle  */
+/* baseAPI cURL handle */
+curl_model curl_get(char *endpoint, char *data);
+curl_model curl_post(char *endpoint, char *data, char *optHeader);
+curl_model curl_delete(char *endpoint, char *data, char *optHeader);
 curl_model curl_head(char *endpoint, char *data);
-curl_model curl_post_auth(char *endpoint, char *data); /* AuthAPI URL & Different Handle with HTTP AUTH */
-void curl_exit(); /* Close BaseAPI Handle */
-void curl_exit_auth(); /* Close AuthAPI Handle */
+void curl_exit();
 
-/* String Concatenation */
-char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode); /* Dynamic Endpoint Concatenation */
-char *url_cat_str(char *strOne, char *id, char *strTwo); /* Dynamic Endpoint Concatenation Str-based  */
+/* authAPI cURL handle */
+curl_model curl_post_auth(char *endpoint, char *data);
+void curl_exit_auth();
+
+/* concatenation */
+char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode);
+char *url_cat_str(char *strOne, char *id, char *strTwo);
 char *param_cat(char *limit, char *query, char *extra);
+
+/* encoding */
 char *url_encode(char *str);
 
 /* Parse Functions */
 cJSON *json_parse(const char * input);
-size_t parse_unauthorized(cJSON *input_json, size_t id);
-size_t parse_notfound(cJSON *input_json, size_t id, char *uuid);
-size_t parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
+int parse_unauthorized(cJSON *input_json, size_t id);
+int parse_notfound(cJSON *input_json, size_t id, char *uuid);
+int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
 
 items_model parse_items(cJSON *input_json, int version, int video);
 items_model parse_tracks(cJSON *input_json);
@@ -38,7 +41,8 @@ album_model parse_album(cJSON *input_json, int version);
 artist_model parse_artist(cJSON *input_json, int version);
 search_model parse_search(cJSON *input_json);
 
-/* OAuth Endpoints  */
+
+/* OAuth Endpoints */
 login_code_model login_create_code();
 login_token_model login_create_token(char *device_code);
 login_token_model login_refresh_token(char *refresh_token);
@@ -72,7 +76,7 @@ items_model get_playlist_items(char *playlistid);
 
 char *get_playlist_etag(char *playlistid);
 int delete_playlist(char *playlistid);
-int delete_playlist_item(char *playlistid, size_t index, char *eTag);
+int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader);
 int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTagHeader);
 int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTagHeader);
 int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eTagHeader);

@@ -16,15 +16,15 @@ user_model get_user(size_t userid) /* TODO: Remove email or check if != NULL  */
     cJSON *input_json = json_parse(req.body);
     Value.status = 1;
     Value.id = cJSON_GetObjectItemCaseSensitive(input_json, "id")->valueint; /*parse JSON objects into data structure*/
-    strcpy(Value.username, cJSON_GetObjectItemCaseSensitive(input_json, "username")->valuestring);
-    strcpy(Value.firstName, cJSON_GetObjectItemCaseSensitive(input_json, "firstName")->valuestring);
-    strcpy(Value.lastName, cJSON_GetObjectItemCaseSensitive(input_json, "lastName")->valuestring);
-    strcpy(Value.email, cJSON_GetObjectItemCaseSensitive(input_json, "email")->valuestring);
-    strcpy(Value.countryCode, cJSON_GetObjectItemCaseSensitive(input_json, "countryCode")->valuestring);
-    strcpy(Value.created, cJSON_GetObjectItemCaseSensitive(input_json, "created")->valuestring);
-    strcpy(Value.picture, cJSON_GetObjectItemCaseSensitive(input_json, "picture")->valuestring);
-    strcpy(Value.gender, cJSON_GetObjectItemCaseSensitive(input_json, "gender")->valuestring);
-    strcpy(Value.dateOfBirth, cJSON_GetObjectItemCaseSensitive(input_json, "dateOfBirth")->valuestring);
+    strncpy(Value.username, cJSON_GetObjectItemCaseSensitive(input_json, "username")->valuestring, sizeof(Value.username));
+    strncpy(Value.firstName, cJSON_GetObjectItemCaseSensitive(input_json, "firstName")->valuestring, sizeof(Value.firstName));
+    strncpy(Value.lastName, cJSON_GetObjectItemCaseSensitive(input_json, "lastName")->valuestring, sizeof(Value.lastName));
+    //strncpy(Value.email, cJSON_GetObjectItemCaseSensitive(input_json, "email")->valuestring, sizeof(Value.email));
+    strncpy(Value.countryCode, cJSON_GetObjectItemCaseSensitive(input_json, "countryCode")->valuestring, sizeof(Value.countryCode));
+    strncpy(Value.created, cJSON_GetObjectItemCaseSensitive(input_json, "created")->valuestring, sizeof(Value.created));
+    strncpy(Value.picture, cJSON_GetObjectItemCaseSensitive(input_json, "picture")->valuestring, sizeof(Value.picture));
+    strncpy(Value.gender, cJSON_GetObjectItemCaseSensitive(input_json, "gender")->valuestring, sizeof(Value.gender));
+    strncpy(Value.dateOfBirth, cJSON_GetObjectItemCaseSensitive(input_json, "dateOfBirth")->valuestring, sizeof(Value.dateOfBirth));
     
     cJSON_Delete(input_json);
     free(req.body);

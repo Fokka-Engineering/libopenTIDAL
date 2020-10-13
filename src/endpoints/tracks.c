@@ -64,7 +64,7 @@ tracks_contributor_model get_track_contributors(size_t trackid)
   }
 }
 
-mix_model get_track_mix(size_t trackid) /* TODO: Improve Error Handling (Differentiate between Status Codes)  */
+mix_model get_track_mix(size_t trackid)
 {
   mix_model Value;
   char *endpoint = url_cat("tracks/", trackid, "/mix", 0);

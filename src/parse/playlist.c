@@ -38,19 +38,19 @@ playlist_model parse_playlist(cJSON *input_json, int version)
         cJSON *duration = cJSON_GetObjectItem(item, "duration");
         cJSON *description = cJSON_GetObjectItemCaseSensitive(item, "description");
 
-        strcpy(Value.uuid[i], uuid->valuestring);
-        strcpy(Value.title[i], title->valuestring);
-        strcpy(Value.lastUpdated[i], lastUpdated->valuestring);
-        strcpy(Value.created[i], created->valuestring);
-        strcpy(Value.image[i], image->valuestring);
-        strcpy(Value.squareImage[i], squareImage->valuestring);
+        strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
+        strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
+        strncpy(Value.lastUpdated[i], lastUpdated->valuestring, sizeof(Value.lastUpdated[i]));
+        strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
+        strncpy(Value.image[i], image->valuestring, sizeof(Value.image[i]));
+        strncpy(Value.squareImage[i], squareImage->valuestring, sizeof(Value.squareImage[i]));
         Value.numberOfTracks[i] = numberOfTracks->valueint;
         Value.numberOfVideos[i] = numberOfVideos->valueint;
         Value.duration[i] = duration->valueint;
 
         if (cJSON_IsNull(description) != 1)
         {
-          strcpy(Value.description[i], description->valuestring);
+          strncpy(Value.description[i], description->valuestring, sizeof(Value.description[i]));
         }
         i = i + 1;
       }
@@ -74,19 +74,19 @@ playlist_model parse_playlist(cJSON *input_json, int version)
         cJSON *duration = cJSON_GetObjectItem(playlist, "duration");
         cJSON *description = cJSON_GetObjectItemCaseSensitive(playlist, "description");
 
-        strcpy(Value.uuid[i], uuid->valuestring);
-        strcpy(Value.title[i], title->valuestring);
-        strcpy(Value.lastUpdated[i], lastUpdated->valuestring);
-        strcpy(Value.created[i], created->valuestring);
-        strcpy(Value.image[i], image->valuestring);
-        strcpy(Value.squareImage[i], squareImage->valuestring);
+        strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
+        strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
+        strncpy(Value.lastUpdated[i], lastUpdated->valuestring, sizeof(Value.lastUpdated[i]));
+        strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
+        strncpy(Value.image[i], image->valuestring, sizeof(Value.image[i]));
+        strncpy(Value.squareImage[i], squareImage->valuestring, sizeof(Value.squareImage[i]));
         Value.numberOfTracks[i] = numberOfTracks->valueint;
         Value.numberOfVideos[i] = numberOfVideos->valueint;
         Value.duration[i] = duration->valueint;
 
         if (cJSON_IsNull(description) != 1)
         {
-          strcpy(Value.description[i], description->valuestring);
+          strncpy(Value.description[i], description->valuestring, sizeof(Value.description[i]));
         }
         i = i + 1;
       }
@@ -104,19 +104,19 @@ playlist_model parse_playlist(cJSON *input_json, int version)
       cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
       cJSON *description = cJSON_GetObjectItemCaseSensitive(input_json, "description");
 
-      strcpy(Value.uuid[0], uuid->valuestring);
-      strcpy(Value.title[0], title->valuestring);
-      strcpy(Value.lastUpdated[0], lastUpdated->valuestring);
-      strcpy(Value.created[0], created->valuestring);
-      strcpy(Value.image[0], image->valuestring);
-      strcpy(Value.squareImage[0], squareImage->valuestring);
+      strncpy(Value.uuid[0], uuid->valuestring, sizeof(Value.uuid[0]));
+      strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
+      strncpy(Value.lastUpdated[0], lastUpdated->valuestring, sizeof(Value.lastUpdated[0]));
+      strncpy(Value.created[0], created->valuestring, sizeof(Value.created[0]));
+      strncpy(Value.image[0], image->valuestring, sizeof(Value.image[0]));
+      strncpy(Value.squareImage[0], squareImage->valuestring, sizeof(Value.squareImage[0]));
       Value.numberOfTracks[0] = numberOfTracks->valueint;
       Value.numberOfVideos[0] = numberOfVideos->valueint;
       Value.duration[0] = duration->valueint;
 
       if (cJSON_IsNull(description) != 1)
       {
-        strcpy(Value.description[0], description->valuestring);
+        strncpy(Value.description[0], description->valuestring, sizeof(Value.description[0]));
       }
     }
   }

@@ -131,7 +131,7 @@ mix_model get_artist_mix(size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      strcpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring);
+      strncpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring, sizeof(Value.id));
       cJSON_Delete(input_json);
       free(req.body);
       return Value;

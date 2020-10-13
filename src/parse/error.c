@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "../include/openTIDAL.h"
 
-size_t parse_unauthorized(cJSON *input_json, size_t id)
+int parse_unauthorized(cJSON *input_json, size_t id)
 {
-  size_t status;
+  int status;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus))
@@ -38,9 +38,9 @@ size_t parse_unauthorized(cJSON *input_json, size_t id)
   return status;
 }
 
-size_t parse_notfound(cJSON *input_json, size_t id, char *uuid)
+int parse_notfound(cJSON *input_json, size_t id, char *uuid)
 {
-  size_t status;
+  int status;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus))
@@ -66,9 +66,9 @@ size_t parse_notfound(cJSON *input_json, size_t id, char *uuid)
   return status;
 }
 
-size_t parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
+int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
 {
-  size_t status;
+  int status;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus))
