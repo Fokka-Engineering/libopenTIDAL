@@ -168,6 +168,8 @@ I've decompiled various TIDAL Android App Versions and debundled the Browser JS 
 
 [```GET pages/videos```][+]()
 
+[```GET pages/mix```][+]()
+
 [```GET pages/my_collection_my_mixes```][+]()
 ###### Search
 [```GET search/albums```][+]()

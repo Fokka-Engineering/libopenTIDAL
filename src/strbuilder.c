@@ -8,7 +8,7 @@ char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode)
 {
   char *urlcat;
   char buffer[20];
-  snprintf(buffer, 20, "%ld", id);
+  snprintf(buffer, 20, "%zu", id);
   urlcat = malloc(strlen(strOne)+1+sizeof(buffer)+strlen(strTwo));
   strcpy(urlcat, strOne);
   strcat(urlcat, buffer);

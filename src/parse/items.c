@@ -21,6 +21,7 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
   cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover"); 
 
+  Value.status = 1;
   Value.id[0] = id->valueint;
   strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
   Value.duration[0] = duration->valueint;
@@ -48,6 +49,42 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   strncpy(Value.albumTitle[0], albumTitle->valuestring, sizeof(Value.albumTitle[0]));
   strncpy(Value.cover[0], albumCover->valuestring, sizeof(Value.cover[0]));
 
+  return Value;
+}
+
+items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain/peak  */
+{
+  items_model Value;
+  const cJSON *artistItem = NULL;
+  int artistCounter = 0;
+  
+  cJSON *id = cJSON_GetObjectItem(input_json, "id");
+  cJSON *title = cJSON_GetObjectItemCaseSensitive(input_json, "title");
+  cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
+  cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
+  cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
+  cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
+  cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
+
+  Value.status = 1;
+  Value.id[0] = id->valueint;
+  strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
+  Value.duration[0] = duration->valueint;
+  Value.popularity[0] = popularity->valueint;
+  Value.trackNumber[0] = trackNumber->valueint;
+  Value.volumeNumber[0] = volumeNumber->valueint;
+  
+  Value.subArraySize[0] = cJSON_GetArraySize(artist);
+  cJSON_ArrayForEach(artistItem, artist)
+  {
+    cJSON *artistId = cJSON_GetObjectItem(artistItem, "id");
+    cJSON *artistName = cJSON_GetObjectItemCaseSensitive(artistItem, "name");
+
+    Value.artistId[0][artistCounter] = artistId->valueint;
+    strncpy(Value.artistName[0][artistCounter], artistName->valuestring, sizeof(Value.artistName[0][artistCounter]));
+    artistCounter = artistCounter + 1;
+  }
+  
   return Value;
 }
 
@@ -87,14 +124,16 @@ items_model parse_items(cJSON *input_json, int version, int video) /* TODO: Add 
       cJSON *volumeNumber = cJSON_GetObjectItem(version_json, "volumeNumber");
       cJSON *version = cJSON_GetObjectItemCaseSensitive(version_json, "version");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(version_json, "artists");
+      cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album"); 
 
+      Value.status = 1;
       Value.id[i] = id->valueint;
       strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
       Value.duration[i] = duration->valueint;
       Value.popularity[i] = popularity->valueint;
       Value.trackNumber[i] = trackNumber->valueint;
       Value.volumeNumber[i] = volumeNumber->valueint;
-      if (cJSON_IsNull(version) != 1)
+      if (cJSON_IsObject(version) && cJSON_IsNull(version) != 1)
       {
         strncpy(Value.version[i], version->valuestring, sizeof(Value.version[i]));
       }
@@ -109,18 +148,22 @@ items_model parse_items(cJSON *input_json, int version, int video) /* TODO: Add 
         strncpy(Value.artistName[i][artistCounter], artistName->valuestring, sizeof(Value.artistName[i][artistCounter]));
         artistCounter = artistCounter + 1;
       }
-
-      if (video == 0) /* Videos don't have an album section */
+      
+      if (cJSON_IsObject(album) && cJSON_IsNull(album) != 1) /* Videos don't have an album section */
         {
-          cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album");
 	  cJSON *albumId = cJSON_GetObjectItemCaseSensitive(album, "id");
           cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
           cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover");
           
+	  Value.isVideo[i] = 0;
 	  Value.albumId[i] = albumId->valueint;
           strncpy(Value.albumTitle[i], albumTitle->valuestring, sizeof(Value.albumTitle[i]));
           strncpy(Value.cover[i], albumCover->valuestring, sizeof(Value.cover[i]));
         }
+      else
+      {
+        Value.isVideo[i] = 1;
+      }
       i = i + 1;
     }
   }

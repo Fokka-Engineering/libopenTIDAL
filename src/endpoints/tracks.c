@@ -3,9 +3,9 @@
 #include <string.h>
 #include "../include/openTIDAL.h"
 
-tracks_contributor_model get_track_contributors(size_t trackid)
+contributor_model get_track_contributors(size_t trackid)
 {
-  tracks_contributor_model Value;
+  contributor_model Value;
   char *endpoint = url_cat("tracks/", trackid, "/contributors", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
@@ -20,13 +20,20 @@ tracks_contributor_model get_track_contributors(size_t trackid)
       size_t i = 0;
       cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
       cJSON *item = NULL;
+      Value.arraySize = cJSON_GetArraySize(items);
       cJSON_ArrayForEach(item, items)
       {
         cJSON *name = cJSON_GetObjectItemCaseSensitive(item, "name");
 	cJSON *role = cJSON_GetObjectItemCaseSensitive(item, "role");
-
-        strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
-	strncpy(Value.role[i], role->valuestring, sizeof(Value.role[i]));
+        
+	if (cJSON_IsString(name))
+	{
+          strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
+	}
+	if (cJSON_IsString(role))
+	{
+          strncpy(Value.role[i], role->valuestring, sizeof(Value.role[i]));
+        }
 	i = i + 1;
       }
       free(req.body);

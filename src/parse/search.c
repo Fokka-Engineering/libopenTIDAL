@@ -42,7 +42,8 @@ search_model parse_search(cJSON *input_json)
   Value.arraySizeArtist = cJSON_GetArraySize(artistsItems);
   Value.offsetArtist = cJSON_GetObjectItemCaseSensitive(artists, "offset")->valueint;
   Value.totalNumberOfItemsArtist = cJSON_GetObjectItemCaseSensitive(artists, "totalNumberOfItems")->valueint;
-  
+  Value.status = 1;
+
   if (Value.totalNumberOfItemsArtist != 0)
   {
     cJSON_ArrayForEach(artistsItem, artistsItems)

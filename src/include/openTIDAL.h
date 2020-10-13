@@ -36,6 +36,7 @@ int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
 
 items_model parse_items(cJSON *input_json, int version, int video);
 items_model parse_tracks(cJSON *input_json);
+items_model parse_videos(cJSON *input_json);
 playlist_model parse_playlist(cJSON *input_json, int version);
 album_model parse_album(cJSON *input_json, int version);
 artist_model parse_artist(cJSON *input_json, int version);
@@ -57,7 +58,7 @@ items_model get_user_tracks(size_t userid);
 items_model get_user_videos(size_t userid);
 
 playlist_model create_user_playlist(size_t userid, char *title, char *description);
-
+page_mix_model get_user_mixes();
 int add_user_album(size_t userid, size_t albumid);
 int add_user_artist(size_t userid, size_t artistid);
 int add_user_playlist(size_t userid, char *playlistid);
@@ -94,9 +95,15 @@ items_model get_artist_videos(size_t artistid);
 album_model get_artist_albums(size_t artistid);
 
 /* Track Endpoints  */
-tracks_contributor_model get_track_contributors(size_t trackid);
+contributor_model get_track_contributors(size_t trackid);
 mix_model get_track_mix(size_t trackid);
 stream_model get_track_streamUrl(size_t trackid);
 items_model get_track(size_t trackid);
+
+/* Video Endpoint  */
+items_model get_video(size_t videoid);
+
+/* Mix Endpoint  */
+items_model get_mix_items(char *mixid);
 
 search_model get_search(char *term, char *limit);

@@ -165,6 +165,93 @@ items_model get_user_videos(size_t userid)
   }
 }
 
+page_mix_model get_user_mixes()
+{
+  page_mix_model Value;
+  char *endpoint = "pages/my_collection_my_mixes";
+  char *baseparams = param_cat("100", "", "deviceType=BROWSER");
+  curl_model req = curl_get(endpoint, baseparams);
+  free(baseparams);
+
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 200)
+    {
+      cJSON *rows = cJSON_GetObjectItem(input_json, "rows");
+      cJSON *rowsArray = cJSON_GetArrayItem(rows, 0);
+      cJSON *modules = cJSON_GetObjectItem(rowsArray, "modules");
+      cJSON *modulesArray = cJSON_GetArrayItem(modules, 0);
+      cJSON *type = cJSON_GetObjectItemCaseSensitive(modulesArray, "type");
+      cJSON *pagedList = cJSON_GetObjectItem(modulesArray, "pagedList");
+      cJSON *limit = cJSON_GetObjectItem(pagedList, "limit");
+      cJSON *offset = cJSON_GetObjectItem(pagedList, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(pagedList, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(pagedList, "items");
+      cJSON *item = NULL;
+      int i;
+      
+      Value.status = 1;
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.limit = limit->valueint;
+      Value.offset = offset->valueint;
+      Value.totalNumberOfItems = totalNumberOfItems->valueint;
+      cJSON_ArrayForEach(item, items)
+      {
+        cJSON *id = cJSON_GetObjectItemCaseSensitive(item, "id");
+	cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
+	cJSON *subTitle = cJSON_GetObjectItemCaseSensitive(item, "subTitle");
+	cJSON *images = cJSON_GetObjectItem(item, "images");
+	cJSON *small = cJSON_GetObjectItem(images, "SMALL");
+	cJSON *medium = cJSON_GetObjectItem(images, "MEDIUM");
+	cJSON *large = cJSON_GetObjectItem(images, "LARGE");
+        cJSON *smallImageUrl = cJSON_GetObjectItemCaseSensitive(small, "url");
+        cJSON *mediumImageUrl = cJSON_GetObjectItemCaseSensitive(medium, "url");
+        cJSON *largeImageUrl = cJSON_GetObjectItemCaseSensitive(large, "url");
+        
+	strncpy(Value.id[i], id->valuestring, sizeof(Value.id[i]));
+	strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
+	strncpy(Value.subTitle[i], subTitle->valuestring, sizeof(Value.subTitle[i]));
+	strncpy(Value.smallImageUrl[i], smallImageUrl->valuestring, sizeof(Value.smallImageUrl[i]));
+	strncpy(Value.mediumImageUrl[i], mediumImageUrl->valuestring, sizeof(Value.mediumImageUrl[i]));
+	strncpy(Value.largeImageUrl[i], largeImageUrl->valuestring, sizeof(Value.largeImageUrl[i]));
+	i += 1;
+      }
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, 0);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, 0, "mymixes");
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = 0;
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+  }
+  else
+  {
+    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
+    Value.status = -1;
+    free(req.body);
+    return Value;
+  }
+}
+
 /* Create/Manipulate/Delete favorites */
 
 int add_user_album(size_t userid, size_t albumid)

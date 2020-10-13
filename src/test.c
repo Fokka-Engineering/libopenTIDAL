@@ -41,21 +41,37 @@ void login_polling()
 
 int main(void)
 {
-  items_model res = get_playlist_items("552c08ba-aae8-4f68-b579-09e24bb3222e");
-  if (res.status != -1)
+  items_model res = get_mix_items("001fb1d7459dadda7ff467738f665f");
+  //items_model res = get_mix_items("004667a04cff872cdd1b9254924935");
+  if (res.status == 1)
   {
     int i;
     int e;
-    for (i = 0; i < res.arraySize; i++)
+    //printf("%s\n", res.title[1]);
+    //printf("%zu\n", res.id[1]);
+    for (i = 0; i < res.arraySize; ++i)
     {
-      printf("%s\n", res.albumTitle[i]);
-      for (e = 0; e < res.subArraySize[i]; e++)
+      printf("%s\n", res.title[i]);
+      printf("%zu\n", res.id[i]);
+      printf("%zu\n", res.isVideo[i]);
+      for (e = 0; e < res.subArraySize[i]; ++e)
       {
-        printf("%s\n", res.artistName[i][e]);
         printf("%zu\n", res.artistId[i][e]);
+        printf("%s\n", res.artistName[i][e]);
       }
     }
   }
+  /*page_mix_model ress = get_user_mixes();
+  if (ress.status == 1)
+  {
+    size_t i;
+    for (i = 0; i < ress.arraySize; ++i)
+    {
+      printf("%s\n", ress.id[i]);
+      printf("%s\n", ress.title[i]);
+      printf("%s\n", ress.largeImageUrl[i]);
+    }
+  }*/
   //login_polling();
   //get_playlist("1edbcbcb-3b5a-4fa1-948c-9b4724dff930");
   /*stream_model res = get_track_streamUrl(122122043);

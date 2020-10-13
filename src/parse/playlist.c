@@ -38,7 +38,8 @@ playlist_model parse_playlist(cJSON *input_json, int version)
         cJSON *duration = cJSON_GetObjectItem(item, "duration");
         cJSON *description = cJSON_GetObjectItemCaseSensitive(item, "description");
 
-        strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
+        Value.status = 1;
+	strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
         strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
         strncpy(Value.lastUpdated[i], lastUpdated->valuestring, sizeof(Value.lastUpdated[i]));
         strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
@@ -74,7 +75,8 @@ playlist_model parse_playlist(cJSON *input_json, int version)
         cJSON *duration = cJSON_GetObjectItem(playlist, "duration");
         cJSON *description = cJSON_GetObjectItemCaseSensitive(playlist, "description");
 
-        strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
+        Value.status = 1;
+	strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
         strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
         strncpy(Value.lastUpdated[i], lastUpdated->valuestring, sizeof(Value.lastUpdated[i]));
         strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
@@ -104,6 +106,7 @@ playlist_model parse_playlist(cJSON *input_json, int version)
       cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
       cJSON *description = cJSON_GetObjectItemCaseSensitive(input_json, "description");
 
+      Value.status = 1;
       strncpy(Value.uuid[0], uuid->valuestring, sizeof(Value.uuid[0]));
       strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
       strncpy(Value.lastUpdated[0], lastUpdated->valuestring, sizeof(Value.lastUpdated[0]));
