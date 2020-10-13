@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 size_t parse_unauthorized(cJSON *input_json, size_t id)
 {
@@ -61,6 +61,34 @@ size_t parse_notfound(cJSON *input_json, size_t id, char *uuid)
     {
       status = 0;
       fprintf(stderr, "[404] Not Found");
+    }
+  }
+  return status;
+}
+
+size_t parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
+{
+  size_t status;
+  const cJSON *subStatus = NULL;
+  subStatus = cJSON_GetObjectItem(input_json, "subStatus");
+  if (cJSON_IsNumber(subStatus))
+  {
+    if (subStatus->valueint == 7002)
+    {
+      status = -4;
+      if (uuid == NULL)
+      {
+        fprintf(stderr, "[412] If-None-Match (eTag) failed for %zu\n", id);
+      }
+      else
+      {
+        fprintf(stderr, "[412] If-None-Match (eTag) failed for%s\n", uuid);
+      }
+    }
+    else
+    {
+      status = 0;
+      fprintf(stderr, "[412] Precondition Failed");
     }
   }
   return status;

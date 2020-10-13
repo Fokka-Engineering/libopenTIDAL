@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 artist_model get_artist(size_t artistid)
 {
@@ -9,63 +9,113 @@ artist_model get_artist(size_t artistid)
   char *endpoint = url_cat("artists/", artistid, "", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    return parse_artist(input_json, 0);
-    /* always cleanup */
-    cJSON_Delete(input_json);
+    if (req.responseCode == 200)
+    {
+      artist_model parse = parse_artist(input_json, 0);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return parse;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = 0;
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
     Value.status = -1;
+    free(req.body);
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }
 
 artist_link_model get_artist_link(size_t artistid)
 {
   const cJSON *item = NULL;
-  const cJSON *items = NULL;
   int i = 0;
   artist_link_model Value;
   char *endpoint = url_cat("artists/", artistid, "/links", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    Value.status = 1;
-    Value.totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems")->valueint;
-    strcpy(Value.source, cJSON_GetObjectItemCaseSensitive(input_json, "source")->valuestring);
-    items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
-    Value.arraySize = cJSON_GetArraySize(items);
-
-    cJSON_ArrayForEach(item, items)
+    if (req.responseCode == 200)
     {
-      strcpy(Value.url[i], cJSON_GetObjectItemCaseSensitive(item, "url")->valuestring);
-      strcpy(Value.siteName[i], cJSON_GetObjectItemCaseSensitive(item, "siteName")->valuestring);
-      i = i + 1;
+      Value.status = 1;
+      cJSON *totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems");
+      cJSON *source = cJSON_GetObjectItemCaseSensitive(input_json, "source");
+      cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
+    
+      Value.totalNumberOfItems = totalNumberOfItems->valueint;
+      strncpy(Value.source, source->valuestring, sizeof(Value.source));
+      Value.arraySize = cJSON_GetArraySize(items);
+
+      cJSON_ArrayForEach(item, items)
+      {
+        cJSON *url = cJSON_GetObjectItemCaseSensitive(item, "url");
+        cJSON *siteName = cJSON_GetObjectItemCaseSensitive(item, "siteName");
+        strncpy(Value.url[i], url->valuestring, sizeof(Value.url[i]));
+        strncpy(Value.siteName[i], siteName->valuestring, sizeof(Value.siteName[i]));
+        i = i + 1;
+      }
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
     }
-    return Value;
-    /* always cleanup */
-    cJSON_Delete(input_json);
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      free(req.body);
+      Value.status = 0;
+      return Value;
+    }
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
+    free(req.body);
     Value.status = -1;
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }
 
 mix_model get_artist_mix(size_t artistid)
@@ -74,24 +124,46 @@ mix_model get_artist_mix(size_t artistid)
   char *endpoint = url_cat("artists/", artistid, "/mix", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    strcpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring);
-    return Value;
-    /* always cleanup */
-    cJSON_Delete(input_json);
+    if (req.responseCode == 200)
+    {
+      strcpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring);
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+    else
+    {
+      free(req.body);
+      Value.status = 0;
+      return Value;
+    }
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
+    free(req.body);
     Value.status = -1;
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }
 
 items_model get_artist_toptracks(size_t artistid)
@@ -100,24 +172,48 @@ items_model get_artist_toptracks(size_t artistid)
   char *endpoint = url_cat("artists/", artistid, "/toptracks", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    return parse_items(input_json, 1, 0);
+    if (req.responseCode == 200)
+    {
+      items_model parse = parse_items(input_json, 1, 0);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return parse;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      free(req.body);
+      Value.status = 0;
+      return Value;
+    }
     /* always cleanup */
     cJSON_Delete(input_json);
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
-    items_model Value;
+    free(req.body);
     Value.status = -1;
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }
 
 items_model get_artist_videos(size_t artistid)
@@ -126,24 +222,46 @@ items_model get_artist_videos(size_t artistid)
   char *endpoint = url_cat("artists/", artistid, "/videos", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    return parse_items(input_json, 1, 1);
-    /* always cleanup */
-    cJSON_Delete(input_json);
+    if (req.responseCode == 200)
+    {
+      items_model parse = parse_items(input_json, 1, 1);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return parse;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      free(req.body);
+      Value.status = 0;
+      return Value;
+    }
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
-    items_model Value;
+    free(req.body);
     Value.status = -1;
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }
 
 album_model get_artist_albums(size_t artistid)
@@ -152,22 +270,45 @@ album_model get_artist_albums(size_t artistid)
   char *endpoint = url_cat("artists/", artistid, "/albums", 0);
   char *baseparams = param_cat("100", "", "");
   curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  free(baseparams);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    return parse_album(input_json, 0);
-    /* always cleanup */
-    cJSON_Delete(input_json);
+    if (req.responseCode == 200)
+    {
+      album_model parse = parse_album(input_json, 0);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return parse;
+    }
+    else if (req.responseCode == 401)
+    {
+      Value.status = parse_unauthorized(input_json, artistid);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else if (req.responseCode == 404)
+    {
+      Value.status = parse_notfound(input_json, artistid, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = 0;
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
-    album_model Value;
+    free(req.body);
     Value.status = -1;
+    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.", artistid);
     return Value;
   }
-  /*Cleanup*/
-  free(endpoint);
-  free(baseparams);
-  free(req.body);
 }

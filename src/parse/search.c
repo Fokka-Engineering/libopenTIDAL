@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 search_model parse_search(cJSON *input_json)
 {

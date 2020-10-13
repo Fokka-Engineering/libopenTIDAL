@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "include/cTidal.h"
+#include "include/openTIDAL.h"
 
-/* Converts an integer value to its hex character*/
+/* converts an integer value to its hex character*/
 char to_hex(char code) {
   static char hex[] = "0123456789abcdef";
   return hex[code & 15];
 }
 
-/* Returns a url-encoded version of str */
+/* returns a url-encoded version of str */
 char *url_encode(char *str) {
   char *pstr = str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
   while (*pstr) {

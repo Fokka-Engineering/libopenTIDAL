@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
-#include "include/cTidal.h"
+#include "include/openTIDAL.h"
 
 const char *baseUrl = "https://api.tidal.com/v1/";
 const char *authUrl = "https://auth.tidal.com/v1/";
 
-/*libcURL Base Functions*/
 struct MemoryStruct {
   char *memory;
   size_t size;
@@ -48,7 +47,7 @@ void curl_exit()
   curl_easy_cleanup(curl);
 }
 
-/* Persistent cURL Handle for API GET Requests */
+/* persistent cURL handle for API GET requests */
 curl_model curl_get(char *endpoint, char *data)
 {
   if(curl_init == 0)
@@ -60,19 +59,23 @@ curl_model curl_get(char *endpoint, char *data)
   curl_model model;
 
   struct MemoryStruct response;
-  response.memory = malloc(1);  /* will be grown as needed by the realloc above */
-  response.size = 0;    /* no data at this point */
+  /* will be grown as needed by the realloc above */
+  response.memory = malloc(1); 
+  /* no data at this point */
+  response.size = 0; 
   
-  /*Char concatenation*/
+  /* char concatenation */
   char *url;
+  /* allocate size of baseUrl, endpoint and data  */
   url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
   strcpy(url, baseUrl);
   strcat(url, endpoint);
   strcat(url, "?");
   strcat(url, data);
 
-  /* Create authorization header */
+  /* create authorization header */
   char *header;
+  /* allocate size of access_token and header  */
   header = malloc(strlen(access_token)+23+1);
   strcpy(header, "authorization: Bearer ");
   strcat(header, access_token);
@@ -83,12 +86,13 @@ curl_model curl_get(char *endpoint, char *data)
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-    
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
+    
+    /* cleanup */
     curl_slist_free_all(chunk);
-
+    free(url);
+    free(header);
   }
   if (res != CURLE_OK) 
   {
@@ -101,12 +105,9 @@ curl_model curl_get(char *endpoint, char *data)
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
-
-  free(url);
-  free(header);
 }
 
-/* Persistent cURL Handle for API POST Requests */
+/* persistent cURL handle for API POST requests */
 curl_model curl_post(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
@@ -118,15 +119,18 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   curl_model model;
 
   struct MemoryStruct response;
-  response.memory = malloc(1);  /* will be grown as needed by the realloc above */
-  response.size = 0;    /* no data at this point */
+  /* will be grown as needed by the realloc above */
+  response.memory = malloc(1);
+  /* no data at this point */
+  response.size = 0; 
 
-  /*Char concatenation*/
+  /* char concatenation */
   char *url;
   url = malloc(strlen(baseUrl)+1+strlen(endpoint));
   strcpy(url, baseUrl);
   strcat(url, endpoint);
 
+  /* concatenate authorization header */
   char *header;
   header = malloc(strlen(access_token)+23+1);
   strcpy(header, "authorization: Bearer ");
@@ -134,15 +138,20 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
 
   if(curl_init == 1) {
     struct curl_slist *chunk = NULL;
-    chunk = curl_slist_append(chunk, header); /*POST Header*/
+    chunk = curl_slist_append(chunk, header);
     chunk = curl_slist_append(chunk, optHeader);
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk); /*Append POST Header*/
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data); /*Append (x-www-form-urlencoded) parameter*/
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    /*append (x-www-form-urlencoded) parameters*/
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
+
+    /* cleanup */
+    curl_slist_free_all(chunk);
+    free(url);
+    free(header);
   }
   if (res != CURLE_OK)
   {
@@ -155,11 +164,9 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
-  free(url);
-  free(header);
 }
 
-/* Persistent cURL Handle for API DELETE Requests */
+/* persistent cURL handle for API DELETE requests */
 curl_model curl_delete(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
@@ -172,16 +179,18 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
 
   struct MemoryStruct response;
 
-  response.memory = malloc(1);   /* will be grown as needed by the realloc above */
-  response.size = 0;     /* no data at this point */
+  /* will be grown as needed by the realloc above */
+  response.memory = malloc(1);
+  /* no data at this point */ 
+  response.size = 0;
 
-  /*Char concatenation*/
+  /*char concatenation*/
   char *url;
   url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
   strcpy(url, baseUrl);
   strcat(url, endpoint);
 
-  /* Create authorization header */
+  /* concatenate authorization header */
   char *header;
   header = malloc(strlen(access_token)+23+1);
   strcpy(header, "authorization: Bearer ");
@@ -194,12 +203,14 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&response);
-    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     res = curl_easy_perform(curl);
-    curl_slist_free_all(chunk);
 
+    /* cleanup */
+    curl_slist_free_all(chunk);
+    free(url);
+    free(header);
   }
   if (res != CURLE_OK)
   {
@@ -212,11 +223,9 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
-  free(url);
-  free(header);
 }
 
-/* Persistent cURL Handle for API HEAD Requests */
+/* persistent cURL handle for API HEAD requests */
 curl_model curl_head(char *endpoint, char *data)
 {
   if(curl_init == 0)
@@ -227,10 +236,13 @@ curl_model curl_head(char *endpoint, char *data)
   CURLcode res;
   curl_model model;
   struct MemoryStruct headerResponse;
-  
+ 
+  /* will be grown as needed by the realloc above */ 
   headerResponse.memory = malloc(1);
+  /* no data at this point */
   headerResponse.size = 0;
-  /*Char concatenation*/
+
+  /*char concatenation*/
   char *url;
   url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
   strcpy(url, baseUrl);
@@ -238,7 +250,7 @@ curl_model curl_head(char *endpoint, char *data)
   strcat(url, "?");
   strcat(url, data);
 
-  /* Create authorization header */
+  /* concatenate authorization header */
   char *header;
   header = malloc(strlen(access_token)+23+1);
   strcpy(header, "authorization: Bearer ");
@@ -252,10 +264,12 @@ curl_model curl_head(char *endpoint, char *data)
     curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerResponse); 
-    //curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl);
+    
+    /* cleanup  */
     curl_slist_free_all(chunk);
-
+    free(url);
+    free(header);
   }
   if (res != CURLE_OK)
   {
@@ -268,10 +282,9 @@ curl_model curl_head(char *endpoint, char *data)
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
     return model;
   }
-  free(url);
-  free(header);
 }
-/* AUTH Handle */
+
+/* auth handle */
 
 int curl_init_auth = 0;
 CURL *curl_auth;
@@ -298,10 +311,12 @@ curl_model curl_post_auth(char *endpoint, char *data)
   curl_model model;
   struct MemoryStruct response;
 
-  response.memory = malloc(1);  /* will be grown as needed by the realloc above */
-  response.size = 0;    /* no data at this point */
+  /* will be grown as needed by the realloc above */
+  response.memory = malloc(1);
+  /* no data at this point */
+  response.size = 0;
 
-  /*Char concatenation*/
+  /*char concatenation*/
   char *url;
   url = malloc(strlen(authUrl)+1+strlen(endpoint));
   strcpy(url, authUrl);
@@ -310,11 +325,12 @@ curl_model curl_post_auth(char *endpoint, char *data)
   if(curl_init_auth == 1) {
     curl_easy_setopt(curl_auth, CURLOPT_URL, url);
     curl_easy_setopt(curl_auth, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(curl_auth, CURLOPT_POSTFIELDS, data); /*Append (x-www-form-urlencoded) parameter*/
+    /* append (x-www-form-urlencoded) parameter */
+    curl_easy_setopt(curl_auth, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(curl_auth, CURLOPT_WRITEDATA, &response);
+    /* enable basic authentication (clientid:client_secret) */
     curl_easy_setopt(curl_auth, CURLOPT_USERNAME, client_id);
     curl_easy_setopt(curl_auth, CURLOPT_PASSWORD, client_secret);
-    //curl_easy_setopt(curl_auth, CURLOPT_FAILONERROR, 1);
     res = curl_easy_perform(curl_auth);
   }
   free(url);

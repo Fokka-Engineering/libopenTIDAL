@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 cJSON *json_parse(const char * input)
 {
@@ -13,7 +13,7 @@ cJSON *json_parse(const char * input)
       if (error_ptr != NULL)
       {
           /*JSON Input empty*/
-          fprintf(stderr, "Error before: %s\n", error_ptr);
+          fprintf(stderr, "[Request] JSON Input empty\n");
       }
       status = 0;
   }

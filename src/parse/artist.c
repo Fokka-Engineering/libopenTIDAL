@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 artist_model parse_artist(cJSON *input_json, int version)
 {

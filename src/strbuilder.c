@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "include/cTidal.h"
+#include "include/openTIDAL.h"
 
+/* concatenate endpoint with an id  */
 char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode)
 {
   char *urlcat;
@@ -22,6 +23,7 @@ char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode)
   return urlcat;
 }
 
+/* concatenate endpoint with an uuid */
 char *url_cat_str(char *strOne, char *id, char *strTwo)
 {
   char *urlcat;
@@ -32,6 +34,7 @@ char *url_cat_str(char *strOne, char *id, char *strTwo)
   return urlcat;
 }
 
+/* concatenate standard url parameter */
 char *param_cat(char *limit, char *query, char *extra)
 {
   char *paramcat;

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 playlist_model parse_playlist(cJSON *input_json, int version)
 {

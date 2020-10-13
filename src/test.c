@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "include/cTidal.h"
+#include "include/openTIDAL.h"
 #include <string.h>
 #include <curl/curl.h>
 
@@ -41,7 +41,7 @@ void login_polling()
 
 int main(void)
 {
-  /*items_model res = get_playlist_items("c24c3adc-6cb6-486c-8a5e-8c1033363619");
+  items_model res = get_playlist_items("552c08ba-aae8-4f68-b579-09e24bb3222e");
   if (res.status != -1)
   {
     int i;
@@ -55,17 +55,24 @@ int main(void)
         printf("%zu\n", res.artistId[i][e]);
       }
     }
-  }*/
+  }
   //login_polling();
-  //get_playlist("10e422fd-1cbf-4672-93cd-b8965580fd21");
-  stream_model res = get_track_streamUrl(122122043);
-  if (res.status != -1)
+  //get_playlist("1edbcbcb-3b5a-4fa1-948c-9b4724dff930");
+  /*stream_model res = get_track_streamUrl(122122043);
+  if (res.status == 1)
   {
     printf("%s\n", "Success!");
     printf("%s\n", res.url);
     printf("%zu\n", res.trackId);
     printf("%s\n", res.codec);
     printf("%s\n", res.soundQuality);
-  }
-  //curl_exit_auth();
+  }*/
+
+  /*char *eTag = get_playlist_etag("1edbcbcb-3b5a-4fa1-948c-9b4724dff930");
+  size_t ress = delete_playlist_item("1edbcbcb-3b5a-4fa1-948c-9b4724dff930", 0, eTag);
+  if (ress == 1)
+  {
+    printf("Success!\n");
+  }*/
+  curl_exit();
 }

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain/peak  */
 {

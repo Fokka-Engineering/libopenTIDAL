@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/cTidal.h"
+#include "../include/openTIDAL.h"
 
 login_code_model login_create_code()
 {
@@ -19,11 +19,12 @@ login_code_model login_create_code()
   /* Copy JSON Response */
   strcpy(Value.deviceCode, cJSON_GetObjectItemCaseSensitive(input_json, "deviceCode")->valuestring);
   strcpy(Value.userCode, cJSON_GetObjectItemCaseSensitive(input_json, "userCode")->valuestring);
-  return Value;
   /* Cleanup */
   cJSON_Delete(input_json);
   free(str);
   free(req.body);
+
+  return Value;
 }
 
 login_token_model login_create_token(char *device_code)
@@ -67,11 +68,12 @@ login_token_model login_create_token(char *device_code)
       Value.status = -1;
     }
   }
-  return Value;
   /* Cleanup */
   cJSON_Delete(input_json);
   free(str);
   free(req.body);
+
+  return Value;
 }
 
 login_token_model login_refresh_token(char *refresh_token)

@@ -1,3 +1,5 @@
+-9 Invalid Indices (Empty Index in Playlist)
+-8 Undefined 401 Error
 -7 Missing sessionId / Bearer
 -6 Token has invalid header
 -5 The token has expired. (Expired on time)
