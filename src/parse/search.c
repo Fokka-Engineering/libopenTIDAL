@@ -6,175 +6,248 @@
 search_model parse_search(cJSON *input_json)
 {
   search_model Value;
-  const cJSON *artists = NULL;
-  const cJSON *artistsItems = NULL;
-  const cJSON *artistsItem = NULL;
-  int artistsCounter = 0;
-  const cJSON *albums = NULL;
-  const cJSON *albumsItems = NULL;
-  const cJSON *albumsItem = NULL;
-  int albumsCounter = 0;
-  const cJSON *playlists = NULL;
-  const cJSON *playlistsItems = NULL;
-  const cJSON *playlistsItem = NULL;
-  int playlistsCounter = 0;
-  const cJSON *tracks = NULL;
-  const cJSON *tracksItems = NULL;
-  const cJSON *tracksItem = NULL;
-  int tracksCounter = 0;
-  const cJSON *videos = NULL;
-  const cJSON *videosItems = NULL;
-  const cJSON *videosItem = NULL;
-  const cJSON *topHit;
-  int videosCounter = 0;
+  int ar = 0; /* artistCounter  */
+  int al = 0; /* albumsCounter  */
+  int pl = 0; /* playlistsCounter  */
+  int tr = 0; /* tracksCounter  */
+  int vi = 0; /* videosCounter  */
 
-  artists = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
-  artistsItems = cJSON_GetObjectItemCaseSensitive(artists, "items");
-  albums = cJSON_GetObjectItemCaseSensitive(input_json, "albums");
-  albumsItems = cJSON_GetObjectItemCaseSensitive(albums, "items");
-  playlists = cJSON_GetObjectItemCaseSensitive(input_json, "playlists");
-  playlistsItems = cJSON_GetObjectItemCaseSensitive(playlists, "items");
-  tracks = cJSON_GetObjectItemCaseSensitive(input_json, "tracks");
-  tracksItems = cJSON_GetObjectItemCaseSensitive(tracks, "items");
-  videos = cJSON_GetObjectItemCaseSensitive(input_json, "videos");
-  videosItems = cJSON_GetObjectItemCaseSensitive(videos, "items");
-  topHit = cJSON_GetObjectItemCaseSensitive(input_json, "topHit");
-  Value.arraySizeArtist = cJSON_GetArraySize(artistsItems);
-  Value.offsetArtist = cJSON_GetObjectItemCaseSensitive(artists, "offset")->valueint;
-  Value.totalNumberOfItemsArtist = cJSON_GetObjectItemCaseSensitive(artists, "totalNumberOfItems")->valueint;
+  cJSON *artists = cJSON_GetObjectItem(input_json, "artists");
+  cJSON *artistsItems = cJSON_GetObjectItem(artists, "items");
+  cJSON *artistTotalNumberOfItems = cJSON_GetObjectItem(artists, "totalNumberOfItems");
+  cJSON *artistsItem = NULL;
+  
+  cJSON *albums = cJSON_GetObjectItem(input_json, "albums");
+  cJSON *albumsItems = cJSON_GetObjectItem(albums, "items");
+  cJSON *albumTotalNumberOfItems = cJSON_GetObjectItem(albums, "totalNumberOfItems");
+  cJSON *albumsItem = NULL;
+
+  cJSON *playlists = cJSON_GetObjectItem(input_json, "playlists");
+  cJSON *playlistsItems = cJSON_GetObjectItem(playlists, "items");
+  cJSON *playlistsTotalNumberOfItems = cJSON_GetObjectItem(playlists, "totalNumberOfItems");
+  cJSON *playlistsItem = NULL;
+
+  cJSON *tracks = cJSON_GetObjectItem(input_json, "tracks");
+  cJSON *tracksItems = cJSON_GetObjectItem(tracks, "items");
+  cJSON *tracksTotalNumberOfItems = cJSON_GetObjectItem(tracks, "totalNumberOfItems");
+  cJSON *tracksItem = NULL;
+
+  cJSON *videos = cJSON_GetObjectItem(input_json, "videos");
+  cJSON *videosItems = cJSON_GetObjectItem(videos, "items");
+  cJSON *videosTotalNumberOfItems = cJSON_GetObjectItem(videos, "totalNumberOfItems");
+  cJSON *videosItem = NULL;
+  
+  cJSON *topHit = cJSON_GetObjectItemCaseSensitive(input_json, "topHit");
   Value.status = 1;
 
-  if (Value.totalNumberOfItemsArtist != 0)
+  if (artistTotalNumberOfItems != 0)
   {
+    cJSON *artistLimit = cJSON_GetObjectItem(artists, "limit");
+    cJSON *artistOffset = cJSON_GetObjectItem(artists, "offset");
+    
+    Value.artists.limit = artistLimit->valueint;
+    Value.artists.offset = artistOffset->valueint;
+    Value.artists.totalNumberOfItems = artistTotalNumberOfItems->valueint;
+    Value.artists.arraySize = cJSON_GetArraySize(artistsItems);
+
     cJSON_ArrayForEach(artistsItem, artistsItems)
     {
-      cJSON *artistId = cJSON_GetObjectItemCaseSensitive(artistsItem, "id");
-      cJSON *artistName = cJSON_GetObjectItemCaseSensitive(artistsItem, "name");
-      cJSON *artistPicture = cJSON_GetObjectItemCaseSensitive(artistsItem, "picture");
-      cJSON *artistPopularity = cJSON_GetObjectItemCaseSensitive(artistsItem, "popularity");
-
-      Value.artistId[artistsCounter] = artistId->valueint;
-      strncpy(Value.artistName[artistsCounter], artistName->valuestring, sizeof(Value.artistName[artistsCounter]));
-      strncpy(Value.artistPicture[artistsCounter], artistPicture->valuestring, sizeof(Value.artistPicture[artistsCounter]));
-      Value.artistPopularity[artistsCounter] = artistPopularity->valueint;
-      artistsCounter = artistsCounter + 1;
+      cJSON *id = cJSON_GetObjectItem(artistsItem, "id");
+      cJSON *name = cJSON_GetObjectItemCaseSensitive(artistsItem, "name");
+      cJSON *picture = cJSON_GetObjectItemCaseSensitive(artistsItem, "picture");
+      cJSON *popularity = cJSON_GetObjectItem(artistsItem, "popularity");
+      
+      Value.artists.id[ar] = id->valueint;
+      strncpy(Value.artists.name[ar], name->valuestring, sizeof(Value.artists.name[ar]));
+      Value.artists.hasPicture[ar] = 0;
+      if (cJSON_IsNull(picture) != 1)
+      {
+        Value.artists.hasPicture[ar] = 1;
+        strncpy(Value.artists.picture[ar], picture->valuestring, sizeof(Value.artists.picture[ar]));
+      }
+      Value.artists.popularity[ar] = popularity->valueint;
+      ar += 1;
     }
   }
-  Value.arraySizeAlbum = cJSON_GetArraySize(albumsItems);
-  Value.offsetAlbum = cJSON_GetObjectItemCaseSensitive(albums, "offset")->valueint;
-  Value.totalNumberOfItemsAlbum = cJSON_GetObjectItemCaseSensitive(albums, "totalNumberOfItems")->valueint;
-  if (Value.totalNumberOfItemsAlbum != 0)
+  if (albumTotalNumberOfItems != 0)
   {
+    cJSON *albumLimit = cJSON_GetObjectItem(albums, "limit");
+    cJSON *albumOffset = cJSON_GetObjectItem(albums, "offset");
+
+    Value.albums.limit = albumLimit->valueint;
+    Value.albums.offset = albumOffset->valueint;
+    Value.albums.totalNumberOfItems = albumTotalNumberOfItems->valueint;
+    Value.albums.arraySize = cJSON_GetArraySize(albumsItems);
+
     cJSON_ArrayForEach(albumsItem, albumsItems)
     {
-      cJSON *albumId = cJSON_GetObjectItemCaseSensitive(albumsItem, "id");
-      cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(albumsItem, "title");
-      cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(albumsItem, "cover");
-      cJSON *albumPopularity = cJSON_GetObjectItemCaseSensitive(albumsItem, "popularity");
-      cJSON *albumDuration = cJSON_GetObjectItemCaseSensitive(albumsItem, "duration");
-      cJSON *albumArtist = cJSON_GetObjectItemCaseSensitive(albumsItem, "artists");
-      cJSON *albumArtistArray = cJSON_GetArrayItem(albumArtist, 0); /* TODO: Add 2D-Array for Artists */ 
-      cJSON *albumArtistId = cJSON_GetObjectItemCaseSensitive(albumArtistArray, "id");
-      cJSON *albumArtistName = cJSON_GetObjectItemCaseSensitive(albumArtistArray, "name");
+      int i = 0;
+      cJSON *subItem = NULL;
+      cJSON *id = cJSON_GetObjectItem(albumsItem, "id");
+      cJSON *title = cJSON_GetObjectItemCaseSensitive(albumsItem, "title");
+      cJSON *duration = cJSON_GetObjectItem(albumsItem, "duration");
+      cJSON *numberOfTracks = cJSON_GetObjectItem(albumsItem, "numberOfTracks");
+      cJSON *numberOfVideos = cJSON_GetObjectItem(albumsItem, "numberOfVideos");
+      cJSON *numberOfVolumes = cJSON_GetObjectItem(albumsItem, "numberOfVolumes");
+      cJSON *copyright = cJSON_GetObjectItemCaseSensitive(albumsItem, "copyright");
+      cJSON *cover = cJSON_GetObjectItemCaseSensitive(albumsItem, "cover");
+      cJSON *popularity = cJSON_GetObjectItem(albumsItem, "popularity");
+      cJSON *releaseDate = cJSON_GetObjectItem(albumsItem, "releaseDate");
+      cJSON *artist = cJSON_GetObjectItem(albumsItem, "artists");
 
-      Value.albumId[albumsCounter] = albumId->valueint;
-      strncpy(Value.albumTitle[albumsCounter], albumTitle->valuestring, sizeof(Value.albumTitle[albumsCounter]));
-      strncpy(Value.albumCover[albumsCounter], albumCover->valuestring, sizeof(Value.albumCover[albumsCounter]));
-      Value.albumPopularity[albumsCounter] = albumPopularity->valueint;
-      Value.albumDuration[albumsCounter] = albumDuration->valueint;
+      Value.albums.id[al] = id->valueint;
+      strncpy(Value.albums.title[al], title->valuestring, sizeof(Value.albums.title[al]));
+      Value.albums.duration[al] = duration->valueint;
+      Value.albums.numberOfTracks[al] = numberOfTracks->valueint;
+      Value.albums.numberOfVideos[al] = numberOfVideos->valueint;
+      Value.albums.numberOfVolumes[al] = numberOfVolumes->valueint;
+      strncpy(Value.albums.releaseDate[al], releaseDate->valuestring, sizeof(Value.albums.releaseDate[al]));
+      strncpy(Value.albums.copyright[al], copyright->valuestring, sizeof(Value.albums.copyright[al]));
+      strncpy(Value.albums.cover[al], cover->valuestring, sizeof(Value.albums.cover[al]));
+      strncpy(Value.albums.releaseDate[al], releaseDate->valuestring, sizeof(Value.albums.releaseDate[al]));
+      Value.albums.popularity[al] = popularity->valueint;
+      
+      Value.albums.subArraySize[al] = cJSON_GetArraySize(artist);
+      cJSON_ArrayForEach(subItem, artist)
+      {
+        cJSON *artistId = cJSON_GetObjectItemCaseSensitive(subItem, "id");
+        cJSON *artistName = cJSON_GetObjectItemCaseSensitive(subItem, "name");
 
-      strncpy(Value.albumArtistName[albumsCounter], albumArtistName->valuestring, sizeof(Value.albumArtistName[albumsCounter]));
-      Value.albumArtistId[albumsCounter] = albumArtistId->valueint;
-      albumsCounter = albumsCounter + 1;
+        Value.albums.artistId[al][i] = artistId->valueint;
+        strncpy(Value.albums.artistName[al][i], artistName->valuestring, sizeof(Value.albums.artistName[al][i]));
+        i += 1;
+      }
+      al += 1;
     }
   }
-  Value.arraySizePlaylist = cJSON_GetArraySize(playlistsItems);
-  Value.offsetPlaylist = cJSON_GetObjectItemCaseSensitive(playlists, "offset")->valueint;
-  Value.totalNumberOfItemsPlaylist = cJSON_GetObjectItemCaseSensitive(playlists, "totalNumberOfItems")->valueint;
-  if (Value.totalNumberOfItemsPlaylist != 0)
+  if (playlistsTotalNumberOfItems != 0)
   {
+    cJSON *playlistsLimit = cJSON_GetObjectItem(playlists, "limit");
+    cJSON *playlistsOffset = cJSON_GetObjectItem(playlists, "offset");
+
+    Value.playlists.limit = playlistsLimit->valueint;
+    Value.playlists.offset = playlistsOffset->valueint;
+    Value.playlists.totalNumberOfItems = playlistsTotalNumberOfItems->valueint;
+    Value.playlists.arraySize = cJSON_GetArraySize(playlistsItems);
+
     cJSON_ArrayForEach(playlistsItem, playlistsItems)
     {
-      cJSON *playlistUuid = cJSON_GetObjectItemCaseSensitive(playlistsItem, "uuid");
-      cJSON *playlistTitle = cJSON_GetObjectItemCaseSensitive(playlistsItem, "title");
-      cJSON *playlistImage = cJSON_GetObjectItemCaseSensitive(playlistsItem, "image");
-      cJSON *playlistDuration = cJSON_GetObjectItem(playlistsItem, "duration");
-      cJSON *playlistSquareImage = cJSON_GetObjectItemCaseSensitive(playlistsItem, "squareImage");
-      cJSON *playlistNumberOfTracks = cJSON_GetObjectItemCaseSensitive(playlistsItem, "numberOfTracks");
-      cJSON *playlistNumberOfVideos = cJSON_GetObjectItemCaseSensitive(playlistsItem, "numberOfVideos");
-      cJSON *playlistPopularity = cJSON_GetObjectItemCaseSensitive(playlistsItem, "popularity");
+      cJSON *uuid = cJSON_GetObjectItemCaseSensitive(playlistsItem, "uuid");
+      cJSON *title = cJSON_GetObjectItemCaseSensitive(playlistsItem, "title");
+      cJSON *description = cJSON_GetObjectItemCaseSensitive(playlistsItem, "description");
+      cJSON *image = cJSON_GetObjectItemCaseSensitive(playlistsItem, "image");
+      cJSON *duration = cJSON_GetObjectItem(playlistsItem, "duration");
+      cJSON *squareImage = cJSON_GetObjectItemCaseSensitive(playlistsItem, "squareImage");
+      cJSON *numberOfTracks = cJSON_GetObjectItem(playlistsItem, "numberOfTracks");
+      cJSON *numberOfVideos = cJSON_GetObjectItem(playlistsItem, "numberOfVideos");
+      cJSON *popularity = cJSON_GetObjectItem(playlistsItem, "popularity");
+      cJSON *created = cJSON_GetObjectItemCaseSensitive(playlistsItem, "created");
+      cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(playlistsItem, "lastUpdated");
 
-      strncpy(Value.playlistUUID[playlistsCounter], playlistUuid->valuestring, sizeof(Value.playlistUUID[playlistsCounter]));
-      strncpy(Value.playlistTitle[playlistsCounter], playlistTitle->valuestring, sizeof(Value.playlistTitle[playlistsCounter]));
-      strncpy(Value.playlistImage[playlistsCounter], playlistImage->valuestring, sizeof(Value.playlistImage[playlistsCounter]));
-      Value.playlistDuration[playlistsCounter] = playlistDuration->valueint;
-      strncpy(Value.playlistSquareImage[playlistsCounter], playlistSquareImage->valuestring, sizeof(Value.playlistSquareImage[playlistsCounter]));
-      Value.playlistNumberOfTracks[playlistsCounter] = playlistNumberOfTracks->valueint;
-      Value.playlistNumberOfVideos[playlistsCounter] = playlistNumberOfVideos->valueint;
-      Value.playlistPopularity[playlistsCounter] = playlistPopularity->valueint;
-      playlistsCounter = playlistsCounter + 1;
+      strncpy(Value.playlists.uuid[pl], uuid->valuestring, sizeof(Value.playlists.uuid[pl]));
+      strncpy(Value.playlists.title[pl], title->valuestring, sizeof(Value.playlists.title[pl]));
+      Value.playlists.hasDescription[pl] = 0;
+      if (cJSON_IsNull(description) != 1)
+      {
+        Value.playlists.hasDescription[pl] = 1;
+        strncpy(Value.playlists.description[pl], description->valuestring, sizeof(Value.playlists.description[pl]));
+      }
+      strncpy(Value.playlists.image[pl], image->valuestring, sizeof(Value.playlists.image[pl]));
+      Value.playlists.duration[pl] = duration->valueint;
+      strncpy(Value.playlists.squareImage[pl], squareImage->valuestring, sizeof(Value.playlists.squareImage[pl]));
+      strncpy(Value.playlists.created[pl], created->valuestring, sizeof(Value.playlists.created[pl]));
+      strncpy(Value.playlists.lastUpdated[pl], lastUpdated->valuestring, sizeof(Value.playlists.lastUpdated[pl]));
+      Value.playlists.numberOfTracks[pl] = numberOfTracks->valueint;
+      Value.playlists.numberOfVideos[pl] = numberOfVideos->valueint;
+      Value.playlists.popularity[pl] = popularity->valueint;
+      pl += 1;
     }
   }
-  Value.arraySizeTracks = cJSON_GetArraySize(tracksItems);
-  Value.offsetTracks = cJSON_GetObjectItemCaseSensitive(tracks, "offset")->valueint;
-  Value.totalNumberOfItemsTracks = cJSON_GetObjectItemCaseSensitive(tracks, "totalNumberOfItems")->valueint;
-  if (Value.totalNumberOfItemsTracks != 0)
+  if (tracksTotalNumberOfItems != 0)
   {
+    cJSON *tracksLimit = cJSON_GetObjectItem(tracks, "limit");
+    cJSON *tracksOffset = cJSON_GetObjectItem(tracks, "offset");
+
+    Value.tracks.limit = tracksLimit->valueint;
+    Value.tracks.offset = tracksOffset->valueint;
+    Value.tracks.totalNumberOfItems = tracksTotalNumberOfItems->valueint;
+    Value.tracks.arraySize = cJSON_GetArraySize(tracksItems);
+
     cJSON_ArrayForEach(tracksItem, tracksItems)
     {
-      cJSON *tracksId = cJSON_GetObjectItemCaseSensitive(tracksItem, "id");
-      cJSON *tracksTitle = cJSON_GetObjectItemCaseSensitive(tracksItem, "title");
-      cJSON *tracksDuration = cJSON_GetObjectItemCaseSensitive(tracksItem, "duration");
-      cJSON *tracksAlbum = cJSON_GetObjectItemCaseSensitive(tracksItem, "album");
-      cJSON *tracksReleaseDate = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "releaseDate");
-      cJSON *tracksAlbumId = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "id");
-      cJSON *tracksAlbumTitle = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "title");
-      cJSON *tracksAlbumCover = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "cover");
-      cJSON *tracksArtist = cJSON_GetObjectItemCaseSensitive(tracksItem, "artists");
-      cJSON *tracksArtistArray = cJSON_GetArrayItem(tracksArtist, 0); /* TODO: 2D-Array  */
-      cJSON *tracksArtistId = cJSON_GetObjectItemCaseSensitive(tracksArtistArray, "id");
-      cJSON *tracksArtistName = cJSON_GetObjectItemCaseSensitive(tracksArtistArray, "name");
+      int i = 0;
+      cJSON *subItem = NULL;
+      cJSON *id = cJSON_GetObjectItem(tracksItem, "id");
+      cJSON *title = cJSON_GetObjectItemCaseSensitive(tracksItem, "title");
+      cJSON *duration = cJSON_GetObjectItem(tracksItem, "duration");
+      cJSON *album = cJSON_GetObjectItem(tracksItem, "album");
+      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(album, "releaseDate");
+      cJSON *popularity = cJSON_GetObjectItemCaseSensitive(tracksItem, "popularity");
+      cJSON *version = cJSON_GetObjectItemCaseSensitive(tracksItem, "version");
+      cJSON *albumId = cJSON_GetObjectItem(album, "id");
+      cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
+      cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover");
+      cJSON *artist = cJSON_GetObjectItem(tracksItem, "artists");
 
-      Value.tracksId[tracksCounter] = tracksId->valueint;
-      strncpy(Value.tracksTitle[tracksCounter], tracksTitle->valuestring, sizeof(Value.tracksTitle[tracksCounter]));
-      Value.tracksDuration[tracksCounter] = tracksDuration->valueint;
-      Value.tracksAlbumId[tracksCounter] = tracksAlbumId->valueint;
-      strncpy(Value.tracksAlbumTitle[tracksCounter], tracksAlbumTitle->valuestring, sizeof(Value.tracksAlbumTitle[tracksCounter]));
-      strncpy(Value.tracksCover[tracksCounter], tracksAlbumCover->valuestring, sizeof(Value.tracksCover[tracksCounter]));
-      strncpy(Value.tracksReleaseDate[tracksCounter], tracksReleaseDate->valuestring, sizeof(Value.tracksReleaseDate[tracksCounter]));
-      Value.tracksArtistId[tracksCounter] = tracksArtistId->valueint;
-      strncpy(Value.tracksArtistName[tracksCounter], tracksArtistName->valuestring, sizeof(Value.tracksArtistName[tracksCounter]));
-      tracksCounter = tracksCounter + 1;
+      Value.tracks.id[tr] = id->valueint;
+      strncpy(Value.tracks.title[tr], title->valuestring, sizeof(Value.tracks.title[tr]));
+      Value.tracks.duration[tr] = duration->valueint;
+      Value.tracks.popularity[tr] = popularity->valueint;
+      Value.tracks.hasVersion[tr] = 0;
+      if (cJSON_IsObject(version) && cJSON_IsNull(version) != 1)
+      {
+        Value.tracks.hasVersion[tr] = 1;
+	strncpy(Value.tracks.version[tr], version->valuestring, sizeof(Value.tracks.version[tr]));
+      }
+      Value.tracks.albumId[tr] = albumId->valueint;
+      strncpy(Value.tracks.albumTitle[tr], albumTitle->valuestring, sizeof(Value.tracks.albumTitle[tr]));
+      strncpy(Value.tracks.cover[tr], albumCover->valuestring, sizeof(Value.tracks.cover[tr]));
+      strncpy(Value.tracks.releaseDate[tr], releaseDate->valuestring, sizeof(Value.tracks.releaseDate[tr]));
+      
+      Value.tracks.subArraySize[tr] = cJSON_GetArraySize(artist);
+      cJSON_ArrayForEach(subItem, artist)
+      {
+        cJSON *artistId = cJSON_GetObjectItem(subItem, "id");
+        cJSON *artistName = cJSON_GetObjectItemCaseSensitive(subItem, "name");
+
+        Value.tracks.artistId[tr][i] = artistId->valueint;
+        strncpy(Value.tracks.artistName[tr][i], artistName->valuestring, sizeof(Value.tracks.artistName[tr][i]));
+        i += 1;
+      }
+      tr += 1;
     }
   }
-  Value.arraySizeVideos = cJSON_GetArraySize(videosItems);
-  Value.offsetVideos = cJSON_GetObjectItemCaseSensitive(videos, "offset")->valueint;
-  Value.totalNumberOfItemsVideos = cJSON_GetObjectItemCaseSensitive(videos, "totalNumberOfItems")->valueint;
-  if (Value.totalNumberOfItemsVideos != 0)
+  if (videosTotalNumberOfItems != 0)
   {
+    cJSON *videosLimit = cJSON_GetObjectItem(videos, "limit");
+    cJSON *videosOffset = cJSON_GetObjectItem(videos, "offset");
+
+    Value.videos.limit = videosLimit->valueint;
+    Value.videos.offset = videosOffset->valueint;
+    Value.videos.totalNumberOfItems = videosTotalNumberOfItems->valueint;
+    Value.videos.arraySize = cJSON_GetArraySize(videosItems);
+
     cJSON_ArrayForEach(videosItem, videosItems)
     {
-      cJSON *videoId = cJSON_GetObjectItemCaseSensitive(videosItem, "id");
-      cJSON *videoTitle = cJSON_GetObjectItemCaseSensitive(videosItem, "title");
-      cJSON *videoDuration = cJSON_GetObjectItemCaseSensitive(videosItem, "duration");
-      cJSON *videoImageId = cJSON_GetObjectItemCaseSensitive(videosItem, "imageId");
-      cJSON *videoReleaseDate = cJSON_GetObjectItemCaseSensitive(videosItem, "releaseDate");
-      cJSON *videoArtist = cJSON_GetObjectItemCaseSensitive(videosItem, "artists");
-      cJSON *videoArtistArray = cJSON_GetArrayItem(videoArtist, 0);
-      cJSON *videoArtistId = cJSON_GetObjectItemCaseSensitive(videoArtistArray, "id");
-      cJSON *videoArtistName = cJSON_GetObjectItemCaseSensitive(videoArtistArray, "name");
+      cJSON *id = cJSON_GetObjectItem(videosItem, "id");
+      cJSON *title = cJSON_GetObjectItemCaseSensitive(videosItem, "title");
+      cJSON *duration = cJSON_GetObjectItem(videosItem, "duration");
+      cJSON *imageId = cJSON_GetObjectItemCaseSensitive(videosItem, "imageId");
+      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(videosItem, "releaseDate");
+      cJSON *popularity = cJSON_GetObjectItemCaseSensitive(videosItem, "popularity");
+      cJSON *artist = cJSON_GetObjectItemCaseSensitive(videosItem, "artists");
 
-      Value.videoId[videosCounter] = videoId->valueint;
-      strncpy(Value.videoTitle[videosCounter], videoTitle->valuestring, sizeof(Value.videoTitle[videosCounter]));
-      Value.videoDuration[videosCounter] = videoDuration->valueint;
-      strncpy(Value.videoImageId[videosCounter], videoImageId->valuestring, sizeof(Value.videoImageId[videosCounter]));
-      strncpy(Value.videoReleaseDate[videosCounter], videoReleaseDate->valuestring, sizeof(Value.videoReleaseDate[videosCounter]));
-      Value.videoArtistId[videosCounter] = videoArtistId->valueint;
-      strncpy(Value.videoArtistName[videosCounter], videoArtistName->valuestring, sizeof(Value.videoArtistName[videosCounter]));
-      videosCounter = videosCounter + 1;
+      Value.videos.id[vi] = id->valueint;
+      strncpy(Value.videos.title[vi], title->valuestring, sizeof(Value.videos.title[vi]));
+      Value.videos.duration[vi] = duration->valueint;
+      Value.videos.popularity[vi] = popularity->valueint;
+      strncpy(Value.videos.cover[vi], imageId->valuestring, sizeof(Value.videos.cover[vi]));
+      strncpy(Value.videos.releaseDate[vi], releaseDate->valuestring, sizeof(Value.videos.releaseDate[vi]));
+      vi += 1;
     }
   }
-  const cJSON *topHitValue = cJSON_GetObjectItemCaseSensitive(topHit, "value");
+  return Value;
+  /*const cJSON *topHitValue = cJSON_GetObjectItemCaseSensitive(topHit, "value");
   strncpy(Value.topHitType, cJSON_GetObjectItemCaseSensitive(topHit, "type")->valuestring, sizeof(Value.topHitType));
   if (strcmp(Value.topHitType, "ARTISTS") == 0)
   {
@@ -196,7 +269,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *albumPopularity = cJSON_GetObjectItemCaseSensitive(topHitValue, "popularity");
     cJSON *albumDuration = cJSON_GetObjectItemCaseSensitive(topHitValue, "duration");
     cJSON *albumArtist = cJSON_GetObjectItemCaseSensitive(topHitValue, "artists");
-    cJSON *albumArtistArray = cJSON_GetArrayItem(albumArtist, 0); /* TODO: Add 2D-Array for Artists */
+    cJSON *albumArtistArray = cJSON_GetArrayItem(albumArtist, 0); 
     cJSON *albumArtistId = cJSON_GetObjectItemCaseSensitive(albumArtistArray, "id");
     cJSON *albumArtistName = cJSON_GetObjectItemCaseSensitive(albumArtistArray, "name");
 
@@ -219,7 +292,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *tracksAlbumTitle = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "title");
     cJSON *tracksAlbumCover = cJSON_GetObjectItemCaseSensitive(tracksAlbum, "cover");
     cJSON *tracksArtist = cJSON_GetObjectItemCaseSensitive(topHitValue, "artists");
-    cJSON *tracksArtistArray = cJSON_GetArrayItem(tracksArtist, 0); /* TODO: 2D-Array  */
+    cJSON *tracksArtistArray = cJSON_GetArrayItem(tracksArtist, 0); 
     cJSON *tracksArtistId = cJSON_GetObjectItemCaseSensitive(tracksArtistArray, "id");
     cJSON *tracksArtistName = cJSON_GetObjectItemCaseSensitive(tracksArtistArray, "name");
 
@@ -273,5 +346,5 @@ search_model parse_search(cJSON *input_json)
     Value.playlistNumberOfVideos[100] = playlistNumberOfVideos->valueint;
     Value.playlistPopularity[100] = playlistPopularity->valueint;
   }
-  return Value;
+  return Value;*/
 }

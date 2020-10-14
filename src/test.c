@@ -41,54 +41,22 @@ void login_polling()
 
 int main(void)
 {
-  items_model res = get_mix_items("001fb1d7459dadda7ff467738f665f");
-  //items_model res = get_mix_items("004667a04cff872cdd1b9254924935");
-  if (res.status == 1)
-  {
-    int i;
-    int e;
-    //printf("%s\n", res.title[1]);
-    //printf("%zu\n", res.id[1]);
-    for (i = 0; i < res.arraySize; ++i)
-    {
-      printf("%s\n", res.title[i]);
-      printf("%zu\n", res.id[i]);
-      printf("%zu\n", res.isVideo[i]);
-      for (e = 0; e < res.subArraySize[i]; ++e)
-      {
-        printf("%zu\n", res.artistId[i][e]);
-        printf("%s\n", res.artistName[i][e]);
-      }
-    }
-  }
-  /*page_mix_model ress = get_user_mixes();
-  if (ress.status == 1)
+  search_model se = get_search("Sting", "50");
+  if (se.status == 1)
   {
     size_t i;
-    for (i = 0; i < ress.arraySize; ++i)
+    size_t a;
+    for (i = 0; i < se.videos.arraySize; ++i)
     {
-      printf("%s\n", ress.id[i]);
-      printf("%s\n", ress.title[i]);
-      printf("%s\n", ress.largeImageUrl[i]);
+      printf("%zu\n", se.videos.id[i]);
+      printf("%s\n", se.videos.title[i]);
+      printf("%s\n", se.videos.cover[i]);
+      /*for (a = 0; a < se.tracks.subArraySize[i]; ++a)
+      {
+        printf("%zu\n", se.tracks.artistId[i][a]);
+        printf("%s\n", se.tracks.artistName[i][a]);
+      }*/
     }
-  }*/
-  //login_polling();
-  //get_playlist("1edbcbcb-3b5a-4fa1-948c-9b4724dff930");
-  /*stream_model res = get_track_streamUrl(122122043);
-  if (res.status == 1)
-  {
-    printf("%s\n", "Success!");
-    printf("%s\n", res.url);
-    printf("%zu\n", res.trackId);
-    printf("%s\n", res.codec);
-    printf("%s\n", res.soundQuality);
-  }*/
-
-  /*char *eTag = get_playlist_etag("1edbcbcb-3b5a-4fa1-948c-9b4724dff930");
-  size_t ress = delete_playlist_item("1edbcbcb-3b5a-4fa1-948c-9b4724dff930", 0, eTag);
-  if (ress == 1)
-  {
-    printf("Success!\n");
-  }*/
+  }
   curl_exit();
 }

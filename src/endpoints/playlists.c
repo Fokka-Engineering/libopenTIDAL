@@ -18,7 +18,7 @@ playlist_model get_playlist(char *playlistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      playlist_model parse = parse_playlist(input_json, 0);
+      playlist_model parse = parse_playlist(input_json);
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);
@@ -71,7 +71,7 @@ items_model get_playlist_items(char *playlistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json, 2, 0);
+      items_model parse = parse_items(input_json);
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);

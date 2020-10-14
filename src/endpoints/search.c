@@ -10,7 +10,6 @@ search_model get_search(char *term, char *limit)
   char *endpoint = "search/";
   char *baseparams = param_cat(limit, encodedTerm, "");
   curl_model req = curl_get(endpoint, baseparams);
-  free(endpoint);
   free(baseparams);
   if (req.status != -1)
   {

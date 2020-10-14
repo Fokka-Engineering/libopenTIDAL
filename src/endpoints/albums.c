@@ -15,7 +15,7 @@ album_model get_album(size_t albumid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      album_model parse = parse_album(input_json, 1);
+      album_model parse = parse_album(input_json);
       free(req.body);
       cJSON_Delete(input_json);
       return parse;
@@ -64,9 +64,10 @@ items_model get_album_items(size_t albumid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      items_model parse = parse_items(input_json);
       cJSON_Delete(input_json);
       free(req.body);
-      return parse_items(input_json, 2, 0);
+      return parse;
     }
     else if (req.responseCode == 401)
     {

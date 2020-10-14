@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../include/openTIDAL.h"
 
-cJSON *json_parse(const char * input)
+cJSON *json_parse(char * input)
 {
   cJSON *input_json = cJSON_Parse(input);
   int status = 0;

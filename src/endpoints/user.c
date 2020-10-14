@@ -50,7 +50,7 @@ items_model get_user_album(size_t userid)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    items_model parse = parse_items(input_json, 0, 1);
+    items_model parse = parse_items(input_json);
     free(req.body);
     cJSON_Delete(input_json);
     return parse;
@@ -75,7 +75,7 @@ artist_model get_user_artist(size_t userid)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    artist_model parse = parse_artist(input_json, 1);
+    artist_model parse = parse_artist(input_json);
     cJSON_Delete(input_json);
     free(req.body);
     return parse;
@@ -100,7 +100,7 @@ playlist_model get_user_playlist(size_t userid)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    playlist_model parse = parse_playlist(input_json, 2);
+    playlist_model parse = parse_playlist(input_json);
     cJSON_Delete(input_json);
     free(req.body);
     return parse;
@@ -125,7 +125,7 @@ items_model get_user_tracks(size_t userid)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    items_model parse = parse_items(input_json, 2, 0);
+    items_model parse = parse_items(input_json);
     free(req.body);
     cJSON_Delete(input_json);
     return parse;
@@ -150,7 +150,7 @@ items_model get_user_videos(size_t userid)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    items_model parse = parse_items(input_json, 2, 1);
+    items_model parse = parse_items(input_json);
     free(req.body);
     cJSON_Delete(input_json);
     return parse;
@@ -378,7 +378,7 @@ playlist_model create_user_playlist(size_t userid, char *title, char *descriptio
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    playlist_model parse = parse_playlist(input_json, 0);
+    playlist_model parse = parse_playlist(input_json);
     free(req.body);
     cJSON_Delete(input_json);
     return parse;

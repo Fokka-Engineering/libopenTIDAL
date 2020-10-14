@@ -29,17 +29,17 @@ char *param_cat(char *limit, char *query, char *extra);
 char *url_encode(char *str);
 
 /* Parse Functions */
-cJSON *json_parse(const char * input);
+cJSON *json_parse(char * input);
 int parse_unauthorized(cJSON *input_json, size_t id);
 int parse_notfound(cJSON *input_json, size_t id, char *uuid);
 int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
 
-items_model parse_items(cJSON *input_json, int version, int video);
+items_model parse_items(cJSON *input_json);
 items_model parse_tracks(cJSON *input_json);
 items_model parse_videos(cJSON *input_json);
-playlist_model parse_playlist(cJSON *input_json, int version);
-album_model parse_album(cJSON *input_json, int version);
-artist_model parse_artist(cJSON *input_json, int version);
+playlist_model parse_playlist(cJSON *input_json);
+album_model parse_album(cJSON *input_json);
+artist_model parse_artist(cJSON *input_json);
 search_model parse_search(cJSON *input_json);
 
 

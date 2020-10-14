@@ -23,7 +23,7 @@ items_model get_mix_items(char *mixid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json, 0, 0);
+      items_model parse = parse_items(input_json);
       cJSON_Delete(input_json);
       free(req.body);
       return parse;

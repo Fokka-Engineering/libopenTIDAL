@@ -88,7 +88,7 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   return Value;
 }
 
-items_model parse_items(cJSON *input_json, int version, int video) /* TODO: Add bool types */
+items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
 {
   items_model Value;
   const cJSON *version_json = NULL;
@@ -107,13 +107,14 @@ items_model parse_items(cJSON *input_json, int version, int video) /* TODO: Add 
     cJSON_ArrayForEach(item, items)
     {
       int artistCounter = 0;
-      if (version == 1) /* Sometimes the JSON response varies */
+      cJSON *innerItem = cJSON_GetObjectItemCaseSensitive(item, "item");
+      if (cJSON_IsObject(innerItem) != 1) /* Sometimes the JSON response varies */
       {
       version_json = item;
       }
       else
       {
-        version_json = cJSON_GetObjectItemCaseSensitive(item, "item");
+        version_json = innerItem;
       }
 
       cJSON *id = cJSON_GetObjectItem(version_json, "id");

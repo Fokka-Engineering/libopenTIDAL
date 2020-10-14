@@ -16,7 +16,7 @@ artist_model get_artist(size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      artist_model parse = parse_artist(input_json, 0);
+      artist_model parse = parse_artist(input_json);
       free(req.body);
       cJSON_Delete(input_json);
       return parse;
@@ -179,7 +179,7 @@ items_model get_artist_toptracks(size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json, 1, 0);
+      items_model parse = parse_items(input_json);
       free(req.body);
       cJSON_Delete(input_json);
       return parse;
@@ -229,7 +229,7 @@ items_model get_artist_videos(size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json, 1, 1);
+      items_model parse = parse_items(input_json);
       free(req.body);
       cJSON_Delete(input_json);
       return parse;
@@ -277,7 +277,7 @@ album_model get_artist_albums(size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      album_model parse = parse_album(input_json, 0);
+      album_model parse = parse_album(input_json);
       free(req.body);
       cJSON_Delete(input_json);
       return parse;

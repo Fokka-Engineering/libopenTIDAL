@@ -3,16 +3,16 @@
 #include <string.h>
 #include "../include/openTIDAL.h"
 
-artist_model parse_artist(cJSON *input_json, int version)
+artist_model parse_artist(cJSON *input_json)
 {
   const cJSON *item = NULL;
   const cJSON *innerItem = NULL;
   const cJSON *items = NULL;
   int i = 0;
   artist_model Value;
-  if (version == 1) /* Additional Object in "items"-Array */
+  items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
+  if (cJSON_IsArray(items)) /* Additional Object in "items"-Array */
   {
-    items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
     Value.arraySize = cJSON_GetArraySize(items);
     Value.totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems")->valueint;
     Value.offset = cJSON_GetObjectItemCaseSensitive(input_json, "offset")->valueint;
@@ -28,7 +28,12 @@ artist_model parse_artist(cJSON *input_json, int version)
       Value.status = 1;
       Value.id[i] = id->valueint;
       strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
-      strncpy(Value.picture[i], picture->valuestring, sizeof(Value.picture[i]));
+      Value.hasPicture[i] = 0;
+      if (cJSON_IsNull(picture) != 1)
+      {
+        Value.hasPicture[i] = 1;
+        strncpy(Value.picture[i], picture->valuestring, sizeof(Value.picture[i]));
+      }
       Value.popularity[i] = popularity->valueint;
       i = i + 1;
     }
@@ -44,7 +49,12 @@ artist_model parse_artist(cJSON *input_json, int version)
     Value.status = 1;
     Value.id[0] = id->valueint;
     strncpy(Value.name[0], name->valuestring, sizeof(Value.name[0]));
-    strncpy(Value.picture[0], picture->valuestring, sizeof(Value.picture[0]));
+    Value.hasPicture[0] = 0;
+      if (cJSON_IsNull(picture) != 1)
+      {
+        Value.hasPicture[0] = 1;
+        strncpy(Value.picture[0], picture->valuestring, sizeof(Value.picture[0]));
+      }
     Value.popularity[0] = popularity->valueint;
     return Value;
   }

@@ -48,28 +48,33 @@ typedef struct user_models
 typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
 {
   int status;
+  size_t limit;
+  size_t offset;
   size_t arraySize; /*ArraySize from cJSON Parser*/
-  int totalNumberOfItems;
+  size_t totalNumberOfItems;
   int numberOfTracks[100];
   int numberOfVideos[100];
   char uuid[100][37]; /* Always 36 Chars Long */
   char title[100][80];
-  char description[100][501]; /* 500 Char Limit */
+  size_t hasDescription[100];
+  char description[100][1024]; /* 500 Char Limit */
   size_t duration[100];
   char lastUpdated[100][29];
   char created[100][29];
   char image[100][37];
   char squareImage[100][37];
+  size_t popularity[100];
 } playlist_model;
 
 typedef struct items_models
 {
   int status;
-  int offset;
-  int totalNumberOfItems;
+  size_t limit;
+  size_t offset;
+  size_t totalNumberOfItems;
   size_t arraySize;
   size_t isVideo[100];
-  int subArraySize[100]; /* 2nd ArraySize of Artist Array */
+  size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
   size_t id[100];
   char title[100][80];
   int explicit[100];
@@ -79,78 +84,25 @@ typedef struct items_models
   size_t popularity[100];
   size_t trackNumber[100];
   size_t volumeNumber[100];
+  size_t hasVersion[100];
   char version[100][50];
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
   size_t albumId[100];
   char albumTitle[100][80];
   char cover[100][37];
-  char videoCover[100][37]; /* NULL except type = Music Video */
   char releaseDate[100][11]; /* Only present in playlist_item response */
   char type[100][12];
 } items_model;
 
-typedef struct search_models
-{
-  int status;
-  int offsetArtist;
-  int offsetAlbum;
-  int offsetPlaylist;
-  int offsetTracks;
-  int offsetVideos;
-  int arraySizeArtist;
-  int arraySizeAlbum;
-  int arraySizePlaylist;
-  int arraySizeTracks;
-  int arraySizeVideos;
-  int totalNumberOfItemsArtist;
-  int totalNumberOfItemsAlbum;
-  int totalNumberOfItemsPlaylist;
-  int totalNumberOfItemsTracks;
-  int totalNumberOfItemsVideos;
-  size_t artistId[101];
-  char artistName[101][50];
-  char artistPicture[101][37];
-  int artistPopularity[101];
-  size_t albumId[101];
-  char albumTitle[101][80];
-  char albumCover[101][37];
-  int albumPopularity[101];
-  size_t albumDuration[101];
-  size_t albumArtistId[101];
-  char albumArtistName[101][50];
-  char playlistUUID[101][37];
-  char playlistTitle[101][80];
-  char playlistImage[101][37];
-  char playlistSquareImage[101][37];
-  int playlistPopularity[101];
-  int playlistNumberOfTracks[101];
-  int playlistNumberOfVideos[101];
-  int playlistDuration[101];
-  size_t tracksId[101];
-  char tracksTitle[101][80];
-  char tracksCover[101][37];
-  size_t tracksArtistId[101];
-  char tracksArtistName[101][50];
-  size_t tracksAlbumId[101];
-  char tracksAlbumTitle[101][80];
-  char tracksReleaseDate[101][11];
-  size_t tracksDuration[101];
-  size_t videoId[101];
-  char videoTitle[101][80];
-  char videoImageId[101][37];
-  char videoReleaseDate[101][11];
-  size_t videoDuration[101];
-  size_t videoArtistId[101];
-  char videoArtistName[101][50];
-  char topHitType[8];
-} search_model;
-
 typedef struct albums_models
 {
   int status;
+  size_t limit;
+  size_t offset;
+  size_t totalNumberOfItems;
   size_t arraySize;
-  int subArraySize[100]; /* 2nd ArraySize of Artist Array */
+  size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
   int explicit[100];
   int duration[100];
   int allowStreaming[100];
@@ -162,8 +114,8 @@ typedef struct albums_models
   int popularity[100];
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
-  size_t albumId[100];
-  char albumTitle[100][80];
+  size_t id[100];
+  char title[100][80];
   char cover[100][37];
   char videoCover[100][37];
   char releaseDate[100][11];
@@ -191,11 +143,13 @@ typedef struct album_credits_models
 typedef struct artists_models
 {
   int status;
+  size_t limit;
+  size_t offset;
+  size_t totalNumberOfItems;
   size_t arraySize;
-  int offset;
-  int totalNumberOfItems;
   size_t id[100];
   char name[100][50];
+  size_t hasPicture[100];
   char picture[100][37];
   int popularity[100];
 } artist_model;
@@ -238,6 +192,22 @@ typedef struct contributors_models
   char name[50][50];
   char role[50][25];
 } contributor_model;
+
+typedef struct search_models
+{
+  int status;
+  char topHitType[8];
+  album_model albums;
+  artist_model artists;
+  items_model tracks;
+  playlist_model playlists;
+  items_model videos;
+  album_model topAlbum;
+  artist_model TopArtist;
+  items_model topTrack;
+  playlist_model topPlaylist;
+  items_model topVideo;
+} search_model;
 
 typedef struct stream_models
 {
