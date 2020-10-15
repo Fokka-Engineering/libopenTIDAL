@@ -69,6 +69,11 @@ search_model parse_search(cJSON *input_json)
  
   cJSON *topHit = cJSON_GetObjectItemCaseSensitive(input_json, "topHit");
   cJSON *topHitValue = cJSON_GetObjectItemCaseSensitive(topHit, "value");
+  Value.isTopAlbum = 0;
+  Value.isTopArtist = 0;
+  Value.isTopTrack = 0;
+  Value.isTopPlaylist = 0;
+  Value.isTopVideo = 0;
   Value.status = 1;
 
   if (artistTotalNumberOfItems != 0)
@@ -266,6 +271,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *topArtistsPicture = cJSON_GetObjectItemCaseSensitive(topHitValue, "picture");
     cJSON *topArtistsPopularity = cJSON_GetObjectItem(topHitValue, "popularity");
 
+    Value.isTopArtist = 1;
     Value.topArtist.id[0] = topArtistsId->valueint;
     strncpy(Value.topArtist.name[0], topArtistsName->valuestring, sizeof(Value.topArtist.name[0]));
     Value.topArtist.hasPicture[0] = 0;
@@ -292,6 +298,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *topAlbumReleaseDate = cJSON_GetObjectItem(topHitValue, "releaseDate");
     cJSON *topAlbumArtist = cJSON_GetObjectItem(topHitValue, "artists");
 
+    Value.isTopAlbum = 1;
     Value.topAlbum.id[0] = topAlbumId->valueint;
     strncpy(Value.topAlbum.title[0], topAlbumTitle->valuestring, sizeof(Value.topAlbum.title[0]));
     Value.topAlbum.duration[0] = topAlbumDuration->valueint;
@@ -331,6 +338,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *topTrackAlbumCover = cJSON_GetObjectItemCaseSensitive(topTrackAlbum, "cover");
     cJSON *topTrackArtist = cJSON_GetObjectItem(topHitValue, "artists");
 
+    Value.isTopTrack = 1;
     Value.topTrack.id[0] = topTrackId->valueint;
     strncpy(Value.topTrack.title[0], topTrackTitle->valuestring, sizeof(Value.topTrack.title[0]));
     Value.topTrack.duration[0] = topTrackDuration->valueint;
@@ -369,6 +377,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *topVideoPopularity = cJSON_GetObjectItemCaseSensitive(topHitValue, "popularity");
     cJSON *topVideoArtist = cJSON_GetObjectItemCaseSensitive(topHitValue, "artists");
 
+    Value.isTopVideo = 1;
     Value.topVideo.id[0] = topVideoId->valueint;
     strncpy(Value.topVideo.title[0], topVideoTitle->valuestring, sizeof(Value.topVideo.title[0]));
     Value.topVideo.duration[0] = topVideoDuration->valueint;
@@ -401,6 +410,7 @@ search_model parse_search(cJSON *input_json)
     cJSON *topPlaylistCreated = cJSON_GetObjectItemCaseSensitive(topHitValue, "created");
     cJSON *topPlaylistLastUpdated = cJSON_GetObjectItemCaseSensitive(topHitValue, "lastUpdated");
 
+    Value.isTopPlaylist = 1;
     strncpy(Value.topPlaylist.uuid[0], topPlaylistUuid->valuestring, sizeof(Value.topPlaylist.uuid[0]));
     strncpy(Value.topPlaylist.title[0], topPlaylistTitle->valuestring, sizeof(Value.topPlaylist.title[0]));
     Value.topPlaylist.hasDescription[0] = 0;

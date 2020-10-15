@@ -197,6 +197,11 @@ typedef struct search_models
 {
   int status;
   char topHitType[10];
+  int isTopAlbum;
+  int isTopArtist;
+  int isTopTrack;
+  int isTopPlaylist;
+  int isTopVideo;
   album_model albums;
   artist_model artists;
   items_model tracks;

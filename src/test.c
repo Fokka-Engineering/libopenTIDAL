@@ -46,19 +46,19 @@ int main(void)
   {
     size_t i;
     size_t a;
-    if (strcmp(se.topHitType, "PLAYLISTS") == 0)
+    if (se.isTopPlaylist)
     {
       printf("%s\n", se.topPlaylist.uuid[0]);
       printf("%s\n", se.topPlaylist.title[0]);
     }
-    if (strcmp(se.topHitType, "ALBUMS") == 0)
+    if (se.isTopAlbum)
     {
       printf("%zu\n", se.topAlbum.id[0]);
       printf("%s\n", se.topAlbum.title[0]);
       printf("%zu\n", se.topAlbum.artistId[0][0]);
       printf("%s\n", se.topAlbum.artistName[0][0]);
     }
-    if (strcmp(se.topHitType, "TRACKS") == 0)
+    if (se.isTopTrack)
     {
       printf("%zu\n", se.topTrack.id[0]);
       printf("%s\n", se.topTrack.title[0]);
