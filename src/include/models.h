@@ -196,14 +196,14 @@ typedef struct contributors_models
 typedef struct search_models
 {
   int status;
-  char topHitType[8];
+  char topHitType[10];
   album_model albums;
   artist_model artists;
   items_model tracks;
   playlist_model playlists;
   items_model videos;
   album_model topAlbum;
-  artist_model TopArtist;
+  artist_model topArtist;
   items_model topTrack;
   playlist_model topPlaylist;
   items_model topVideo;

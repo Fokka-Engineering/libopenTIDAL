@@ -41,21 +41,41 @@ void login_polling()
 
 int main(void)
 {
-  search_model se = get_search("Sting", "50");
+  search_model se = get_search("Sting Essentials", "50");
   if (se.status == 1)
   {
     size_t i;
     size_t a;
+    if (strcmp(se.topHitType, "PLAYLISTS") == 0)
+    {
+      printf("%s\n", se.topPlaylist.uuid[0]);
+      printf("%s\n", se.topPlaylist.title[0]);
+    }
+    if (strcmp(se.topHitType, "ALBUMS") == 0)
+    {
+      printf("%zu\n", se.topAlbum.id[0]);
+      printf("%s\n", se.topAlbum.title[0]);
+      printf("%zu\n", se.topAlbum.artistId[0][0]);
+      printf("%s\n", se.topAlbum.artistName[0][0]);
+    }
+    if (strcmp(se.topHitType, "TRACKS") == 0)
+    {
+      printf("%zu\n", se.topTrack.id[0]);
+      printf("%s\n", se.topTrack.title[0]);
+      printf("%zu\n", se.topTrack.artistId[0][0]);
+      printf("%s\n", se.topTrack.artistName[0][0]);
+    }
+    
     for (i = 0; i < se.videos.arraySize; ++i)
     {
       printf("%zu\n", se.videos.id[i]);
       printf("%s\n", se.videos.title[i]);
       printf("%s\n", se.videos.cover[i]);
-      /*for (a = 0; a < se.tracks.subArraySize[i]; ++a)
+      for (a = 0; a < se.videos.subArraySize[i]; ++a)
       {
-        printf("%zu\n", se.tracks.artistId[i][a]);
-        printf("%s\n", se.tracks.artistName[i][a]);
-      }*/
+        printf("%zu\n", se.videos.artistId[i][a]);
+        printf("%s\n", se.videos.artistName[i][a]);
+      }
     }
   }
   curl_exit();
