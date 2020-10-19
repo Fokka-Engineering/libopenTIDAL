@@ -32,7 +32,7 @@ int parse_unauthorized(cJSON *input_json, size_t id)
     else
     {
       status = 0;
-      fprintf(stderr, "[401] Unauthorized");
+      fprintf(stderr, "[401] Unauthorized\n");
     }
   }
   return status;
@@ -60,7 +60,7 @@ int parse_notfound(cJSON *input_json, size_t id, char *uuid)
     else
     {
       status = 0;
-      fprintf(stderr, "[404] Not Found");
+      fprintf(stderr, "[404] Not Found\n");
     }
   }
   return status;
@@ -78,17 +78,69 @@ int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
       status = -4;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[412] If-None-Match (eTag) failed for %zu\n", id);
+        fprintf(stderr, "[412] If-None-Match (eTag) failed for Resource %zu\n", id);
       }
       else
       {
-        fprintf(stderr, "[412] If-None-Match (eTag) failed for%s\n", uuid);
+        fprintf(stderr, "[412] If-None-Match (eTag) failed for Resource %s\n", uuid);
       }
     }
     else
     {
       status = 0;
-      fprintf(stderr, "[412] Precondition Failed");
+      fprintf(stderr, "[412] Precondition Failed\n");
+    }
+  }
+  return status;
+}
+
+int parse_badrequest(cJSON *input_json, size_t id, char *uuid)
+{
+  int status;
+  const cJSON *subStatus = NULL;
+  subStatus = cJSON_GetObjectItem(input_json, "subStatus");
+  if (cJSON_IsNumber(subStatus))
+  {
+    if (subStatus->valueint == 1002)
+    {
+      status = -4;
+      if (uuid == NULL)
+      {
+        fprintf(stderr, "[400] Parameter missing for Resource%zu\n", id);
+      }
+      else
+      {
+        fprintf(stderr, "[400] Parameter missing for Resource %s\n", uuid);
+      }
+    }
+    else if (subStatus->valueint == 1005)
+    {
+      status = -12;
+      if (uuid == NULL)
+      {
+        fprintf(stderr, "[400] User not found for Resource %zu\n", id);
+      }
+      else
+      {
+        fprintf(stderr, "[400] User not found for Resource %s\n", uuid);
+      }
+    }
+    else if (subStatus->valueint == 6003)
+    {
+      status = -7;
+      if (uuid == NULL)
+      {
+        fprintf(stderr, "[400] Token missing for Resource %zu\n", id);
+      }
+      else
+      {
+        fprintf(stderr, "[400] Token missing for Resource %s\n", uuid);
+      }
+    }
+    else
+    {
+      status = 0;
+      fprintf(stderr, "[400] Bad Request\n");
     }
   }
   return status;

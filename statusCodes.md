@@ -1,3 +1,6 @@
+-12 User not found
+-11 Undefined 400 Error
+-10 Not a Valid manifest
 -9 Invalid Indices (Empty Index in Playlist)
 -8 Undefined 401 Error
 -7 Missing sessionId / Bearer

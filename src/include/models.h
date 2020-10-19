@@ -10,6 +10,7 @@ typedef struct curl_models
 
 typedef struct login_code_models
 {
+  int status;
   char deviceCode[37]; /* deviceCode is always 36 Chars long */
   char userCode[6]; /* userCode is always 5 Chars long */
 } login_code_model;
@@ -52,8 +53,8 @@ typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
   size_t offset;
   size_t arraySize; /*ArraySize from cJSON Parser*/
   size_t totalNumberOfItems;
-  int numberOfTracks[100];
-  int numberOfVideos[100];
+  size_t numberOfTracks[100];
+  size_t numberOfVideos[100];
   char uuid[100][37]; /* Always 36 Chars Long */
   char title[100][80];
   size_t hasDescription[100];
@@ -91,6 +92,7 @@ typedef struct items_models
   size_t albumId[100];
   char albumTitle[100][80];
   char cover[100][37];
+  char quality[100][20];
   char releaseDate[100][11]; /* Only present in playlist_item response */
   char type[100][12];
 } items_model;
@@ -103,15 +105,15 @@ typedef struct albums_models
   size_t totalNumberOfItems;
   size_t arraySize;
   size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
-  int explicit[100];
-  int duration[100];
-  int allowStreaming[100];
-  int streamReady[100];
+  size_t explicit[100];
+  size_t duration[100];
+  size_t allowStreaming[100];
+  size_t streamReady[100];
   char copyright[100][50];
-  int numberOfTracks[100];
-  int numberOfVideos[100];
-  int numberOfVolumes[100];
-  int popularity[100];
+  size_t numberOfTracks[100];
+  size_t numberOfVideos[100];
+  size_t numberOfVolumes[100];
+  size_t popularity[100];
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
   size_t id[100];
@@ -151,7 +153,7 @@ typedef struct artists_models
   char name[100][50];
   size_t hasPicture[100];
   char picture[100][37];
-  int popularity[100];
+  size_t popularity[100];
 } artist_model;
 
 typedef struct artist_links_models
@@ -217,9 +219,13 @@ typedef struct search_models
 typedef struct stream_models
 {
   int status;
-  char url[256];
+  char url[512];
   size_t trackId;
-  char soundQuality[10];
-  char videoQuality[10];
-  char codec[5];
+  size_t videoId;
+  char assetPresentation[10];
+  char audioQuality[20];
+  char audioMode[20];
+  char videoQuality[20];
+  char mimeType[30];
+  char codec[10];
 } stream_model;

@@ -13,10 +13,15 @@ artist_model parse_artist(cJSON *input_json)
   items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
   if (cJSON_IsArray(items)) /* Additional Object in "items"-Array */
   {
-    Value.arraySize = cJSON_GetArraySize(items);
-    Value.totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems")->valueint;
-    Value.offset = cJSON_GetObjectItemCaseSensitive(input_json, "offset")->valueint;
+    cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+    cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+    cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
 
+    Value.arraySize = cJSON_GetArraySize(items);
+    Value.totalNumberOfItems = totalNumberOfItems->valueint;
+    Value.limit = limit->valueint;
+    Value.offset = offset->valueint;
+ 
     cJSON_ArrayForEach(item, items)
     {
       innerItem = cJSON_GetObjectItemCaseSensitive(item, "item");

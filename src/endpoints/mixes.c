@@ -11,12 +11,11 @@ items_model get_mix_items(char *mixid)
 {
   items_model Value;
   char buffer[50];
-  
+  char baseparams[20];
+
   snprintf(buffer, 50, "mixes/%s/items", mixid);
-  char *baseparams = param_cat("100", "", "");
-  
+  snprintf(baseparams, 20, "countryCode=%s", countryCode); 
   curl_model req = curl_get(buffer, baseparams);
-  free(baseparams);
 
   if (req.status != -1)
   {
@@ -27,6 +26,13 @@ items_model get_mix_items(char *mixid)
       cJSON_Delete(input_json);
       free(req.body);
       return parse;
+    }
+    else if (req.responseCode == 400)
+    {
+      Value.status = parse_badrequest(input_json, 0, mixid);
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
     }
     else if (req.responseCode == 401)
     {
@@ -54,7 +60,7 @@ items_model get_mix_items(char *mixid)
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Mix %s: CURLE_OK Check failed.", mixid);
+    fprintf(stderr, "[Request Error] Mix %s: CURLE_OK Check failed.\n", mixid);
     return Value;
   }
 }

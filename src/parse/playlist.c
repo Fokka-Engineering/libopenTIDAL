@@ -5,13 +5,14 @@
 
 playlist_model parse_playlist(cJSON *input_json)
 {
-  const cJSON *item = NULL;
+  cJSON *item = NULL;
   int i = 0;
   playlist_model Value;
 
-  cJSON *totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems");
+  cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+  cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+  cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
   cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
-  
   if (cJSON_IsObject(totalNumberOfItems))
   {
     Value.totalNumberOfItems = totalNumberOfItems->valueint;
@@ -23,22 +24,34 @@ playlist_model parse_playlist(cJSON *input_json)
 
   if (Value.totalNumberOfItems != 0)
   {
-    if (cJSON_IsObject(items))
+    if (cJSON_IsArray(items))
     {
+      Value.limit = limit->valueint;
+      Value.offset = offset->valueint;
       Value.arraySize = cJSON_GetArraySize(items);
-
       cJSON_ArrayForEach(item, items)
       {
-	cJSON *uuid = cJSON_GetObjectItemCaseSensitive(item, "uuid");
-        cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
-        cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(item, "lastUpdated");
-        cJSON *created = cJSON_GetObjectItemCaseSensitive(item, "created");
-        cJSON *image = cJSON_GetObjectItemCaseSensitive(item, "image");
-        cJSON *squareImage = cJSON_GetObjectItem(item, "squareImage");
-        cJSON *numberOfTracks = cJSON_GetObjectItem(item, "numberOfTracks");
-        cJSON *numberOfVideos = cJSON_GetObjectItem(item, "numberOfVideos");
-        cJSON *duration = cJSON_GetObjectItem(item, "duration");
-        cJSON *description = cJSON_GetObjectItemCaseSensitive(item, "description");
+	cJSON *playlist = cJSON_GetObjectItem(item, "playlist");
+	cJSON *playlist_version;
+	if (cJSON_IsObject(playlist))
+        {
+          playlist_version = playlist;
+        }
+	else
+        {
+          playlist_version = item;
+	}
+        cJSON *uuid = cJSON_GetObjectItemCaseSensitive(playlist_version, "uuid");
+        cJSON *title = cJSON_GetObjectItemCaseSensitive(playlist_version, "title");
+        cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(playlist_version, "lastUpdated");
+        cJSON *created = cJSON_GetObjectItemCaseSensitive(playlist_version, "created");
+        cJSON *image = cJSON_GetObjectItemCaseSensitive(playlist_version, "image");
+        cJSON *squareImage = cJSON_GetObjectItem(playlist_version, "squareImage");
+        cJSON *numberOfTracks = cJSON_GetObjectItem(playlist_version, "numberOfTracks");
+        cJSON *numberOfVideos = cJSON_GetObjectItem(playlist_version, "numberOfVideos");
+        cJSON *duration = cJSON_GetObjectItem(playlist_version, "duration");
+        cJSON *description = cJSON_GetObjectItemCaseSensitive(playlist_version, "description");
+        cJSON *popularity = cJSON_GetObjectItem(playlist_version, "popularity");
 
         Value.status = 1;
 	strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
@@ -50,6 +63,7 @@ playlist_model parse_playlist(cJSON *input_json)
         Value.numberOfTracks[i] = numberOfTracks->valueint;
         Value.numberOfVideos[i] = numberOfVideos->valueint;
         Value.duration[i] = duration->valueint;
+	Value.popularity[i] = popularity->valueint;
 
         if (cJSON_IsNull(description) != 1)
         {
@@ -70,6 +84,7 @@ playlist_model parse_playlist(cJSON *input_json)
       cJSON *numberOfVideos = cJSON_GetObjectItem(input_json, "numberOfVideos");
       cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
       cJSON *description = cJSON_GetObjectItemCaseSensitive(input_json, "description");
+      cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
 
       Value.status = 1;
       strncpy(Value.uuid[0], uuid->valuestring, sizeof(Value.uuid[0]));
@@ -81,9 +96,12 @@ playlist_model parse_playlist(cJSON *input_json)
       Value.numberOfTracks[0] = numberOfTracks->valueint;
       Value.numberOfVideos[0] = numberOfVideos->valueint;
       Value.duration[0] = duration->valueint;
+      Value.popularity[0] = popularity->valueint;
+      Value.hasDescription[0] = 0;
 
       if (cJSON_IsNull(description) != 1)
       {
+        Value.hasDescription[0] = 1;
         strncpy(Value.description[0], description->valuestring, sizeof(Value.description[0]));
       }
     }

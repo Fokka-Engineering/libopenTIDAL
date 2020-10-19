@@ -6,12 +6,13 @@
 playlist_model get_playlist(char *playlistid)
 {
   playlist_model Value;
-  char *endpoint = url_cat_str("playlists/", playlistid, "");
-  char *baseparams = param_cat("100", "", "");
+  char *endpoint;
+  char baseparams[20];
+  
+  endpoint = url_cat_str("playlists/", playlistid, "");
+  snprintf(baseparams, 20, "countryCode=%s", countryCode);
   curl_model req = curl_get(endpoint, baseparams);
-
   free(endpoint);
-  free(baseparams);
   
   if (req.status != -1)
   {
@@ -23,6 +24,14 @@ playlist_model get_playlist(char *playlistid)
       cJSON_Delete(input_json);
       free(req.body);
       return parse;
+    }
+    else if (req.responseCode == 400)
+    {
+      Value.status = parse_badrequest(input_json, 0, playlistid);
+      /* Cleanup */
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
     }
     else if (req.responseCode == 401)
     {
@@ -58,14 +67,18 @@ playlist_model get_playlist(char *playlistid)
   }
 }
 
-items_model get_playlist_items(char *playlistid)
+items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
 {
   items_model Value;
-  char *endpoint = url_cat_str("playlists/", playlistid, "/items");
-  char *baseparams = param_cat("100", "", "");
+  char *endpoint;
+  char baseparams[50];
+  
+  endpoint = url_cat_str("playlists/", playlistid, "/items");
+  snprintf(baseparams, 50, "countryCode=%s&limit%zu&offset=%zu", countryCode,
+            limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
-  free(baseparams);
+  
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
@@ -76,6 +89,14 @@ items_model get_playlist_items(char *playlistid)
       cJSON_Delete(input_json);
       free(req.body);
       return parse;
+    }
+    else if (req.responseCode == 400)
+    {
+      Value.status = parse_badrequest(input_json, 0, playlistid);
+      /* Cleanup */
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
     }
     else if (req.responseCode == 401)
     {
@@ -114,11 +135,14 @@ items_model get_playlist_items(char *playlistid)
 char *get_playlist_etag(char *playlistid)
 {
   /* Request playlist endpoint to scrape eTag Header  */
-  char *endpoint = url_cat_str("playlists/", playlistid, "");
-  char *baseparams = param_cat("100", "", "");
+  char *endpoint;
+  char baseparams[20];
+
+  endpoint = url_cat_str("playlists/", playlistid, "");
+  snprintf(baseparams, 20, "countryCode=%s", countryCode);
   curl_model req = curl_head(endpoint, baseparams); /* Returns Header with eTag */
   free(endpoint);
-  free(baseparams);
+  
   if (req.status != -1)
   {
     if (req.responseCode == 200)
@@ -161,7 +185,7 @@ char *get_playlist_etag(char *playlistid)
     }
     else
     {
-      fprintf(stderr, "Could not parse eTag-Header. Not a 200 Response.\n");
+      fprintf(stderr, "[Request Error] Could not parse eTag-Header. Not a 200 Response.\n");
       free(req.header);
       return 0;
     }
@@ -180,9 +204,10 @@ int delete_playlist(char *playlistid)
   snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
+  
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
+    if (req.responseCode == 200 || req.responseCode == 204)
     {
       free(req.body);
       return 1;
@@ -190,7 +215,7 @@ int delete_playlist(char *playlistid)
     else if (req.responseCode == 400)
     {
       free(req.body);
-      fprintf(stderr, "[400] Invalid Indices\n");
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)
@@ -242,7 +267,7 @@ int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader)
     }
     else if (req.responseCode == 400)
     {
-      fprintf(stderr, "[400] Invalid Indices\n");
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)
@@ -292,7 +317,7 @@ int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTa
     }
     else if (req.responseCode == 400)
     {
-      fprintf(stderr, "[400] Invalid Indices\n");
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)
@@ -342,7 +367,7 @@ int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTa
     }
     else if (req.responseCode == 400)
     {
-      fprintf(stderr, "[400] Invalid Indices\n");
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)
@@ -392,7 +417,7 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eT
     }
     else if (req.responseCode == 400)
     {
-      fprintf(stderr, "[400] Invalid Indices\n");
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)

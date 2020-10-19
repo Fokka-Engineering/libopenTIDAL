@@ -8,30 +8,45 @@ album_model parse_album(cJSON *input_json)
   album_model Value;
   const cJSON *artistItems = NULL;
   const cJSON *artistItem = NULL;
-  const cJSON *items = NULL;
-
-  items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
+  cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+  cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+  cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+  cJSON *items = cJSON_GetObjectItem(input_json, "items");
   if (cJSON_IsArray(items))
   {
-    const cJSON *item = NULL;
+    cJSON *item = NULL;
     int i = 0;
     Value.arraySize = cJSON_GetArraySize(items);
+    Value.limit = limit->valueint;
+    Value.offset = offset->valueint;
+    Value.totalNumberOfItems = totalNumberOfItems->valueint;
     cJSON_ArrayForEach(item, items)
     {
       int artistCounter = 0;
+      cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+      cJSON *item_version = NULL;
+      if (cJSON_IsObject(innerItem))
+      {
+        item_version = innerItem;
+      }
+      else
+      {
+        item_version = item;
+      }
 
-      cJSON *id = cJSON_GetObjectItem(item, "id");
-      cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
-      cJSON *duration = cJSON_GetObjectItem(item, "duration");
-      cJSON *numberOfTracks = cJSON_GetObjectItemCaseSensitive(item, "numberOfTracks");
-      cJSON *numberOfVideos = cJSON_GetObjectItemCaseSensitive(item, "numberOfVideos");
-      cJSON *numberOfVolumes = cJSON_GetObjectItemCaseSensitive(item, "numberOfVolumes");
-      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(item, "releaseDate");
-      cJSON *copyright = cJSON_GetObjectItemCaseSensitive(item, "copyright");
-      cJSON *cover = cJSON_GetObjectItemCaseSensitive(item, "cover");
-      cJSON *popularity = cJSON_GetObjectItemCaseSensitive(item, "popularity");
-      cJSON *artist = cJSON_GetObjectItemCaseSensitive(item, "artists");
+      cJSON *id = cJSON_GetObjectItem(item_version, "id");
+      cJSON *title = cJSON_GetObjectItemCaseSensitive(item_version, "title");
+      cJSON *duration = cJSON_GetObjectItem(item_version, "duration");
+      cJSON *numberOfTracks = cJSON_GetObjectItemCaseSensitive(item_version, "numberOfTracks");
+      cJSON *numberOfVideos = cJSON_GetObjectItemCaseSensitive(item_version, "numberOfVideos");
+      cJSON *numberOfVolumes = cJSON_GetObjectItemCaseSensitive(item_version, "numberOfVolumes");
+      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(item_version, "releaseDate");
+      cJSON *copyright = cJSON_GetObjectItemCaseSensitive(item_version, "copyright");
+      cJSON *cover = cJSON_GetObjectItemCaseSensitive(item_version, "cover");
+      cJSON *popularity = cJSON_GetObjectItemCaseSensitive(item_version, "popularity");
+      cJSON *artist = cJSON_GetObjectItemCaseSensitive(item_version, "artists");
 
+      Value.status = 1;
       Value.id[i] = id->valueint;
       strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
       Value.duration[i] = duration->valueint;
