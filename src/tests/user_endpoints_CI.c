@@ -22,7 +22,7 @@ int main(void)
 
   printf("Testing openTIDAL User Endpoints...\n");
   printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token);
+  scanf("%s", input_token); /* Pls no BufferOverflow :( */
   access_token = input_token;
   printf("[CI] Enter your UserId: ");
   scanf("%zu", &userid);
@@ -32,18 +32,18 @@ int main(void)
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    user_model get_user_res = get_user(userid);
-    if (get_user_res.status == 1)
+    user_model res = get_user(userid);
+    if (res.status == 1)
     {
-      printf("Username: %s\n", get_user_res.username);
-      printf("First Name: %s\n", get_user_res.firstName);
-      printf("Last Name: %s\n", get_user_res.lastName);
-      printf("E-Mail: %s\n", get_user_res.email);
-      printf("CountryCode: %s\n", get_user_res.countryCode);
-      printf("Created: %s\n", get_user_res.created);
-      printf("Picture: %s\n", get_user_res.picture);
-      printf("Gender: %s\n", get_user_res.gender);
-      printf("Date of Birth: %s\n", get_user_res.dateOfBirth);
+      printf("Username: %s\n", res.username);
+      printf("First Name: %s\n", res.firstName);
+      printf("Last Name: %s\n", res.lastName);
+      printf("E-Mail: %s\n", res.email);
+      printf("CountryCode: %s\n", res.countryCode);
+      printf("Created: %s\n", res.created);
+      printf("Picture: %s\n", res.picture);
+      printf("Gender: %s\n", res.gender);
+      printf("Date of Birth: %s\n", res.dateOfBirth);
     }
   }
   else

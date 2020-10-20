@@ -116,6 +116,7 @@ typedef struct albums_models
   size_t popularity[100];
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
+  char quality[100][20];
   size_t id[100];
   char title[100][80];
   char cover[100][37];
@@ -190,6 +191,9 @@ typedef struct pages_mix_models
 typedef struct contributors_models
 {
   int status;
+  size_t limit;
+  size_t offset;
+  size_t totalNumberOfItems;
   size_t arraySize;
   char name[50][50];
   char role[50][25];

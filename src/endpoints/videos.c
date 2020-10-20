@@ -22,8 +22,16 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
     {
       Value.status = 1;
       size_t i = 0;
-      cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *item = NULL;
+
+      Value.limit = limit->valueint;
+      Value.offset = offset->valueint;
+      Value.totalNumberOfItems = totalNumberOfItems->valueint;
+      Value.arraySize = cJSON_GetArraySize(items);
       cJSON_ArrayForEach(item, items)
       {
         cJSON *name = cJSON_GetObjectItemCaseSensitive(item, "name");

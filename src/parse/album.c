@@ -43,6 +43,7 @@ album_model parse_album(cJSON *input_json)
       cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(item_version, "releaseDate");
       cJSON *copyright = cJSON_GetObjectItemCaseSensitive(item_version, "copyright");
       cJSON *cover = cJSON_GetObjectItemCaseSensitive(item_version, "cover");
+      cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(item_version, "audioQuality");
       cJSON *popularity = cJSON_GetObjectItemCaseSensitive(item_version, "popularity");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(item_version, "artists");
 
@@ -57,6 +58,11 @@ album_model parse_album(cJSON *input_json)
       strncpy(Value.copyright[i], copyright->valuestring, sizeof(Value.copyright[i]));
       strncpy(Value.cover[i], cover->valuestring, sizeof(Value.cover[i]));
       Value.popularity[i] = popularity->valueint;
+      
+      if (cJSON_IsString(audioQuality) == 1 && cJSON_IsNull(audioQuality) != 1)
+      {
+        strncpy(Value.quality[i], audioQuality->valuestring, sizeof(Value.quality[i]));
+      }
       
       Value.subArraySize[i] = cJSON_GetArraySize(artist);
       cJSON_ArrayForEach(artistItem, artist)
@@ -84,10 +90,12 @@ album_model parse_album(cJSON *input_json)
     cJSON *numberOfVolumes = cJSON_GetObjectItemCaseSensitive(input_json, "numberOfVolumes");
     cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(input_json, "releaseDate");
     cJSON *copyright = cJSON_GetObjectItemCaseSensitive(input_json, "copyright");
+    cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(input_json, "audioQuality");
     cJSON *cover = cJSON_GetObjectItemCaseSensitive(input_json, "cover");
     cJSON *popularity = cJSON_GetObjectItemCaseSensitive(input_json, "popularity");
     cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
 
+    Value.status = 1;
     Value.id[0] = id->valueint;
     strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
     Value.duration[0] = duration->valueint;
@@ -98,6 +106,11 @@ album_model parse_album(cJSON *input_json)
     strncpy(Value.copyright[0], copyright->valuestring, sizeof(Value.copyright[0]));
     strncpy(Value.cover[0], cover->valuestring, sizeof(Value.cover[0]));
     Value.popularity[0] = popularity->valueint;
+    
+    if (cJSON_IsString(audioQuality) == 1 && cJSON_IsNull(audioQuality) != 1)
+    {
+      strncpy(Value.quality[0], audioQuality->valuestring, sizeof(Value.quality[0]));
+    }
 
     Value.subArraySize[0] = cJSON_GetArraySize(artist);
     cJSON_ArrayForEach(artistItem, artist)

@@ -16,14 +16,17 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
   cJSON *version = cJSON_GetObjectItemCaseSensitive(input_json, "version");
+  cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(input_json, "audioQuality");
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
   cJSON *album = cJSON_GetObjectItemCaseSensitive(input_json, "album");
   cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
   cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover"); 
 
   Value.status = 1;
+  Value.hasVersion[0] = 0;
   Value.id[0] = id->valueint;
   strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
+  strncpy(Value.quality[0], audioQuality->valuestring, sizeof(Value.quality[0]));
   Value.duration[0] = duration->valueint;
   Value.popularity[0] = popularity->valueint;
   Value.trackNumber[0] = trackNumber->valueint;
@@ -31,6 +34,7 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   
   if (cJSON_IsNull(version) != 1)
   {
+    Value.hasVersion[0] = 1;
     strncpy(Value.version[0], version->valuestring, sizeof(Value.version[0]));
   }
   
@@ -64,6 +68,8 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
   cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
+  cJSON *quality = cJSON_GetObjectItemCaseSensitive(input_json, "quality");
+  cJSON *imageId = cJSON_GetObjectItemCaseSensitive(input_json, "imageId");
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
 
   Value.status = 1;
@@ -73,7 +79,8 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   Value.popularity[0] = popularity->valueint;
   Value.trackNumber[0] = trackNumber->valueint;
   Value.volumeNumber[0] = volumeNumber->valueint;
-  
+  strncpy(Value.quality[0], quality->valuestring, sizeof(Value.quality[0]));
+  strncpy(Value.cover[0], imageId->valuestring, sizeof(Value.cover[0]));
   Value.subArraySize[0] = cJSON_GetArraySize(artist);
   cJSON_ArrayForEach(artistItem, artist)
   {
@@ -126,6 +133,7 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       cJSON *version = cJSON_GetObjectItemCaseSensitive(version_json, "version");
       cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(version_json, "audioQuality");
       cJSON *quality = cJSON_GetObjectItemCaseSensitive(version_json, "quality");
+      cJSON *imageId = cJSON_GetObjectItemCaseSensitive(version_json, "imageId");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(version_json, "artists");
       cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album"); 
 
@@ -169,6 +177,7 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       else
       {
         Value.isVideo[i] = 1;
+	strncpy(Value.cover[i], imageId->valuestring, sizeof(Value.cover[i]));
 	strncpy(Value.quality[i], quality->valuestring, sizeof(Value.quality[i]));
       }
       i = i + 1;

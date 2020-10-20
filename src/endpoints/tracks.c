@@ -14,7 +14,7 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
 
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
-  free(baseparams); 
+  
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
@@ -22,8 +22,14 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
     {
       Value.status = 1;
       size_t i = 0;
-      cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *item = NULL;
+      Value.limit = limit->valueint;
+      Value.offset = offset->valueint;
+      Value.totalNumberOfItems = totalNumberOfItems->valueint;
       Value.arraySize = cJSON_GetArraySize(items);
       cJSON_ArrayForEach(item, items)
       {

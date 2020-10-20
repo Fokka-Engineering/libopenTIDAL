@@ -137,6 +137,7 @@ char *get_playlist_etag(char *playlistid)
   /* Request playlist endpoint to scrape eTag Header  */
   char *endpoint;
   char baseparams[20];
+  char *eTagHeader = malloc(30);
 
   endpoint = url_cat_str("playlists/", playlistid, "");
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
@@ -151,7 +152,6 @@ char *get_playlist_etag(char *playlistid)
       int e; /* Counter for ETag-String Extraction  */
       char *p = strtok (req.header, "\n");
       char eTag[20];
-      char *eTagHeader = malloc(30);
       /* Buffer for splitted HTTP-Header  */ 
       char *array[30];
       while (p != NULL)
@@ -192,7 +192,7 @@ char *get_playlist_etag(char *playlistid)
   }
   else
   {
-    free(req.body);
+    free(req.header);
     fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return 0;
   }
@@ -204,47 +204,40 @@ int delete_playlist(char *playlistid)
   snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
-  
+  free(req.body); 
   if (req.status != -1)
   {
     if (req.responseCode == 200 || req.responseCode == 204)
     {
-      free(req.body);
       return 1;
     }
     else if (req.responseCode == 400)
     {
-      free(req.body);
       fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
       return -9;
     }
     else if (req.responseCode == 401)
     {
-      free(req.body);
       fprintf(stderr, "[401] Unauthorized\n");
       return -8;
     }
     else if (req.responseCode == 404)
     {
-      free(req.body);
       fprintf(stderr, "[404] Resource %s not found\n", playlistid);
       return -2;
     }
     else if (req.responseCode == 412)
     {
-      free(req.body);
       fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
       return -4;
     }
     else
     {
-      free(req.body);
       return 0;
     }
   }
   else
   {
-    free(req.body);
     fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }  
@@ -257,8 +250,8 @@ int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader)
   curl_model req = curl_delete(buffer, "", eTagHeader);
   
   /* cleanup */
-  free(eTagHeader);
   free(req.body);
+  
   if (req.status != -1)
   {
     if (req.responseCode == 200)
@@ -297,152 +290,18 @@ int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader)
   }
 }
 
+/* TODO: FIX THIS SHIT!  */
 int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTagHeader)
 {
-  char buffer[80];
-  snprintf(buffer, 80, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
-
-  char bufferTwo[20];
-  snprintf(bufferTwo, 20, "toIndex=%zu", toIndex);
-  curl_model req = curl_post(buffer, bufferTwo, eTagHeader);
-  
-  /* cleanup */
-  free(eTagHeader);
-  free(req.body);
-  if (req.status != -1)
-  {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
-  }
-  else
-  {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return -1;
-  }
+  return 0;
 }
 
 int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTagHeader)
 {
-  char buffer[80];
-  snprintf(buffer, 80, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
-  /* onDupes = ADD or SKIP  */
-  char bufferTwo[60];
-  snprintf(bufferTwo, 60, "trackIds=%zu&onDupes=%s&onArtifactNotFound=FAIL", trackid, onDupes);
-  curl_model req = curl_post(buffer, bufferTwo, eTagHeader);
-  
-  /* cleanup */
-  free(eTagHeader);
-  free(req.body);
-  if (req.status != -1)
-  {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
-  }
-  else
-  {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return -1;
-  } 
+  return 0;
 }
 
 int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eTagHeader)
 {
-  char buffer[80];
-  snprintf(buffer, 80, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
-
-  char bufferTwo[60];
-  snprintf(bufferTwo, 60, "trackIds=%s&onDupes=%s&onArtifactNotFound=FAIL", trackids, onDupes);
-  curl_model req = curl_post(buffer, bufferTwo, eTagHeader);
-  
-  /* cleanup */
-  free(eTagHeader);
-  free(req.body);
-  if (req.status != -1)
-  {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
-  }
-  else
-  {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return -1;
-  }
+  return 0;
 }

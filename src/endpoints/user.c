@@ -508,25 +508,21 @@ int add_user_album(size_t userid, size_t albumid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -555,25 +551,21 @@ int add_user_artist(size_t userid, size_t artistid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -605,25 +597,21 @@ int add_user_playlist(size_t userid, char *playlistid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -652,25 +640,21 @@ int add_user_track(size_t userid, size_t trackid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -701,25 +685,21 @@ int add_user_video(size_t userid, size_t videoid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -816,25 +796,21 @@ int delete_user_album(size_t userid, size_t albumid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -863,25 +839,21 @@ int delete_user_artist(size_t userid, size_t artistid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -910,25 +882,21 @@ int delete_user_playlist(size_t userid, char *playlistid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -957,25 +925,21 @@ int delete_user_track(size_t userid, size_t trackid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
@@ -1004,25 +968,21 @@ int delete_user_video(size_t userid, size_t videoid)
     else if (req.responseCode == 400)
     {
       status = -11;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      free(req.body);
       return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      free(req.body);
       return status;
     }
     else
     {
       status = 0;
-      free(req.body);
       return status;
     }
   }
