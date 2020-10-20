@@ -94,7 +94,7 @@ items_model get_album_items(size_t albumid, size_t limit, size_t offset);
 
 /* Artist Endpoints */
 artist_model get_artist(size_t artistid);
-artist_link_model get_artist_link(size_t artistid);
+artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset);
 mix_model get_artist_mix(size_t artistid);
 items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset);
 items_model get_artist_videos(size_t artistid, size_t limit, size_t offset);

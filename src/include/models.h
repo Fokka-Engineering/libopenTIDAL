@@ -93,6 +93,7 @@ typedef struct items_models
   char albumTitle[100][80];
   char cover[100][37];
   char quality[100][20];
+  size_t hasReleaseDate[100];
   char releaseDate[100][11]; /* Only present in playlist_item response */
   char type[100][12];
 } items_model;
@@ -160,8 +161,10 @@ typedef struct artists_models
 typedef struct artist_links_models
 {
   int status;
+  size_t limit;
+  size_t offset;
   size_t arraySize;
-  int totalNumberOfItems;
+  size_t totalNumberOfItems;
   char url[20][80];
   char siteName[20][50];
   char source[25];

@@ -16,6 +16,7 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
   cJSON *version = cJSON_GetObjectItemCaseSensitive(input_json, "version");
+  cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(input_json, "releaseDate");
   cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(input_json, "audioQuality");
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
   cJSON *album = cJSON_GetObjectItemCaseSensitive(input_json, "album");
@@ -31,8 +32,13 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   Value.popularity[0] = popularity->valueint;
   Value.trackNumber[0] = trackNumber->valueint;
   Value.volumeNumber[0] = volumeNumber->valueint;
-  
-  if (cJSON_IsNull(version) != 1)
+  Value.hasReleaseDate[0] = 0;
+  if (cJSON_IsString(releaseDate) && cJSON_IsNull(releaseDate) != 1)
+  {
+    Value.hasReleaseDate[0] = 1;
+    strncpy(Value.releaseDate[0], releaseDate->valuestring, sizeof(Value.releaseDate[0]));
+  }
+  if (cJSON_IsString(version) && cJSON_IsNull(version) != 1)
   {
     Value.hasVersion[0] = 1;
     strncpy(Value.version[0], version->valuestring, sizeof(Value.version[0]));
@@ -68,6 +74,7 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
   cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
+  cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(input_json, "releaseDate");
   cJSON *quality = cJSON_GetObjectItemCaseSensitive(input_json, "quality");
   cJSON *imageId = cJSON_GetObjectItemCaseSensitive(input_json, "imageId");
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
@@ -82,6 +89,12 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   strncpy(Value.quality[0], quality->valuestring, sizeof(Value.quality[0]));
   strncpy(Value.cover[0], imageId->valuestring, sizeof(Value.cover[0]));
   Value.subArraySize[0] = cJSON_GetArraySize(artist);
+  Value.hasReleaseDate[0] = 0;
+  if (cJSON_IsString(releaseDate) && cJSON_IsNull(releaseDate) != 1)
+  {
+    Value.hasReleaseDate[0] = 1;
+    strncpy(Value.releaseDate[0], releaseDate->valuestring, sizeof(Value.releaseDate[0]));
+  }
   cJSON_ArrayForEach(artistItem, artist)
   {
     cJSON *artistId = cJSON_GetObjectItem(artistItem, "id");
@@ -134,6 +147,7 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(version_json, "audioQuality");
       cJSON *quality = cJSON_GetObjectItemCaseSensitive(version_json, "quality");
       cJSON *imageId = cJSON_GetObjectItemCaseSensitive(version_json, "imageId");
+      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(version_json, "releaseDate");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(version_json, "artists");
       cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album"); 
 
@@ -145,12 +159,17 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       Value.trackNumber[i] = trackNumber->valueint;
       Value.volumeNumber[i] = volumeNumber->valueint;
       Value.hasVersion[i] = 0;
-      if (cJSON_IsObject(version) && cJSON_IsNull(version) != 1)
+      Value.hasReleaseDate[i] = 0;
+      if (cJSON_IsString(version) && cJSON_IsNull(version) != 1)
       {
         Value.hasVersion[i] = 1;
         strncpy(Value.version[i], version->valuestring, sizeof(Value.version[i]));
       }
-
+      if (cJSON_IsString(releaseDate) && cJSON_IsNull(releaseDate) != 1)
+      {
+        Value.hasReleaseDate[i] = 1;
+        strncpy(Value.releaseDate[i], releaseDate->valuestring, sizeof(Value.releaseDate[i]));
+      }
       Value.subArraySize[i] = cJSON_GetArraySize(artist);
       cJSON_ArrayForEach(artistItem, artist)
       {

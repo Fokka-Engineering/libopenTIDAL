@@ -88,18 +88,18 @@ int main(void)
         {
           printf("Version: %s\n", res.version[i]);
         }
-        printf("ReleaseDate: %s\n", res.releaseDate[0]);
-        printf("Quality: %s\n", res.quality[0]);
-        printf("Cover: %s\n", res.cover[0]);
-        if (res.isVideo[0] != 1)
+        printf("ReleaseDate: %s\n", res.releaseDate[i]);
+        printf("Quality: %s\n", res.quality[i]);
+        printf("Cover: %s\n", res.cover[i]);
+        if (res.isVideo[i] != 1)
         {
-          printf("AlbumId: %zu\n", res.albumId[0]);
-   	  printf("AlbumTitle: %s\n", res.albumTitle[0]);
+          printf("AlbumId: %zu\n", res.albumId[i]);
+   	  printf("AlbumTitle: %s\n", res.albumTitle[i]);
         }
-        for (a = 0; a < res.subArraySize[0]; ++a)
+        for (a = 0; a < res.subArraySize[i]; ++a)
         {
-          printf("ArtistId: %zu\n", res.artistId[0][a]);
-          printf("ArtistName %s\n", res.artistName[0][a]);
+          printf("ArtistId: %zu\n", res.artistId[i][a]);
+          printf("ArtistName %s\n", res.artistName[i][a]);
         }
       }
     }

@@ -62,16 +62,17 @@ artist_model get_artist(size_t artistid)
   }
 }
 
-artist_link_model get_artist_link(size_t artistid)
+artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
 {
   artist_link_model Value;
   const cJSON *item = NULL;
   int i = 0;
   char *endpoint;
-  char baseparams[20];
+  char baseparams[50];
   
   endpoint = url_cat("artists/", artistid, "/links", 0);
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
+            limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
   
@@ -81,10 +82,14 @@ artist_link_model get_artist_link(size_t artistid)
     if (req.responseCode == 200)
     {
       Value.status = 1;
-      cJSON *totalNumberOfItems = cJSON_GetObjectItemCaseSensitive(input_json, "totalNumberOfItems");
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *source = cJSON_GetObjectItemCaseSensitive(input_json, "source");
-      cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
-    
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      
+      Value.limit = limit->valueint;
+      Value.offset = offset->valueint; 
       Value.totalNumberOfItems = totalNumberOfItems->valueint;
       strncpy(Value.source, source->valuestring, sizeof(Value.source));
       Value.arraySize = cJSON_GetArraySize(items);
@@ -154,6 +159,7 @@ mix_model get_artist_mix(size_t artistid)
     if (req.responseCode == 200)
     {
       strncpy(Value.id, cJSON_GetObjectItemCaseSensitive(input_json, "id")->valuestring, sizeof(Value.id));
+      Value.status = 1;
       cJSON_Delete(input_json);
       free(req.body);
       return Value;
