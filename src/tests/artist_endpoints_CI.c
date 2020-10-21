@@ -227,6 +227,9 @@ int main(void)
     {
       int i;
       int a;
+      printf("Limit: %zu\n", res.limit);
+      printf("Offset: %zu\n", res.offset);
+      printf("TotalNumberOfItems: %zu\n", res.totalNumberOfItems);
       for (i = 0; i < res.arraySize; ++i)
       {
         printf("Id: %zu\n", res.id[i]);

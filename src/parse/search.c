@@ -109,10 +109,11 @@ search_model parse_search(cJSON *input_json)
       cJSON *numberOfTracks = cJSON_GetObjectItem(albumsItem, "numberOfTracks");
       cJSON *numberOfVideos = cJSON_GetObjectItem(albumsItem, "numberOfVideos");
       cJSON *numberOfVolumes = cJSON_GetObjectItem(albumsItem, "numberOfVolumes");
+      cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(albumsItem, "releaseDate");
+      cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(albumsItem, "audioQuality");
       cJSON *copyright = cJSON_GetObjectItemCaseSensitive(albumsItem, "copyright");
       cJSON *cover = cJSON_GetObjectItemCaseSensitive(albumsItem, "cover");
       cJSON *popularity = cJSON_GetObjectItem(albumsItem, "popularity");
-      cJSON *releaseDate = cJSON_GetObjectItem(albumsItem, "releaseDate");
       cJSON *artist = cJSON_GetObjectItem(albumsItem, "artists");
 
       Value.albums.id[al] = id->valueint;
@@ -122,9 +123,9 @@ search_model parse_search(cJSON *input_json)
       Value.albums.numberOfVideos[al] = numberOfVideos->valueint;
       Value.albums.numberOfVolumes[al] = numberOfVolumes->valueint;
       strncpy(Value.albums.releaseDate[al], releaseDate->valuestring, sizeof(Value.albums.releaseDate[al]));
+      strncpy(Value.albums.quality[al], audioQuality->valuestring, sizeof(Value.albums.quality[al]));
       strncpy(Value.albums.copyright[al], copyright->valuestring, sizeof(Value.albums.copyright[al]));
       strncpy(Value.albums.cover[al], cover->valuestring, sizeof(Value.albums.cover[al]));
-      strncpy(Value.albums.releaseDate[al], releaseDate->valuestring, sizeof(Value.albums.releaseDate[al]));
       Value.albums.popularity[al] = popularity->valueint;
       
       Value.albums.subArraySize[al] = cJSON_GetArraySize(artist);
