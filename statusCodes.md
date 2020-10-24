@@ -1,3 +1,4 @@
+-13 User does not have a valid session
 -12 User not found
 -11 Undefined 400 Error
 -10 Not a Valid manifest

@@ -285,7 +285,7 @@ search_model parse_search(cJSON *input_json)
   }
   else if (strcmp(Value.topHitType, "ALBUMS") == 0)
   {
-    int i; 
+    int i = 0; 
     cJSON *topAlbumSubItem = NULL;
     cJSON *topAlbumId = cJSON_GetObjectItem(topHitValue, "id");
     cJSON *topAlbumTitle = cJSON_GetObjectItemCaseSensitive(topHitValue, "title");

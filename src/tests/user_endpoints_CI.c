@@ -7,43 +7,44 @@
 #include <unistd.h>
 #include "../include/base64.h"
 
-char *client_id = "8SEZWa4J1NVC5U5Y";
-char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-char *audioQuality = "LOSSLESS";
-char *videoQuality = "HIGH";
-char *countryCode = "DE";
-char *access_token;
-
 int main(void)
 {
-  size_t userid;
   size_t skipped;
-  char input_token[1024];
-
+  init("persistent.json", "LOSSLESS", "HIGH");
   printf("Testing openTIDAL User Endpoints...\n");
-  printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token); /* Pls no BufferOverflow :( */
-  access_token = input_token;
-  printf("[CI] Enter your UserId: ");
-  scanf("%zu", &userid);
   /* get_user  */
   skipped = 1;
   printf("[CI] Testing get_user (0 to skip)...: ");
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    user_model res = get_user(userid);
+    user_model res = get_user();
     if (res.status == 1)
     {
       printf("Username: %s\n", res.username);
-      printf("First Name: %s\n", res.firstName);
-      printf("Last Name: %s\n", res.lastName);
+      if (res.hasFirstName)
+      {
+        printf("First Name: %s\n", res.firstName);
+      }
+      if (res.hasLastName)
+      {
+        printf("Last Name: %s\n", res.lastName);
+      }
       printf("E-Mail: %s\n", res.email);
       printf("CountryCode: %s\n", res.countryCode);
       printf("Created: %s\n", res.created);
-      printf("Picture: %s\n", res.picture);
-      printf("Gender: %s\n", res.gender);
-      printf("Date of Birth: %s\n", res.dateOfBirth);
+      if (res.hasPicture)
+      {
+        printf("Picture: %s\n", res.picture);
+      }
+      if (res.hasGender)
+      {
+        printf("Gender: %s\n", res.gender);
+      }
+      if (res.hasDateOfBirth)
+      {
+        printf("Date of Birth: %s\n", res.dateOfBirth);
+      }
     }
   }
   else
@@ -66,7 +67,7 @@ int main(void)
     
     char *order = "DATE";
     char *orderDirection = "DESC";
-    album_model res = get_user_album(userid, limit, offset, order, orderDirection);
+    album_model res = get_user_album(limit, offset, order, orderDirection);
     if (res.status == 1)
     {
       size_t i;
@@ -118,7 +119,7 @@ int main(void)
     char *order = "DATE";
     char *orderDirection = "DESC";
     
-    artist_model res = get_user_artist(userid, limit, offset, order, orderDirection);
+    artist_model res = get_user_artist(limit, offset, order, orderDirection);
     if (res.status == 1)
     {
       int i;
@@ -158,7 +159,7 @@ int main(void)
     char *order = "DATE";
     char *orderDirection = "DESC";
 
-    items_model res = get_user_tracks(userid, limit, offset, order, orderDirection);
+    items_model res = get_user_tracks(limit, offset, order, orderDirection);
     if (res.status == 1)
     {
       int i;
@@ -209,7 +210,7 @@ int main(void)
     char *order = "DATE";
     char *orderDirection = "DESC";
 
-    items_model res = get_user_videos(userid, limit, offset, order, orderDirection);
+    items_model res = get_user_videos(limit, offset, order, orderDirection);
     if (res.status == 1)
     {
       int i;
@@ -257,7 +258,7 @@ int main(void)
     char *order = "DATE";
     char *orderDirection = "DESC";
 
-    playlist_model res = get_user_playlist(userid, limit, offset, order, orderDirection);
+    playlist_model res = get_user_playlist(limit, offset, order, orderDirection);
     if (res.status == 1)
     {
       int i;
@@ -330,7 +331,7 @@ int main(void)
     scanf("%s", description);
 
 
-    playlist_model res = create_user_playlist(userid, title, description);
+    playlist_model res = create_user_playlist(title, description);
     if (res.status == 1)
     {
       printf("NumberOfTracks: %zu\n", res.numberOfTracks[0]);
@@ -361,27 +362,27 @@ int main(void)
   if (skipped != 0)
   {
     /* Add Test */
-    int res_album = add_user_album(userid, 62930816);
+    int res_album = add_user_album(62930816);
     if (res_album == 1)
     {
       printf("[CI] Album Creation (Success)\n");
     }
-    int res_artist = add_user_artist(userid, 3755341);
+    int res_artist = add_user_artist(3755341);
     if (res_artist == 1)
     {
       printf("[CI] Artist Creation (Success)\n");
     }
-    int res_playlist = add_user_playlist(userid, "cc065c40-951f-4bf7-aaa8-e6724f53ff7f");
+    int res_playlist = add_user_playlist("cc065c40-951f-4bf7-aaa8-e6724f53ff7f");
     if (res_playlist == 1)
     {
       printf("[CI] Playlist Creation (Success)\n");
     }
-    int res_track = add_user_track(userid, 32599618);
+    int res_track = add_user_track(32599618);
     if (res_track == 1)
     {
       printf("[CI] Track Creation (Success)\n");
     }
-    int res_video = add_user_video(userid, 70543020);
+    int res_video = add_user_video(70543020);
     if (res_video == 1)
     {
       printf("[CI] Video Creation (Success)\n");
@@ -389,27 +390,27 @@ int main(void)
     /* Delete Test */
     printf("[CI] Deleting...\n");
 
-    int ress_album = delete_user_album(userid, 62930816);
+    int ress_album = delete_user_album(62930816);
     if (ress_album == 1)
     {
       printf("[CI] Album Deletion (Success)\n");
     }
-    int ress_artist = delete_user_artist(userid, 3755341);
+    int ress_artist = delete_user_artist(3755341);
     if (ress_artist == 1)
     {
       printf("[CI] Artist Deletion (Success)\n");
     }
-    int ress_playlist = delete_user_playlist(userid, "cc065c40-951f-4bf7-aaa8-e6724f53ff7f");
+    int ress_playlist = delete_user_playlist("cc065c40-951f-4bf7-aaa8-e6724f53ff7f");
     if (ress_playlist == 1)
     {
       printf("[CI] Playlist Deletion (Success)\n");
     }
-    int ress_track = delete_user_track(userid, 32599618);
+    int ress_track = delete_user_track(32599618);
     if (ress_track == 1)
     {
       printf("[CI] Track Deletion (Success)\n");
     }
-    int ress_video = delete_user_video(userid, 70543020);
+    int ress_video = delete_user_video(70543020);
     if (ress_video == 1)
     {
       printf("[CI] Video Deletion (Success)\n");
@@ -420,5 +421,5 @@ int main(void)
     printf("[CI] Skipping...\n");
   }
 
-  curl_exit();
+  cleanup();
 }

@@ -1,3 +1,4 @@
+#include <time.h>
 #pragma once
 
 typedef struct curl_models
@@ -13,11 +14,13 @@ typedef struct login_code_models
   int status;
   char deviceCode[37]; /* deviceCode is always 36 Chars long */
   char userCode[6]; /* userCode is always 5 Chars long */
+  time_t timestamp;
 } login_code_model;
 
 typedef struct login_token_models
 {
   int status;
+  time_t timestamp;
   size_t expires_in;
   char access_token[1000];
   char refresh_token[1000];
@@ -35,6 +38,11 @@ typedef struct user_models
 {
   int status;
   size_t id;
+  size_t hasFirstName;
+  size_t hasLastName;
+  size_t hasPicture;
+  size_t hasGender;
+  size_t hasDateOfBirth;
   char username[50];
   char firstName[25];
   char lastName[25];

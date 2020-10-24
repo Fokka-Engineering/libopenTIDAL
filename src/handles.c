@@ -51,14 +51,15 @@ void curl_exit()
 curl_model curl_get(char *endpoint, char *data)
 {
   if(curl_init == 0)
-    {
-      curl = curl_session();
-      curl_init = 1;
-    }
+  {
+    curl = curl_session();
+    curl_init = 1;
+  }
   CURLcode res;
   curl_model model;
-
   struct MemoryStruct response;
+
+  refresh_persistent();
   /* will be grown as needed by the realloc above */
   response.memory = malloc(1); 
   /* no data at this point */
@@ -80,7 +81,8 @@ curl_model curl_get(char *endpoint, char *data)
   strcpy(header, "authorization: Bearer ");
   strcat(header, access_token);
 
-  if(curl_init == 1) {
+  if(curl_init == 1)
+  {
     struct curl_slist *chunk = NULL;
     chunk = curl_slist_append(chunk, header);
     curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -93,16 +95,22 @@ curl_model curl_get(char *endpoint, char *data)
     curl_slist_free_all(chunk);
     free(url);
     free(header);
-  }
-  if (res != CURLE_OK) 
-  {
-    model.status = -1;
-    return model;
+
+    if (res != CURLE_OK)
+    {
+      model.status = -1;
+      return model;
+    }
+    else
+    {
+      model.body = response.memory;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+      return model;
+    }
   }
   else
   {
-    model.body = response.memory;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+    model.status = -1;
     return model;
   }
 }
@@ -111,14 +119,17 @@ curl_model curl_get(char *endpoint, char *data)
 curl_model curl_post(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
-    {
-      curl = curl_session();
-      curl_init = 1;
-    }
+  {
+    curl = curl_session();
+    curl_init = 1;
+  }
   CURLcode res;
   curl_model model;
 
   struct MemoryStruct response;
+
+  refresh_persistent();
+
   /* will be grown as needed by the realloc above */
   response.memory = malloc(1);
   /* no data at this point */
@@ -136,7 +147,8 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   strcpy(header, "authorization: Bearer ");
   strcat(header, access_token);
 
-  if(curl_init == 1) {
+  if(curl_init == 1)
+  {
     struct curl_slist *chunk = NULL;
     chunk = curl_slist_append(chunk, header);
     chunk = curl_slist_append(chunk, optHeader);
@@ -152,16 +164,22 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     curl_slist_free_all(chunk);
     free(url);
     free(header);
-  }
-  if (res != CURLE_OK)
-  {
-    model.status = -1;
-    return model;
+
+    if (res != CURLE_OK)
+    {
+      model.status = -1;
+      return model;
+    }
+    else
+    {
+      model.body = response.memory;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+      return model;
+    }
   }
   else
   {
-    model.body = response.memory;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+    model.status = -1;
     return model;
   }
 }
@@ -170,14 +188,16 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
 curl_model curl_delete(char *endpoint, char *data, char *optHeader)
 {
   if(curl_init == 0)
-    {
-      curl = curl_session();
-      curl_init = 1;
-    }
+  {
+    curl = curl_session();
+    curl_init = 1;
+  }
   CURLcode res;
   curl_model model;
 
   struct MemoryStruct response;
+  
+  refresh_persistent();
 
   /* will be grown as needed by the realloc above */
   response.memory = malloc(1);
@@ -211,16 +231,21 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_slist_free_all(chunk);
     free(url);
     free(header);
-  }
-  if (res != CURLE_OK)
-  {
-    model.status = -1;
-    return model;
+    if (res != CURLE_OK)
+    {
+      model.status = -1;
+      return model;
+    }
+    else
+    {
+      model.body = response.memory;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+      return model;
+    }
   }
   else
   {
-    model.body = response.memory;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+    model.status = -1;
     return model;
   }
 }
@@ -237,6 +262,8 @@ curl_model curl_head(char *endpoint, char *data)
   curl_model model;
   struct MemoryStruct headerResponse;
  
+  refresh_persistent();
+
   /* will be grown as needed by the realloc above */ 
   headerResponse.memory = malloc(1);
   /* no data at this point */
@@ -270,16 +297,22 @@ curl_model curl_head(char *endpoint, char *data)
     curl_slist_free_all(chunk);
     free(url);
     free(header);
-  }
-  if (res != CURLE_OK)
-  {
-    model.status = -1;
-    return model;
+
+    if (res != CURLE_OK)
+    {
+      model.status = -1;
+      return model;
+    }
+    else
+    {
+      model.header = headerResponse.memory;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+      return model;
+    }
   }
   else
   {
-    model.header = headerResponse.memory;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+    model.status = -1;
     return model;
   }
 }
@@ -332,8 +365,23 @@ curl_model curl_post_auth(char *endpoint, char *data)
     curl_easy_setopt(curl_auth, CURLOPT_USERNAME, client_id);
     curl_easy_setopt(curl_auth, CURLOPT_PASSWORD, client_secret);
     res = curl_easy_perform(curl_auth);
+    
+    free(url);
+    
+    if (res != CURLE_OK)
+    {
+      model.status = -1;
+      return model;
+    }
+    else
+    {
+      model.body = response.memory;
+      return model;
+    }
   }
-  free(url);
-  model.body = response.memory;
-  return model;
+  else
+  {
+    model.status = -1;
+    return model;
+  }
 }

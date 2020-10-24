@@ -4,11 +4,13 @@
 extern char *client_id;
 extern char *client_secret;
 extern char *access_token;
-
+extern char *refresh_token;
+extern time_t expires_in;
+extern size_t userId;
 extern char *countryCode;
 extern char *audioQuality;
 extern char *videoQuality;
-extern char *userId;
+extern char *persistentFile;
 
 /* baseAPI cURL handle */
 curl_model curl_get(char *endpoint, char *data);
@@ -24,6 +26,10 @@ void curl_exit_auth();
 /* concatenation */
 char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode);
 char *url_cat_str(char *strOne, char *id, char *strTwo);
+
+/* persistentJSON */
+char *create_persistent_stream(char *username);
+void read_persistent_stream(cJSON *input_json);
 
 /* encoding */
 char *url_encode(char *str);
@@ -49,33 +55,37 @@ login_code_model login_create_code();
 login_token_model login_create_token(char *device_code);
 login_token_model login_refresh_token(char *refresh_token);
 
-
+void scan_persistent();
+void create_persistent(char *username);
+void refresh_persistent();
+void init(char *file_location, char *audio_quality, char *video_quality);
+void cleanup();
 /* User Endpoints */
-user_model get_user(size_t userid);
-playlist_model get_user_playlist(size_t userid, size_t limit,
+user_model get_user();
+playlist_model get_user_playlist(size_t limit,
                               size_t offset, char *order, char *orderDirection);
-album_model get_user_album(size_t userid, size_t limit,
+album_model get_user_album(size_t limit,
                               size_t offset, char *order, char *orderDirection);
-artist_model get_user_artist(size_t userid, size_t limit,
+artist_model get_user_artist(size_t limit,
                               size_t offset, char *order, char *orderDirection);
-items_model get_user_tracks(size_t userid, size_t limit,
+items_model get_user_tracks(size_t limit,
                               size_t offset, char *order, char *orderDirection);
-items_model get_user_videos(size_t userid, size_t limit,
+items_model get_user_videos(size_t limit,
                               size_t offset, char *order, char *orderDirection);
 
-playlist_model create_user_playlist(size_t userid, char *title, char *description);
+playlist_model create_user_playlist(char *title, char *description);
 page_mix_model get_user_mixes();
-int add_user_album(size_t userid, size_t albumid);
-int add_user_artist(size_t userid, size_t artistid);
-int add_user_playlist(size_t userid, char *playlistid);
-int add_user_track(size_t userid, size_t trackid);
-int add_user_video(size_t userid, size_t videoid);
+int add_user_album(size_t albumid);
+int add_user_artist(size_t artistid);
+int add_user_playlist(char *playlistid);
+int add_user_track(size_t trackid);
+int add_user_video(size_t videoid);
 
-int delete_user_album(size_t userid, size_t albumid);
-int delete_user_artist(size_t userid, size_t artistid);
-int delete_user_playlist(size_t userid, char *playlistid);
-int delete_user_track(size_t userid, size_t trackid);
-int delete_user_video(size_t userid, size_t videoid);
+int delete_user_album(size_t albumid);
+int delete_user_artist(size_t artistid);
+int delete_user_playlist(char *playlistid);
+int delete_user_track(size_t trackid);
+int delete_user_video(size_t videoid);
 
 /* Playlist Endpoints */
 playlist_model get_playlist(char *playlistid);

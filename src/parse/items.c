@@ -114,7 +114,6 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
   const cJSON *version_json = NULL;
   const cJSON *item = NULL;
   const cJSON *items = NULL;
-  const cJSON *artistItems = NULL;
   const cJSON *artistItem = NULL;
   int i = 0;
 

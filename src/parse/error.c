@@ -4,15 +4,20 @@
 
 int parse_unauthorized(cJSON *input_json, size_t id)
 {
-  int status;
+  int status = 0;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
-  if (cJSON_IsNumber(subStatus))
+  if (cJSON_IsNumber(subStatus) == 1)
   {
     if (subStatus->valueint == 4005)
     {
       status = -3;
       fprintf(stderr, "[401] Asset %zu is not ready for playback\n", id);
+    }
+    else if (subStatus->valueint == 6001)
+    {
+      status = -13;
+      fprintf(stderr, "[401] User does not have a valid session\n");
     }
     else if (subStatus->valueint == 6005)
     {
@@ -40,10 +45,10 @@ int parse_unauthorized(cJSON *input_json, size_t id)
 
 int parse_notfound(cJSON *input_json, size_t id, char *uuid)
 {
-  int status;
+  int status = 0;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
-  if (cJSON_IsNumber(subStatus))
+  if (cJSON_IsNumber(subStatus) == 1)
   {
     if (subStatus->valueint == 2001)
     {
@@ -68,10 +73,10 @@ int parse_notfound(cJSON *input_json, size_t id, char *uuid)
 
 int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
 {
-  int status;
+  int status = 0;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
-  if (cJSON_IsNumber(subStatus))
+  if (cJSON_IsNumber(subStatus) == 1)
   {
     if (subStatus->valueint == 7002)
     {
@@ -96,10 +101,10 @@ int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
 
 int parse_badrequest(cJSON *input_json, size_t id, char *uuid)
 {
-  int status;
+  int status = 0;
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
-  if (cJSON_IsNumber(subStatus))
+  if (cJSON_IsNumber(subStatus) == 1)
   {
     if (subStatus->valueint == 1002)
     {

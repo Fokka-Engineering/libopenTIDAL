@@ -6,7 +6,6 @@
 album_model parse_album(cJSON *input_json)
 {
   album_model Value;
-  const cJSON *artistItems = NULL;
   const cJSON *artistItem = NULL;
   cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
   cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
