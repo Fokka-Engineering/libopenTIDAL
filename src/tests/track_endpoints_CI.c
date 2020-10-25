@@ -17,12 +17,8 @@ char *access_token;
 int main(void)
 {
   size_t skipped;
-  char input_token[1024];
-
+  init("persistent.json", "LOSSLESS", "HIGH");
   printf("Testing openTIDAL Track Endpoints...\n");
-  printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token); /* Pls no BufferOverflow :( */
-  access_token = input_token;
   
   /* get_track  */
   skipped = 1;

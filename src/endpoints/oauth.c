@@ -128,24 +128,28 @@ login_token_model login_refresh_token(char *refresh_token)
             client_id, refresh_token, grant_type, scopes);
   
   curl_model req = curl_post_auth("oauth2/token", data);
-  printf("%s\n", req.body);
+  //printf("%s\n", req.body);
   if (req.status != 1)
   {
     cJSON *input_json = json_parse(req.body);
-    cJSON *access_token = cJSON_GetObjectItemCaseSensitive(input_json, "access_token");
-    cJSON *expires_in = cJSON_GetObjectItemCaseSensitive(input_json, "expires_in");
+    cJSON *access_token_json = cJSON_GetObjectItemCaseSensitive(input_json, "access_token");
+    cJSON *expires_in_json = cJSON_GetObjectItemCaseSensitive(input_json, "expires_in");
     cJSON *user = cJSON_GetObjectItemCaseSensitive(input_json, "user");
-    cJSON *countryCode = cJSON_GetObjectItemCaseSensitive(user, "countryCode");
+    cJSON *countryCode_json = cJSON_GetObjectItemCaseSensitive(user, "countryCode");
     cJSON *username = cJSON_GetObjectItemCaseSensitive(user, "username");
-    cJSON *userId = cJSON_GetObjectItemCaseSensitive(user, "userId");
-    if (cJSON_IsString(access_token) == 1)
+    cJSON *userId_json = cJSON_GetObjectItemCaseSensitive(user, "userId");
+    if (cJSON_IsString(access_token_json) == 1)
     {
       Value.status = 1;
-      strncpy(Value.access_token, access_token->valuestring, sizeof(Value.access_token));
-      Value.expires_in = expires_in->valueint;
-      strncpy(Value.countryCode, countryCode->valuestring, sizeof(Value.countryCode));
+      strncpy(Value.access_token, access_token_json->valuestring, sizeof(Value.access_token));
+      access_token = Value.access_token;
+      Value.expires_in = expires_in_json->valueint;
+      expires_in = Value.expires_in;
+      strncpy(Value.countryCode, countryCode_json->valuestring, sizeof(Value.countryCode));
+      countryCode = Value.countryCode;
       strncpy(Value.username, username->valuestring, sizeof(Value.username));
-      Value.userId = userId->valueint;
+      Value.userId = userId_json->valueint;
+      userId = Value.userId;
     }
     else
     {

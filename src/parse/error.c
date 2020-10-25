@@ -111,7 +111,7 @@ int parse_badrequest(cJSON *input_json, size_t id, char *uuid)
       status = -4;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[400] Parameter missing for Resource%zu\n", id);
+        fprintf(stderr, "[400] Parameter missing for Resource %zu\n", id);
       }
       else
       {
