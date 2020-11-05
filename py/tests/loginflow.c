@@ -51,7 +51,7 @@ void login_polling()
 
 int main(void)
 {
-  init("/Users/admin/Desktop/test.json", "LOSSLESS", "HIGH");
+  init("persistent.json", "LOSSLESS", "HIGH");
   login_polling();
   printf("%zu\n", userId);
   curl_exit_auth();

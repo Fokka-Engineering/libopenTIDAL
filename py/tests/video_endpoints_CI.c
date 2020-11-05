@@ -9,20 +9,28 @@
 
 char *client_id = "8SEZWa4J1NVC5U5Y";
 char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
+char *audioQuality = "LOSSLESS";
+char *videoQuality = "HIGH";
+char *countryCode = "DE";
+char *access_token;
 
 int main(void)
 {
   size_t skipped;
-  init("persistent.json", "LOSSLESS", "HIGH");
-  printf("Testing openTIDAL Track Endpoints...\n");
+  char input_token[1024];
+
+  printf("Testing openTIDAL Video Endpoints...\n");
+  printf("[CI] Enter your access_token: ");
+  scanf("%s", input_token); /* Pls no BufferOverflow :( */
+  access_token = input_token;
   
-  /* get_track  */
+  /* get_video  */
   skipped = 1;
-  printf("[CI] Testing get_track (0 to skip)...: ");
+  printf("[CI] Testing get_video (0 to skip)...: ");
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    items_model res = get_track(122122043);
+    items_model res = get_video(58782326);
     if (res.status == 1)
     {
       int i;
@@ -34,12 +42,6 @@ int main(void)
       printf("VolumeNumber: %zu\n", res.volumeNumber[0]);
       printf("Quality: %s\n", res.quality[0]);
       printf("Cover: %s\n", res.cover[0]);
-      printf("AlbumId: %zu\n", res.albumId[0]);
-      printf("AlbumTitle: %s\n", res.albumTitle[0]);
-      if (res.hasVersion[0] == 1)
-      {
-        printf("Version: %s\n", res.version[0]);
-      }
       for (i = 0; i < res.subArraySize[0]; ++i)
       {
         printf("ArtistId: %zu\n", res.artistId[0][i]);
@@ -52,9 +54,9 @@ int main(void)
     printf("[CI] Skipping...\n");
   }
 
-  /* get_track_contributors  */
+  /* get_video_contributors  */
   skipped = 1;
-  printf("[CI] Testing get_track_contributors (0 to skip)...: ");
+  printf("[CI] Testing get_video_contributors (0 to skip)...: ");
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
@@ -66,7 +68,7 @@ int main(void)
     printf("[CI] Offset: ");
     scanf("%zu", &offset);
 
-    contributor_model res = get_track_contributors(122122043, limit, offset);
+    contributor_model res = get_video_contributors(58782326, limit, offset);
     if (res.status == 1)
     {
       printf("Limit: %zu\n", res.limit);
@@ -85,39 +87,20 @@ int main(void)
     printf("[CI] Skipping...\n");
   }
 
-  /* get_track_mix  */
+  /* get_video_stream  */
   skipped = 1;
-  printf("[CI] Testing get_track_mix (0 to skip)...: ");
+  printf("[CI] Testing get_video_stream (0 to skip)...: ");
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    mix_model res = get_track_mix(122122043);
-    if (res.status == 1)
-    {
-      printf("Id: %s\n", res.id);
-    }
-  }
-  else
-  {
-    printf("[CI] Skipping...\n");
-  }
-
-  /* get_track_stream  */
-  skipped = 1;
-  printf("[CI] Testing get_track_stream (0 to skip)...: ");
-  scanf("%zu", &skipped);
-  if (skipped != 0)
-  {
-    stream_model res = get_track_stream(122122043);
+    stream_model res = get_video_stream(58782326);
     if (res.status == 1)
     {
       printf("Url: %s\n", res.url);
-      printf("TrackId: %zu\n", res.trackId);
-      printf("AudioMode: %s\n", res.audioMode);
+      printf("VideoId: %zu\n", res.videoId);
       printf("AssetPresentation: %s\n", res.assetPresentation);
-      printf("audioQuality: %s\n", res.audioQuality);
+      printf("VideoQuality: %s\n", res.videoQuality);
       printf("MimeType: %s\n", res.mimeType);
-      printf("Codec: %s\n", res.codec);
     }
   }
   else

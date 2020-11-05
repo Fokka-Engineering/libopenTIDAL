@@ -24,8 +24,7 @@ int isScanStream = 0;
 
 void init(char *file_location)
 {
-  persistentFile = malloc(strlen(file_location) + 1);
-  strcpy(persistentFile, file_location);
+  persistentFile = file_location;
   scan_persistent();
 }
 
@@ -33,7 +32,6 @@ void cleanup()
 {
   curl_exit_auth();
   curl_exit();
-  free(persistentFile);
   if (isStream == 1)
   {
     free(json_stream);

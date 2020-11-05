@@ -14,7 +14,7 @@ typedef struct login_code_models
   int status;
   char deviceCode[37]; /* deviceCode is always 36 Chars long */
   char userCode[6]; /* userCode is always 5 Chars long */
-  time_t expires_in;
+  time_t timestamp;
 } login_code_model;
 
 typedef struct login_token_models

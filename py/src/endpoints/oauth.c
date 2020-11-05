@@ -26,7 +26,7 @@ login_code_model login_create_code()
     if (cJSON_IsString(deviceCode))
     {
       Value.status = 1;
-      Value.expires_in = time(NULL) + 300;
+      Value.timestamp = time(NULL);
       strncpy(Value.deviceCode, deviceCode->valuestring, sizeof(Value.deviceCode));
       strncpy(Value.userCode, userCode->valuestring, sizeof(Value.userCode));
     }
@@ -55,7 +55,7 @@ login_token_model login_create_token(char *device_code)
             client_id, device_code, grant_type, scopes);
   
   curl_model req = curl_post_auth("oauth2/token", data);
-  if (req.status != -1)
+  if (req.status != 1)
   { 
     cJSON *input_json = json_parse(req.body);
     cJSON *check_status = cJSON_GetObjectItemCaseSensitive(input_json, "status");
@@ -83,7 +83,7 @@ login_token_model login_create_token(char *device_code)
       strncpy(Value.username, username->valuestring, sizeof(Value.username));
       Value.userId = userId_json->valueint;
       userId = userId_json->valueint;
-      create_persistent(Value.username, "HIGH", "HIGH"); /* Default Quality Settings  */
+      create_persistent(Value.username, audioQuality, videoQuality);
     }
     else
     {
@@ -103,6 +103,7 @@ login_token_model login_create_token(char *device_code)
         Value.status = -1;
       }
     }
+    /* Cleanup */
     cJSON_Delete(input_json);
     free(req.body);
     return Value;
@@ -128,7 +129,7 @@ login_token_model login_refresh_token(char *refresh_token)
   
   curl_model req = curl_post_auth("oauth2/token", data);
   //printf("%s\n", req.body);
-  if (req.status != -1)
+  if (req.status != 1)
   {
     cJSON *input_json = json_parse(req.body);
     cJSON *access_token_json = cJSON_GetObjectItemCaseSensitive(input_json, "access_token");
