@@ -20,8 +20,7 @@ typedef struct login_code_models
 typedef struct login_token_models
 {
   int status;
-  time_t timestamp;
-  size_t expires_in;
+  time_t expires_in;
   char access_token[1000];
   char refresh_token[1000];
   char countryCode[3];

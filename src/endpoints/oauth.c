@@ -71,7 +71,6 @@ login_token_model login_create_token(char *device_code)
     if (cJSON_IsNumber(check_status) != 1)
     {
       Value.status = 1;
-      Value.timestamp = time(NULL);
       strncpy(Value.access_token, access_token_json->valuestring, sizeof(Value.access_token));
       access_token = Value.access_token;
       strncpy(Value.refresh_token, refresh_token_json->valuestring, sizeof(Value.refresh_token));
