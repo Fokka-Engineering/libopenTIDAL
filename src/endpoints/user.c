@@ -411,7 +411,7 @@ get_user_videos(size_t limit, size_t offset, char *order, char *orderDirection)
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
     return Value;
   }
 }
@@ -505,7 +505,7 @@ page_mix_model get_user_mixes()
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
+    printf("[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
     Value.status = -1;
     free(req.body);
     return Value;
@@ -791,7 +791,7 @@ playlist_model create_user_playlist(char *title, char *description)
   }
   else
   {
-    printf("%s\n", "Request Error: cURL returned a 4xx status code. Authorization Error.");
+    printf("[Request Error] CURLE_OK Check failed.\n");
     playlist_model Value;
     Value.status = -1;
     free(req.body);

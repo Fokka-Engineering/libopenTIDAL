@@ -71,6 +71,7 @@ typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
   char created[100][29];
   char image[100][37];
   char squareImage[100][37];
+  char type[100][20];
   size_t popularity[100];
 } playlist_model;
 
@@ -85,10 +86,12 @@ typedef struct items_models
   size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
   size_t id[100];
   char title[100][80];
-  int explicit[100];
+  size_t explicitItem[100];
   size_t duration[100];
-  int allowStreaming[100];
-  int streamReady[100];
+  size_t allowStreaming[100];
+  size_t streamReady[100];
+  double replayGain[100];
+  double peak[100];
   size_t popularity[100];
   size_t trackNumber[100];
   size_t volumeNumber[100];
@@ -113,7 +116,7 @@ typedef struct albums_models
   size_t totalNumberOfItems;
   size_t arraySize;
   size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
-  size_t explicit[100];
+  size_t explicitItem[100];
   size_t duration[100];
   size_t allowStreaming[100];
   size_t streamReady[100];
@@ -125,6 +128,8 @@ typedef struct albums_models
   size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
   char artistName[100][6][50];
   char quality[100][20];
+  size_t hasVersion[100];
+  char version[100][50];
   size_t id[100];
   char title[100][80];
   char cover[100][37];

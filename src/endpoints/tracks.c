@@ -76,7 +76,7 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.", trackid);
+    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return Value;
   }
 }
@@ -131,7 +131,7 @@ mix_model get_track_mix(size_t trackid)
   {
     free(req.body);
     Value.status = -1;
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.", trackid);
+    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return Value;
   }
 }
@@ -270,7 +270,7 @@ items_model get_track(size_t trackid)
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.", trackid);
+    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return Value;
   }
 }

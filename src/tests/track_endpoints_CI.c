@@ -13,7 +13,7 @@ char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
 int main(void)
 {
   size_t skipped;
-  init("persistent.json", "LOSSLESS", "HIGH");
+  init("persistent.json");
   printf("Testing openTIDAL Track Endpoints...\n");
   
   /* get_track  */
@@ -33,6 +33,11 @@ int main(void)
       printf("TrackNumber: %zu\n", res.trackNumber[0]);
       printf("VolumeNumber: %zu\n", res.volumeNumber[0]);
       printf("Quality: %s\n", res.quality[0]);
+      printf("Explicit: %zu\n", res.explicitItem[0]);
+      printf("AllowStreaming: %zu\n", res.allowStreaming[0]);
+      printf("StreamReady: %zu\n", res.streamReady[0]);
+      printf("replayGain: %f\n", res.replayGain[0]);
+      printf("Peak: %f\n", res.peak[0]);
       printf("Cover: %s\n", res.cover[0]);
       printf("AlbumId: %zu\n", res.albumId[0]);
       printf("AlbumTitle: %s\n", res.albumTitle[0]);

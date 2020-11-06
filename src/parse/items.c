@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../include/openTIDAL.h"
 
-items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain/peak  */
+items_model parse_tracks(cJSON *input_json)
 {
   items_model Value;
   const cJSON *artistItem = NULL;
@@ -17,6 +17,11 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
   cJSON *version = cJSON_GetObjectItemCaseSensitive(input_json, "version");
   cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(input_json, "releaseDate");
+  cJSON *explicitItem = cJSON_GetObjectItem(input_json, "explicit");
+  cJSON *allowStreaming = cJSON_GetObjectItem(input_json, "allowStreaming");
+  cJSON *streamReady = cJSON_GetObjectItem(input_json, "streamReady");
+  cJSON *replayGain = cJSON_GetObjectItem(input_json, "replayGain");
+  cJSON *peak = cJSON_GetObjectItem(input_json, "peak");
   cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(input_json, "audioQuality");
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
   cJSON *album = cJSON_GetObjectItemCaseSensitive(input_json, "album");
@@ -32,6 +37,11 @@ items_model parse_tracks(cJSON *input_json) /* TODO: Add bool types & replayGain
   Value.popularity[0] = popularity->valueint;
   Value.trackNumber[0] = trackNumber->valueint;
   Value.volumeNumber[0] = volumeNumber->valueint;
+  Value.replayGain[0] = replayGain->valuedouble;
+  Value.peak[0] = peak->valuedouble;
+  Value.explicitItem[0] = cJSON_IsTrue(explicitItem);
+  Value.allowStreaming[0] = cJSON_IsTrue(allowStreaming);
+  Value.streamReady[0] = cJSON_IsTrue(streamReady);
   Value.hasReleaseDate[0] = 0;
   if (cJSON_IsString(releaseDate) && cJSON_IsNull(releaseDate) != 1)
   {
@@ -72,6 +82,9 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   cJSON *title = cJSON_GetObjectItemCaseSensitive(input_json, "title");
   cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
   cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
+  cJSON *explicitItem = cJSON_GetObjectItem(input_json, "explicit");
+  cJSON *allowStreaming = cJSON_GetObjectItem(input_json, "allowStreaming");
+  cJSON *streamReady = cJSON_GetObjectItem(input_json, "streamReady");
   cJSON *trackNumber = cJSON_GetObjectItem(input_json, "trackNumber");
   cJSON *volumeNumber = cJSON_GetObjectItem(input_json, "volumeNumber");
   cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(input_json, "releaseDate");
@@ -83,6 +96,9 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   Value.id[0] = id->valueint;
   strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
   Value.duration[0] = duration->valueint;
+  Value.explicitItem[0] = cJSON_IsTrue(explicitItem);
+  Value.allowStreaming[0] = cJSON_IsTrue(allowStreaming);
+  Value.streamReady[0] = cJSON_IsTrue(streamReady);
   Value.popularity[0] = popularity->valueint;
   Value.trackNumber[0] = trackNumber->valueint;
   Value.volumeNumber[0] = volumeNumber->valueint;
@@ -143,6 +159,11 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       cJSON *trackNumber = cJSON_GetObjectItem(version_json, "trackNumber");
       cJSON *volumeNumber = cJSON_GetObjectItem(version_json, "volumeNumber");
       cJSON *version = cJSON_GetObjectItemCaseSensitive(version_json, "version");
+      cJSON *explicitItem = cJSON_GetObjectItem(version_json, "explicit");
+      cJSON *allowStreaming = cJSON_GetObjectItem(version_json, "allowStreaming");
+      cJSON *streamReady = cJSON_GetObjectItem(version_json, "streamReady");
+      cJSON *replayGain = cJSON_GetObjectItem(version_json, "replayGain");
+      cJSON *peak = cJSON_GetObjectItem(version_json, "peak");
       cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(version_json, "audioQuality");
       cJSON *quality = cJSON_GetObjectItemCaseSensitive(version_json, "quality");
       cJSON *imageId = cJSON_GetObjectItemCaseSensitive(version_json, "imageId");
@@ -157,6 +178,9 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       Value.popularity[i] = popularity->valueint;
       Value.trackNumber[i] = trackNumber->valueint;
       Value.volumeNumber[i] = volumeNumber->valueint;
+      Value.explicitItem[i] = cJSON_IsTrue(explicitItem);
+      Value.allowStreaming[i] = cJSON_IsTrue(allowStreaming);
+      Value.streamReady[i] = cJSON_IsTrue(streamReady);
       Value.hasVersion[i] = 0;
       Value.hasReleaseDate[i] = 0;
       if (cJSON_IsString(version) && cJSON_IsNull(version) != 1)
@@ -175,6 +199,8 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
         cJSON *artistId = cJSON_GetObjectItemCaseSensitive(artistItem, "id");
 	cJSON *artistName = cJSON_GetObjectItemCaseSensitive(artistItem, "name");
 
+	Value.replayGain[i] = replayGain->valuedouble;
+	Value.peak[i] = peak->valuedouble;
         Value.artistId[i][artistCounter] = artistId->valueint;
         strncpy(Value.artistName[i][artistCounter], artistName->valuestring, sizeof(Value.artistName[i][artistCounter]));
         artistCounter = artistCounter + 1;
@@ -185,7 +211,6 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
 	  cJSON *albumId = cJSON_GetObjectItemCaseSensitive(album, "id");
           cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
           cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover");
-          
 	  Value.isVideo[i] = 0;
 	  Value.albumId[i] = albumId->valueint;
           strncpy(Value.quality[i], audioQuality->valuestring, sizeof(Value.quality[i]));

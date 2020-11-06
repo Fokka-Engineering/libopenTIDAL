@@ -37,9 +37,9 @@ login_code_model login_create_code()
   }
   else
   {
-    free(req.body);
     Value.status = -1;
     fprintf(stderr, "[Request Error] Device Authorization: CURLE_OK Check failed.\n");
+    free(req.body);
     return Value; 
   }
 }

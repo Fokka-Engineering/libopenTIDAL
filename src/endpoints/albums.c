@@ -115,7 +115,7 @@ items_model get_album_items(size_t albumid, size_t limit, size_t offset)
   {
     free(req.body);
     Value.status = -1;
-    fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.", albumid);
+    fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.\n", albumid);
     return Value;
   }
 }

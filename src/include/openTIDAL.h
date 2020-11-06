@@ -15,6 +15,7 @@ extern char *access_token;
 extern char *refresh_token;
 extern time_t expires_in;
 extern size_t userId;
+extern size_t demoEnabled;
 extern char *countryCode;
 extern char *audioQuality;
 extern char *videoQuality;
