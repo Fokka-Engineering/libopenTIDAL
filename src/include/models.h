@@ -69,6 +69,7 @@ typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
   size_t duration[100];
   char lastUpdated[100][29];
   char created[100][29];
+  size_t publicPlaylist[100];
   char image[100][37];
   char squareImage[100][37];
   char type[100][20];

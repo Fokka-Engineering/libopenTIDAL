@@ -52,6 +52,8 @@ playlist_model parse_playlist(cJSON *input_json)
         cJSON *duration = cJSON_GetObjectItem(playlist_version, "duration");
         cJSON *description = cJSON_GetObjectItemCaseSensitive(playlist_version, "description");
         cJSON *popularity = cJSON_GetObjectItem(playlist_version, "popularity");
+        cJSON *type = cJSON_GetObjectItemCaseSensitive(playlist_version, "type");
+        cJSON *publicPlaylist = cJSON_GetObjectItem(playlist_version, "publicPlaylist");
 
         Value.status = 1;
 	strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
@@ -60,7 +62,9 @@ playlist_model parse_playlist(cJSON *input_json)
         strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
         strncpy(Value.image[i], image->valuestring, sizeof(Value.image[i]));
         strncpy(Value.squareImage[i], squareImage->valuestring, sizeof(Value.squareImage[i]));
-        Value.numberOfTracks[i] = numberOfTracks->valueint;
+        strncpy(Value.type[i], type->valuestring, sizeof(Value.type[i]));
+	Value.publicPlaylist[i] = cJSON_IsTrue(publicPlaylist);
+	Value.numberOfTracks[i] = numberOfTracks->valueint;
         Value.numberOfVideos[i] = numberOfVideos->valueint;
         Value.duration[i] = duration->valueint;
 	Value.popularity[i] = popularity->valueint;
@@ -85,6 +89,8 @@ playlist_model parse_playlist(cJSON *input_json)
       cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
       cJSON *description = cJSON_GetObjectItemCaseSensitive(input_json, "description");
       cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
+      cJSON *type = cJSON_GetObjectItemCaseSensitive(input_json, "type");
+      cJSON *publicPlaylist = cJSON_GetObjectItem(input_json, "publicPlaylist");
 
       Value.status = 1;
       strncpy(Value.uuid[0], uuid->valuestring, sizeof(Value.uuid[0]));
@@ -93,6 +99,8 @@ playlist_model parse_playlist(cJSON *input_json)
       strncpy(Value.created[0], created->valuestring, sizeof(Value.created[0]));
       strncpy(Value.image[0], image->valuestring, sizeof(Value.image[0]));
       strncpy(Value.squareImage[0], squareImage->valuestring, sizeof(Value.squareImage[0]));
+      strncpy(Value.type[0], type->valuestring, sizeof(Value.type[0]));
+      Value.publicPlaylist[0] = cJSON_IsTrue(publicPlaylist);
       Value.numberOfTracks[0] = numberOfTracks->valueint;
       Value.numberOfVideos[0] = numberOfVideos->valueint;
       Value.duration[0] = duration->valueint;
