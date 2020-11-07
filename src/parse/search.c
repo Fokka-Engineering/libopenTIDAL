@@ -110,6 +110,9 @@ search_model parse_search(cJSON *input_json)
       cJSON *numberOfVideos = cJSON_GetObjectItem(albumsItem, "numberOfVideos");
       cJSON *numberOfVolumes = cJSON_GetObjectItem(albumsItem, "numberOfVolumes");
       cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(albumsItem, "releaseDate");
+      cJSON *explicitItem = cJSON_GetObjectItem(albumsItem, "explicit");
+      cJSON *allowStreaming = cJSON_GetObjectItem(albumsItem, "allowStreaming");
+      cJSON *streamReady = cJSON_GetObjectItem(albumsItem, "streamReady");
       cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(albumsItem, "audioQuality");
       cJSON *copyright = cJSON_GetObjectItemCaseSensitive(albumsItem, "copyright");
       cJSON *cover = cJSON_GetObjectItemCaseSensitive(albumsItem, "cover");
@@ -122,6 +125,9 @@ search_model parse_search(cJSON *input_json)
       Value.albums.numberOfTracks[al] = numberOfTracks->valueint;
       Value.albums.numberOfVideos[al] = numberOfVideos->valueint;
       Value.albums.numberOfVolumes[al] = numberOfVolumes->valueint;
+      Value.albums.explicitItem[al] = cJSON_IsTrue(explicitItem);
+      Value.albums.allowStreaming[al] = cJSON_IsTrue(allowStreaming);
+      Value.albums.streamReady[al] = cJSON_IsTrue(streamReady);
       strncpy(Value.albums.releaseDate[al], releaseDate->valuestring, sizeof(Value.albums.releaseDate[al]));
       strncpy(Value.albums.quality[al], audioQuality->valuestring, sizeof(Value.albums.quality[al]));
       strncpy(Value.albums.copyright[al], copyright->valuestring, sizeof(Value.albums.copyright[al]));
@@ -154,6 +160,8 @@ search_model parse_search(cJSON *input_json)
       cJSON *numberOfTracks = cJSON_GetObjectItem(playlistsItem, "numberOfTracks");
       cJSON *numberOfVideos = cJSON_GetObjectItem(playlistsItem, "numberOfVideos");
       cJSON *popularity = cJSON_GetObjectItem(playlistsItem, "popularity");
+      cJSON *publicPlaylist = cJSON_GetObjectItem(playlistsItem, "publicPlaylist");
+      cJSON *type = cJSON_GetObjectItemCaseSensitive(playlistsItem, "type");
       cJSON *created = cJSON_GetObjectItemCaseSensitive(playlistsItem, "created");
       cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(playlistsItem, "lastUpdated");
 
@@ -167,6 +175,8 @@ search_model parse_search(cJSON *input_json)
       }
       strncpy(Value.playlists.image[pl], image->valuestring, sizeof(Value.playlists.image[pl]));
       Value.playlists.duration[pl] = duration->valueint;
+      Value.playlists.publicPlaylist[pl] = cJSON_IsTrue(publicPlaylist);
+      strncpy(Value.playlists.type[pl], type->valuestring, sizeof(Value.playlists.type[pl]));
       strncpy(Value.playlists.squareImage[pl], squareImage->valuestring, sizeof(Value.playlists.squareImage[pl]));
       strncpy(Value.playlists.created[pl], created->valuestring, sizeof(Value.playlists.created[pl]));
       strncpy(Value.playlists.lastUpdated[pl], lastUpdated->valuestring, sizeof(Value.playlists.lastUpdated[pl]));
@@ -189,6 +199,11 @@ search_model parse_search(cJSON *input_json)
       cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(album, "releaseDate");
       cJSON *popularity = cJSON_GetObjectItemCaseSensitive(tracksItem, "popularity");
       cJSON *version = cJSON_GetObjectItemCaseSensitive(tracksItem, "version");
+      cJSON *explicitItem = cJSON_GetObjectItem(tracksItem, "explicit");
+      cJSON *allowStreaming = cJSON_GetObjectItem(tracksItem, "allowStreaming");
+      cJSON *streamReady = cJSON_GetObjectItem(tracksItem, "streamReady");
+      cJSON *replayGain = cJSON_GetObjectItem(tracksItem, "replayGain");
+      cJSON *peak = cJSON_GetObjectItem(tracksItem, "peak");
       cJSON *albumId = cJSON_GetObjectItem(album, "id");
       cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
       cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover");
@@ -204,6 +219,11 @@ search_model parse_search(cJSON *input_json)
         Value.tracks.hasVersion[tr] = 1;
 	strncpy(Value.tracks.version[tr], version->valuestring, sizeof(Value.tracks.version[tr]));
       }
+      Value.tracks.explicitItem[tr] = cJSON_IsTrue(explicitItem);
+      Value.tracks.allowStreaming[tr] = cJSON_IsTrue(allowStreaming);
+      Value.tracks.streamReady[tr] = cJSON_IsTrue(streamReady);
+      Value.tracks.replayGain[tr] = replayGain->valuedouble;
+      Value.tracks.peak[tr] = peak->valuedouble;
       Value.tracks.albumId[tr] = albumId->valueint;
       strncpy(Value.tracks.albumTitle[tr], albumTitle->valuestring, sizeof(Value.tracks.albumTitle[tr]));
       strncpy(Value.tracks.cover[tr], albumCover->valuestring, sizeof(Value.tracks.cover[tr]));
@@ -233,6 +253,9 @@ search_model parse_search(cJSON *input_json)
       cJSON *duration = cJSON_GetObjectItem(videosItem, "duration");
       cJSON *imageId = cJSON_GetObjectItemCaseSensitive(videosItem, "imageId");
       cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(videosItem, "releaseDate");
+      cJSON *explicitItem = cJSON_GetObjectItem(videosItem, "explicit");
+      cJSON *allowStreaming = cJSON_GetObjectItem(videosItem, "allowStreaming");
+      cJSON *streamReady = cJSON_GetObjectItem(videosItem, "streamReady");
       cJSON *popularity = cJSON_GetObjectItemCaseSensitive(videosItem, "popularity");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(videosItem, "artists");
 
@@ -242,7 +265,9 @@ search_model parse_search(cJSON *input_json)
       Value.videos.popularity[vi] = popularity->valueint;
       strncpy(Value.videos.cover[vi], imageId->valuestring, sizeof(Value.videos.cover[vi]));
       strncpy(Value.videos.releaseDate[vi], releaseDate->valuestring, sizeof(Value.videos.releaseDate[vi]));
-      
+      Value.videos.explicitItem[vi] = cJSON_IsTrue(explicitItem);
+      Value.videos.allowStreaming[vi] = cJSON_IsTrue(allowStreaming);
+      Value.videos.streamReady[vi] = cJSON_IsTrue(streamReady);
       Value.videos.subArraySize[vi] = cJSON_GetArraySize(artist);
       cJSON_ArrayForEach(subItem, artist)
       {
@@ -296,6 +321,11 @@ search_model parse_search(cJSON *input_json)
     cJSON *topAlbumCopyright = cJSON_GetObjectItemCaseSensitive(topHitValue, "copyright");
     cJSON *topAlbumCover = cJSON_GetObjectItemCaseSensitive(topHitValue, "cover");
     cJSON *topAlbumPopularity = cJSON_GetObjectItem(topHitValue, "popularity");
+    cJSON *topAlbumExplicitItem = cJSON_GetObjectItem(topHitValue, "explicit");
+    cJSON *topAlbumAllowStreaming = cJSON_GetObjectItem(topHitValue, "allowStreaming");
+    cJSON *topAlbumStreamReady = cJSON_GetObjectItem(topHitValue, "streamReady");
+    cJSON *topAlbumAudioQuality = cJSON_GetObjectItem(topHitValue, "audioQuality");
+    cJSON *topAlbumVersion = cJSON_GetObjectItemCaseSensitive(topHitValue, "version");
     cJSON *topAlbumReleaseDate = cJSON_GetObjectItem(topHitValue, "releaseDate");
     cJSON *topAlbumArtist = cJSON_GetObjectItem(topHitValue, "artists");
 
@@ -306,11 +336,21 @@ search_model parse_search(cJSON *input_json)
     Value.topAlbum.numberOfTracks[0] = topAlbumNumberOfTracks->valueint;
     Value.topAlbum.numberOfVideos[0] = topAlbumNumberOfVideos->valueint;
     Value.topAlbum.numberOfVolumes[0] = topAlbumNumberOfVolumes->valueint;
+    Value.topAlbum.explicitItem[0] = cJSON_IsTrue(topAlbumExplicitItem);
+    Value.topAlbum.allowStreaming[0] = cJSON_IsTrue(topAlbumAllowStreaming);
+    Value.topAlbum.streamReady[0] = cJSON_IsTrue(topAlbumStreamReady);
+    Value.topAlbum.hasVersion[0] = 0;
+    strncpy(Value.topAlbum.quality[0], topAlbumAudioQuality->valuestring, sizeof(Value.topAlbum.quality[0]));
     strncpy(Value.topAlbum.releaseDate[0], topAlbumReleaseDate->valuestring, sizeof(Value.topAlbum.releaseDate[0]));
     strncpy(Value.topAlbum.copyright[0], topAlbumCopyright->valuestring, sizeof(Value.topAlbum.copyright[0]));
     strncpy(Value.topAlbum.cover[0], topAlbumCover->valuestring, sizeof(Value.topAlbum.cover[0]));
     strncpy(Value.topAlbum.releaseDate[0], topAlbumReleaseDate->valuestring, sizeof(Value.topAlbum.releaseDate[0]));
     Value.topAlbum.popularity[0] = topAlbumPopularity->valueint;
+    if (cJSON_IsObject(topAlbumVersion) && cJSON_IsNull(topAlbumVersion) != 1)
+    {
+      Value.topAlbum.hasVersion[0] = 1;
+      strncpy(Value.topAlbum.version[0], topAlbumVersion->valuestring, sizeof(Value.topAlbum.version[0]));
+    } 
 
     Value.topAlbum.subArraySize[0] = cJSON_GetArraySize(topAlbumArtist);
     cJSON_ArrayForEach(topAlbumSubItem, topAlbumArtist)
