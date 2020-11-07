@@ -8,7 +8,7 @@ items_model parse_tracks(cJSON *input_json)
   items_model Value;
   const cJSON *artistItem = NULL;
   int artistCounter = 0;
-  
+
   cJSON *id = cJSON_GetObjectItem(input_json, "id");
   cJSON *title = cJSON_GetObjectItemCaseSensitive(input_json, "title");
   cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
@@ -26,7 +26,7 @@ items_model parse_tracks(cJSON *input_json)
   cJSON *artist = cJSON_GetObjectItemCaseSensitive(input_json, "artists");
   cJSON *album = cJSON_GetObjectItemCaseSensitive(input_json, "album");
   cJSON *albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
-  cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover"); 
+  cJSON *albumCover = cJSON_GetObjectItemCaseSensitive(album, "cover");
 
   Value.status = 1;
   Value.hasVersion[0] = 0;
@@ -53,7 +53,7 @@ items_model parse_tracks(cJSON *input_json)
     Value.hasVersion[0] = 1;
     strncpy(Value.version[0], version->valuestring, sizeof(Value.version[0]));
   }
-  
+
   Value.subArraySize[0] = cJSON_GetArraySize(artist);
   cJSON_ArrayForEach(artistItem, artist)
   {
@@ -64,7 +64,7 @@ items_model parse_tracks(cJSON *input_json)
     strncpy(Value.artistName[0][artistCounter], artistName->valuestring, sizeof(Value.artistName[0][artistCounter]));
     artistCounter = artistCounter + 1;
   }
-  
+
   Value.albumId[0] = cJSON_GetObjectItem(album, "id")->valueint;
   strncpy(Value.albumTitle[0], albumTitle->valuestring, sizeof(Value.albumTitle[0]));
   strncpy(Value.cover[0], albumCover->valuestring, sizeof(Value.cover[0]));
@@ -77,7 +77,7 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
   items_model Value;
   const cJSON *artistItem = NULL;
   int artistCounter = 0;
-  
+
   cJSON *id = cJSON_GetObjectItem(input_json, "id");
   cJSON *title = cJSON_GetObjectItemCaseSensitive(input_json, "title");
   cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
@@ -120,7 +120,7 @@ items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain
     strncpy(Value.artistName[0][artistCounter], artistName->valuestring, sizeof(Value.artistName[0][artistCounter]));
     artistCounter = artistCounter + 1;
   }
-  
+
   return Value;
 }
 
@@ -169,7 +169,7 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
       cJSON *imageId = cJSON_GetObjectItemCaseSensitive(version_json, "imageId");
       cJSON *releaseDate = cJSON_GetObjectItemCaseSensitive(version_json, "releaseDate");
       cJSON *artist = cJSON_GetObjectItemCaseSensitive(version_json, "artists");
-      cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album"); 
+      cJSON *album = cJSON_GetObjectItemCaseSensitive(version_json, "album");
 
       Value.status = 1;
       Value.id[i] = id->valueint;
@@ -205,7 +205,7 @@ items_model parse_items(cJSON *input_json) /* TODO: Add bool types */
         strncpy(Value.artistName[i][artistCounter], artistName->valuestring, sizeof(Value.artistName[i][artistCounter]));
         artistCounter = artistCounter + 1;
       }
-      
+
       if (cJSON_IsObject(album) && cJSON_IsNull(album) != 1) /* Videos don't have an album section */
         {
 	  cJSON *albumId = cJSON_GetObjectItemCaseSensitive(album, "id");
