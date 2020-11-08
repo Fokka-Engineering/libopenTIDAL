@@ -1,5 +1,6 @@
 #include "cJSON.h"
 #include "models.h"
+#include "json_models.h"
 
 #ifndef openTIDAL__h
 #define openTIDAL__h

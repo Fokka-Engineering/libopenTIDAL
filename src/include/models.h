@@ -3,7 +3,7 @@
 
 typedef struct curl_models
 {
-  int status;
+  int status; /* custom status codes for error handling  */
   size_t responseCode;
   char *body;
   char *header;

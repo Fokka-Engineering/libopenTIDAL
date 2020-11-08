@@ -72,7 +72,7 @@ items_model parse_tracks(cJSON *input_json)
   return Value;
 }
 
-items_model parse_videos(cJSON *input_json) /* TODO: Add bool types & replayGain/peak  */
+items_model parse_videos(cJSON *input_json)
 {
   items_model Value;
   const cJSON *artistItem = NULL;
