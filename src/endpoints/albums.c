@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 album_model get_album(size_t albumid)
@@ -17,35 +18,17 @@ album_model get_album(size_t albumid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      album_model parse = parse_album(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, albumid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, albumid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, albumid, NULL);
+      json_album_model processed_json = json_parse_album(input_json);
+      Value = parse_album_values(processed_json, 0);
+      Value.status = 1;
+      
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, albumid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -77,35 +60,39 @@ items_model get_album_items(size_t albumid, size_t limit, size_t offset)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      Value.totalNumberOfItems = totalNumberOfItems->valueint;
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_items_model processed_json = json_parse_items(innerItem);
+          Value = parse_items_values(processed_json, i);
+	  i += 1;
+        }
+      }
+
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+
       cJSON_Delete(input_json);
       free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, albumid, NULL);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, albumid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, albumid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, albumid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;

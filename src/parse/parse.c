@@ -1,21 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/openTIDAL.h"
+#include "../include/parse.h"
 
-cJSON *json_parse(char * input)
+void parse_string(cJSON *object, char *string, size_t length)
 {
-  cJSON *input_json = cJSON_Parse(input);
-  int status = 0;
-  if (input_json == NULL)
+  if (cJSON_IsString(object)&& (!cJSON_IsNull(object)))
   {
-      const char *error_ptr = cJSON_GetErrorPtr();
-      if (error_ptr != NULL)
-      {
-          /*JSON Input empty*/
-          fprintf(stderr, "[Request] JSON Input empty\n");
-      }
-      status = 0;
+    strncpy(string, object->valuestring, length);
   }
-  return input_json;
+  else
+  {
+    strcpy(string, "\0");
+  }
+}
+
+void parse_number(cJSON *object, size_t *number)
+{
+  if (cJSON_IsNumber(object) && (!cJSON_IsNull(object)))
+  {
+    *number = object->valueint;
+  }
+  else
+  {
+    *number = 0;
+  }
+}
+
+void parse_double(cJSON *object, double *number)
+{
+  if (cJSON_IsNumber(object) && (!cJSON_IsNull(object)))
+  {
+    *number = object->valuedouble;
+  }
+  else
+  {
+    *number = 0;
+  }
+}
+
+void parse_bool(cJSON *object, size_t *number)
+{
+  *number = cJSON_IsTrue(object);
 }

@@ -4,7 +4,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
+
+/* TODO: Improve Error Handling with HTTP Codes */
 
 login_code_model login_create_code()
 {
@@ -18,18 +21,12 @@ login_code_model login_create_code()
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    Value.status = 0;
-    /* Copy JSON Response */
-    cJSON *deviceCode = cJSON_GetObjectItemCaseSensitive(input_json, "deviceCode");
-    cJSON *userCode = cJSON_GetObjectItemCaseSensitive(input_json, "userCode");
     
-    if (cJSON_IsString(deviceCode))
-    {
-      Value.status = 1;
-      Value.expires_in = time(NULL) + 300;
-      strncpy(Value.deviceCode, deviceCode->valuestring, sizeof(Value.deviceCode));
-      strncpy(Value.userCode, userCode->valuestring, sizeof(Value.userCode));
-    }
+    json_login_code_model processed_json = json_parse_login_code(input_json);
+    Value = parse_login_code_values(processed_json);
+    Value.status = 1;
+    Value.expires_in = time(NULL) + Value.timeFrame;
+
     /* Cleanup */
     cJSON_Delete(input_json);
     free(req.body);

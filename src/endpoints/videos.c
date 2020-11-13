@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/base64.h"
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 contributor_model get_video_contributors(size_t videoid, size_t limit, size_t offset)
@@ -51,23 +52,9 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
       cJSON_Delete(input_json);
       return Value;
     }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, videoid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, videoid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, videoid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -77,7 +64,7 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Video %zu: CURLE_OK Check failed.", videoid);
+    fprintf(stderr, "[Request Error] Video %zu: CURLE_OK Check failed.\n", videoid);
     return Value;
   }
 }
@@ -102,23 +89,9 @@ items_model get_video(size_t videoid)
       free(req.body);
       return parse;
     }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, videoid);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, videoid, NULL);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, videoid, NULL);
       cJSON_Delete(input_json);
       free(req.body);
       return Value;
@@ -128,7 +101,7 @@ items_model get_video(size_t videoid)
   {
     Value.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.", videoid);
+    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", videoid);
     return Value;
   }
 }
@@ -178,30 +151,9 @@ stream_model get_video_stream(size_t videoid)
       }
       return Value;
     }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, videoid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, videoid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, videoid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, videoid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;

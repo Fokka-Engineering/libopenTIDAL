@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
-
-/* TODO: Provide direct image url with pages/mix endpoint or find an alternative 
- * (pages endpoints are bloated, slow and hard to parse)
- * Requesting User Mixes (Ids and Images) works with get_user_mixes*/
 
 items_model get_mix_items(char *mixid)
 {
@@ -22,35 +19,38 @@ items_model get_mix_items(char *mixid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, 0, mixid);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, 0, mixid);
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        Value.arraySize = cJSON_GetArraySize(items);
+	cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+          json_items_model processed_json = json_parse_items(innerItem);
+	  Value = parse_items_values(processed_json, i);
+	  i += 1;
+	}
+      }
+      
+      parse_number(limit, &Value.limit); 
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.status = 1;
+      Value.arraySize = cJSON_GetArraySize(items);
+
       cJSON_Delete(input_json);
       free(req.body);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, 0, mixid);
       cJSON_Delete(input_json);
       free(req.body);
       return Value;

@@ -1,122 +1,236 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/openTIDAL.h"
+#include "../include/parse.h"
 
-playlist_model parse_playlist(cJSON *input_json)
+/* TODO: Add Credit Parser */
+
+login_code_model parse_login_code_values(json_login_code_model json)
 {
-  cJSON *item = NULL;
-  int i = 0;
+  login_code_model Value;
+
+  parse_string(json.deviceCode, Value.deviceCode, sizeof(Value.deviceCode));
+  parse_string(json.userCode, Value.userCode, sizeof(Value.userCode));
+  parse_string(json.verificationUri, Value.verificationUri, sizeof(Value.verificationUri));
+  parse_string(json.verificationUriComplete, Value.verificationUriComplete, sizeof(Value.verificationUriComplete));
+  parse_number(json.expiresIn, &Value.timeFrame);
+  parse_number(json.interval, &Value.interval);
+
+  return Value;
+}
+
+login_token_model parse_login_token_values(json_login_token_model json)
+{
+  login_token_model Value;
+
+  parse_string(json.access_token, Value.access_token, sizeof(Value.access_token));
+  parse_string(json.refresh_token, Value.refresh_token, sizeof(Value.refresh_token));
+  parse_string(json.token_type, Value.token_type, sizeof(Value.token_type));
+  parse_number(json.expires_in, &Value.timeFrame);
+  parse_number(json.userId, &Value.userId);
+  parse_string(json.email, Value.email, sizeof(Value.email));
+  parse_string(json.countryCode, Value.countryCode, sizeof(Value.countryCode));
+  parse_string(json.fullName, Value.fullName, sizeof(Value.fullName));
+  parse_string(json.firstName, Value.firstName, sizeof(Value.firstName));
+  parse_string(json.lastName, Value.lastName, sizeof(Value.lastName));
+  parse_string(json.nickname, Value.nickname, sizeof(Value.nickname));
+  parse_string(json.username, Value.username, sizeof(Value.username));
+  parse_string(json.imageId, Value.imageId, sizeof(Value.imageId));
+  parse_number(json.created, &Value.created);
+  parse_number(json.updated, &Value.updated);
+  parse_number(json.facebookUid, &Value.facebookUid);
+  parse_string(json.appleUid, Value.appleUid, sizeof(Value.appleUid));
+
+  return Value;
+}
+
+playlist_model parse_playlist_values(json_playlist_model json, size_t i)
+{
   playlist_model Value;
+  
+  parse_string(json.uuid, Value.uuid[i], sizeof(Value.uuid[i]));
+  parse_string(json.title, Value.title[i], sizeof(Value.title[i]));
+  parse_string(json.description, Value.description[i], sizeof(Value.description[i]));
+  parse_number(json.popularity, &Value.popularity[i]);
+  parse_number(json.duration, &Value.duration[i]);
+  parse_string(json.created, Value.created[i], sizeof(Value.created[i]));
+  parse_string(json.lastUpdated, Value.lastUpdated[i], sizeof(Value.lastUpdated[i]));
+  parse_number(json.numberOfTracks, &Value.numberOfTracks[i]);
+  parse_number(json.numberOfVideos, &Value.numberOfVideos[i]);
+  parse_bool(json.publicPlaylist, &Value.publicPlaylist[i]);
+  parse_string(json.image, Value.image[i], sizeof(Value.image[i]));
+  parse_string(json.squareImage, Value.squareImage[i], sizeof(Value.squareImage[i]));
+  parse_string(json.type, Value.type[i], sizeof(Value.type[i]));
 
-  cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-  cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-  cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-  cJSON *items = cJSON_GetObjectItemCaseSensitive(input_json, "items");
-  if (cJSON_IsObject(totalNumberOfItems))
-  {
-    Value.totalNumberOfItems = totalNumberOfItems->valueint;
-  }
-  else
-  {
-    Value.totalNumberOfItems = 1;
-  }
+  return Value;
+}
 
-  if (Value.totalNumberOfItems != 0)
-  {
-    if (cJSON_IsArray(items))
+items_model parse_items_values(json_items_model json, size_t i)
+{
+  items_model Value;
+  size_t ac = 0;
+
+  parse_number(json.id, &Value.id[i]);
+  parse_string(json.title, Value.title[i], sizeof(Value.title[i]));
+  parse_number(json.duration, &Value.duration[i]);
+  parse_number(json.popularity, &Value.popularity[i]);
+  parse_number(json.trackNumber, &Value.trackNumber[i]);
+  parse_number(json.volumeNumber, &Value.volumeNumber[i]);
+  parse_string(json.version, Value.version[i], sizeof(Value.version[i]));
+  parse_string(json.releaseDate, Value.releaseDate[i], sizeof(Value.releaseDate[i]));
+  parse_string(json.cover, Value.cover[i], sizeof(Value.cover[i]));
+  parse_string(json.videoCover, Value.videoCover[i], sizeof(Value.videoCover[i]));
+  parse_string(json.imageId, Value.imageId[i], sizeof(Value.imageId[i]));
+  parse_string(json.audioQuality, Value.audioQuality[i], sizeof(Value.audioQuality[i]));
+  parse_string(json.quality, Value.quality[i], sizeof(Value.quality[i]));
+  parse_bool(json.explicitItem, &Value.explicitItem[i]);
+  parse_bool(json.allowStreaming, &Value.allowStreaming[i]);
+  parse_bool(json.streamReady, &Value.streamReady[i]);
+  parse_double(json.replayGain, &Value.replayGain[i]);
+  parse_double(json.peak, &Value.peak[i]);
+  parse_number(json.albumId, &Value.albumId[i]);
+  parse_string(json.albumTitle, Value.albumTitle[i], sizeof(Value.albumTitle[i]));
+  parse_string(json.type, Value.type[i], sizeof(Value.type[i]));
+
+  if (cJSON_IsArray(json.artists))
+  { 
+    Value.subArraySize[i] = cJSON_GetArraySize(json.artists);
+    for (ac = 0; ac < Value.subArraySize[i]; ++ac)
     {
-      Value.limit = limit->valueint;
-      Value.offset = offset->valueint;
-      Value.arraySize = cJSON_GetArraySize(items);
-      cJSON_ArrayForEach(item, items)
-      {
-	cJSON *playlist = cJSON_GetObjectItem(item, "playlist");
-	cJSON *playlist_version;
-	if (cJSON_IsObject(playlist))
-        {
-          playlist_version = playlist;
-        }
-	else
-        {
-          playlist_version = item;
-	}
-        cJSON *uuid = cJSON_GetObjectItemCaseSensitive(playlist_version, "uuid");
-        cJSON *title = cJSON_GetObjectItemCaseSensitive(playlist_version, "title");
-        cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(playlist_version, "lastUpdated");
-        cJSON *created = cJSON_GetObjectItemCaseSensitive(playlist_version, "created");
-        cJSON *image = cJSON_GetObjectItemCaseSensitive(playlist_version, "image");
-        cJSON *squareImage = cJSON_GetObjectItem(playlist_version, "squareImage");
-        cJSON *numberOfTracks = cJSON_GetObjectItem(playlist_version, "numberOfTracks");
-        cJSON *numberOfVideos = cJSON_GetObjectItem(playlist_version, "numberOfVideos");
-        cJSON *duration = cJSON_GetObjectItem(playlist_version, "duration");
-        cJSON *description = cJSON_GetObjectItemCaseSensitive(playlist_version, "description");
-        cJSON *popularity = cJSON_GetObjectItem(playlist_version, "popularity");
-        cJSON *type = cJSON_GetObjectItemCaseSensitive(playlist_version, "type");
-        cJSON *publicPlaylist = cJSON_GetObjectItem(playlist_version, "publicPlaylist");
-
-        Value.status = 1;
-	strncpy(Value.uuid[i], uuid->valuestring, sizeof(Value.uuid[i]));
-        strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
-        strncpy(Value.lastUpdated[i], lastUpdated->valuestring, sizeof(Value.lastUpdated[i]));
-        strncpy(Value.created[i], created->valuestring, sizeof(Value.created[i]));
-        strncpy(Value.image[i], image->valuestring, sizeof(Value.image[i]));
-        strncpy(Value.squareImage[i], squareImage->valuestring, sizeof(Value.squareImage[i]));
-        strncpy(Value.type[i], type->valuestring, sizeof(Value.type[i]));
-	Value.publicPlaylist[i] = cJSON_IsTrue(publicPlaylist);
-	Value.numberOfTracks[i] = numberOfTracks->valueint;
-        Value.numberOfVideos[i] = numberOfVideos->valueint;
-        Value.duration[i] = duration->valueint;
-	Value.popularity[i] = popularity->valueint;
-
-        if (cJSON_IsNull(description) != 1)
-        {
-          strncpy(Value.description[i], description->valuestring, sizeof(Value.description[i]));
-        }
-        i = i + 1;
-      }
-    }
-    else
-    {
-      cJSON *uuid = cJSON_GetObjectItemCaseSensitive(input_json, "uuid");
-      cJSON *title = cJSON_GetObjectItemCaseSensitive(input_json, "title");
-      cJSON *lastUpdated = cJSON_GetObjectItemCaseSensitive(input_json, "lastUpdated");
-      cJSON *created = cJSON_GetObjectItemCaseSensitive(input_json, "created");
-      cJSON *image = cJSON_GetObjectItemCaseSensitive(input_json, "image");
-      cJSON *squareImage = cJSON_GetObjectItemCaseSensitive(input_json, "squareImage");
-      cJSON *numberOfTracks = cJSON_GetObjectItem(input_json, "numberOfTracks");
-      cJSON *numberOfVideos = cJSON_GetObjectItem(input_json, "numberOfVideos");
-      cJSON *duration = cJSON_GetObjectItem(input_json, "duration");
-      cJSON *description = cJSON_GetObjectItemCaseSensitive(input_json, "description");
-      cJSON *popularity = cJSON_GetObjectItem(input_json, "popularity");
-      cJSON *type = cJSON_GetObjectItemCaseSensitive(input_json, "type");
-      cJSON *publicPlaylist = cJSON_GetObjectItem(input_json, "publicPlaylist");
-
-      Value.status = 1;
-      strncpy(Value.uuid[0], uuid->valuestring, sizeof(Value.uuid[0]));
-      strncpy(Value.title[0], title->valuestring, sizeof(Value.title[0]));
-      strncpy(Value.lastUpdated[0], lastUpdated->valuestring, sizeof(Value.lastUpdated[0]));
-      strncpy(Value.created[0], created->valuestring, sizeof(Value.created[0]));
-      strncpy(Value.image[0], image->valuestring, sizeof(Value.image[0]));
-      strncpy(Value.squareImage[0], squareImage->valuestring, sizeof(Value.squareImage[0]));
-      strncpy(Value.type[0], type->valuestring, sizeof(Value.type[0]));
-      Value.publicPlaylist[0] = cJSON_IsTrue(publicPlaylist);
-      Value.numberOfTracks[0] = numberOfTracks->valueint;
-      Value.numberOfVideos[0] = numberOfVideos->valueint;
-      Value.duration[0] = duration->valueint;
-      Value.popularity[0] = popularity->valueint;
-      Value.hasDescription[0] = 0;
-
-      if (cJSON_IsNull(description) != 1)
-      {
-        Value.hasDescription[0] = 1;
-        strncpy(Value.description[0], description->valuestring, sizeof(Value.description[0]));
-      }
+      parse_number(json.artistId[ac], &Value.artistId[i][ac]);
+      parse_string(json.artistName[ac], Value.artistName[i][ac], sizeof(Value.artistName[i][ac]));
     }
   }
   else
   {
-    printf("%s\n", "No Items in Response");
+    Value.subArraySize[i] = 0;
   }
+
+  return Value;
+}
+
+album_model parse_album_values(json_album_model json, size_t i)
+{
+  album_model Value;
+  size_t ac = 0;
+
+  parse_number(json.id, &Value.id[i]);
+  parse_string(json.title, Value.title[i], sizeof(Value.title[i]));
+  parse_number(json.duration, &Value.duration[i]);
+  parse_number(json.popularity, &Value.popularity[i]);
+  parse_string(json.copyright, Value.copyright[i], sizeof(Value.copyright[i]));
+  parse_string(json.quality, Value.quality[i], sizeof(Value.quality[i]));
+  parse_string(json.cover, Value.cover[i], sizeof(Value.cover[i]));
+  parse_string(json.videoCover, Value.videoCover[i], sizeof(Value.videoCover[i]));
+  parse_string(json.releaseDate, Value.releaseDate[i], sizeof(Value.releaseDate[i]));
+  parse_string(json.version, Value.version[i], sizeof(Value.version[i]));
+  parse_bool(json.explicitItem, &Value.explicitItem[i]);
+  parse_bool(json.allowStreaming, &Value.allowStreaming[i]);
+  parse_bool(json.streamReady, &Value.streamReady[i]);
+  parse_number(json.numberOfTracks, &Value.numberOfTracks[i]);
+  parse_number(json.numberOfVideos, &Value.numberOfVideos[i]);
+  parse_number(json.numberOfVolumes, &Value.numberOfVolumes[i]);
+
+  if (cJSON_IsArray(json.artists))
+  { 
+    Value.subArraySize[i] = cJSON_GetArraySize(json.artists);
+    for (ac = 0; ac < Value.subArraySize[i]; ++ac)
+    {
+      parse_number(json.artistId[ac], &Value.artistId[i][ac]);
+      parse_string(json.artistName[ac], Value.artistName[i][ac], sizeof(Value.artistName[i][ac]));
+    }
+  }
+  else
+  {
+    Value.subArraySize[i] = 0;
+  }
+
+  return Value;
+}
+
+artist_model parse_artist_values(json_artist_model json, size_t i)
+{
+  artist_model Value;
+  
+  parse_number(json.id, &Value.id[i]);
+  parse_string(json.name, Value.name[i], sizeof(Value.name[i]));
+  parse_string(json.picture, Value.picture[i], sizeof(Value.picture[i]));
+  parse_number(json.popularity, &Value.popularity[i]);
+
+  return Value;
+}
+
+artist_link_model parse_link_values(json_links_model json, size_t i)
+{
+  artist_link_model Value;
+
+  parse_string(json.url, Value.url[i], sizeof(Value.url[i]));
+  parse_string(json.siteName, Value.siteName[i], sizeof(Value.siteName[i]));
+
+  return Value;
+}
+
+contributor_model parse_contributor_values(json_contributor_model json, size_t i)
+{
+  contributor_model Value;
+
+  parse_string(json.name, Value.name[i], sizeof(Value.name[i]));
+  parse_string(json.role, Value.role[i], sizeof(Value.role[i]));
+
+  return Value;
+}
+
+mix_model parse_mix_values(json_mix_model json)
+{
+  mix_model Value;
+
+  parse_string(json.id, Value.id, sizeof(Value.id));
+
+  return Value;
+}
+
+page_mix_model parse_page_mix_values(json_page_mix_model json, size_t i)
+{
+  page_mix_model Value;
+
+  parse_string(json.id, Value.id[i], sizeof(Value.id[i]));
+  parse_string(json.title, Value.title[i], sizeof(Value.title[i]));
+  parse_string(json.subTitle, Value.subTitle[i], sizeof(Value.subTitle[i]));
+  parse_number(json.smallImageWidth, &Value.smallImageWidth[i]);
+  parse_number(json.smallImageHeight, &Value.smallImageHeight[i]);
+  parse_string(json.smallImageUrl, Value.smallImageUrl[i], sizeof(Value.smallImageUrl[i]));
+  parse_number(json.mediumImageWidth, &Value.mediumImageWidth[i]);
+  parse_number(json.mediumImageHeight, &Value.mediumImageHeight[i]);
+  parse_string(json.mediumImageUrl, Value.mediumImageUrl[i], sizeof(Value.mediumImageUrl[i]));
+  parse_number(json.largeImageWidth, &Value.largeImageWidth[i]);
+  parse_number(json.largeImageHeight, &Value.largeImageHeight[i]);
+  parse_string(json.largeImageUrl, Value.largeImageUrl[i], sizeof(Value.largeImageUrl[i]));
+  parse_string(json.mixType, Value.mixType[i], sizeof(Value.mixType[i]));
+
+  return Value;
+}
+
+stream_model parse_stream_values(json_stream_model json)
+{
+  stream_model Value;
+
+  parse_number(json.trackId, &Value.trackId);
+  parse_number(json.videoId, &Value.videoId);
+  parse_string(json.assetPresentation, Value.assetPresentation, sizeof(Value.assetPresentation));
+  parse_string(json.audioQuality, Value.audioQuality, sizeof(Value.audioQuality));
+  parse_string(json.audioMode, Value.audioMode, sizeof(Value.audioMode));
+  parse_string(json.videoQuality, Value.videoQuality, sizeof(Value.videoQuality));
+  parse_string(json.manifestMimeType, Value.manifestMimeType, sizeof(Value.manifestMimeType));
+  
+  /* Pointing to temporary allocated json value */ 
+  if (cJSON_IsString(json.manifest) && (!cJSON_IsNull(json.manifest)))
+  {
+    Value.manifest = json.manifest->valuestring;
+  }
+  else
+  {
+    Value.manifest = NULL;
+  }
+
   return Value;
 }

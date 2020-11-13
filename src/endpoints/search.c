@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 /* Search */
@@ -26,30 +27,9 @@ search_model get_search(char *term, size_t limit)
       cJSON_Delete(input_json);
       return parse;
     }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, 0, "Search");
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, 0, "Search");
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, 0, "Search");
       cJSON_Delete(input_json);
       free(req.body);
       return Value;

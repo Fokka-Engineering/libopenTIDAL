@@ -9,20 +9,12 @@
 
 char *client_id = "8SEZWa4J1NVC5U5Y";
 char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-char *audioQuality = "LOSSLESS";
-char *videoQuality = "HIGH";
-char *countryCode = "DE";
-char *access_token;
 
 int main(void)
 {
   size_t skipped;
-  char input_token[1024];
-
+  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
   printf("Testing openTIDAL Search Endpoints...\n");
-  printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token); /* Pls no BufferOverflow :( */
-  access_token = input_token;
   
   /* get_search  */
   skipped = 1;
@@ -43,7 +35,7 @@ int main(void)
     {
       int i;
       /* Artists  */ 
-      printf("Limit: %zu\n", res.artists.limit);
+      /*printf("Limit: %zu\n", res.artists.limit);
       printf("Offset: %zu\n", res.artists.offset);
       printf("TotalNumberOfItems: %zu\n", res.artists.totalNumberOfItems);
       for (i = 0; i < res.artists.arraySize; ++i)
@@ -56,9 +48,9 @@ int main(void)
         {
 	  printf("Picture: %s\n", res.artists.picture[i]);
 	}
-      }
+      }*/
       /* Albums */
-      printf("Limit: %zu\n", res.albums.limit);
+      /*printf("Limit: %zu\n", res.albums.limit);
       printf("Offset: %zu\n", res.albums.offset);
       printf("TotalNumberOfItems: %zu\n", res.albums.totalNumberOfItems);
       for (i = 0; i < res.albums.arraySize; ++i)
@@ -80,7 +72,7 @@ int main(void)
           printf("ArtistId #%d: %zu\n", a, res.albums.artistId[i][a]);
 	  printf("ArtistName #%d: %s\n", a, res.albums.artistName[i][a]);
 	}
-      }
+      }*/
       /* Playlists */
       printf("Limit: %zu\n", res.playlists.limit);
       printf("Offset: %zu\n", res.playlists.offset);
@@ -91,7 +83,7 @@ int main(void)
         printf("Uuid: %s\n", res.playlists.uuid[i]);
 	printf("Title: %s\n", res.playlists.title[i]);
 	printf("Duration: %zu\n", res.playlists.duration[i]);
-	printf("Image: %s\n", res.playlists.image[i]);
+	//printf("Image: %s\n", res.playlists.image[i]);
 	printf("SquareImage: %s\n", res.playlists.squareImage[i]);
 	printf("Created: %s\n", res.playlists.created[i]);
 	printf("LastUpdated: %s\n", res.playlists.lastUpdated[i]);
@@ -104,7 +96,7 @@ int main(void)
 	}
       }
       /* Tracks */
-      printf("Limit: %zu\n", res.tracks.limit);
+      /*printf("Limit: %zu\n", res.tracks.limit);
       printf("Offset: %zu\n", res.tracks.offset);
       printf("TotalNumberOfItems: %zu\n", res.tracks.totalNumberOfItems);
       for (i = 0; i < res.tracks.arraySize; ++i)
@@ -128,9 +120,9 @@ int main(void)
           printf("ArtistId: %zu\n", res.tracks.artistId[i][a]);
 	  printf("ArtistName: %s\n", res.tracks.artistName[i][a]);
 	}
-      }
+      }*/
       /* Videos */
-      printf("Limit: %zu\n", res.videos.limit);
+      /*printf("Limit: %zu\n", res.videos.limit);
       printf("Offset: %zu\n", res.videos.offset);
       printf("TotalNumberOfItems: %zu\n", res.videos.totalNumberOfItems);
       for (i = 0; i < res.videos.arraySize; ++i)
@@ -148,9 +140,9 @@ int main(void)
           printf("ArtistId: %zu\n", res.videos.artistId[i][a]);
           printf("ArtistName: %s\n", res.videos.artistName[i][a]);
         }
-      }
+      }*/
       /* TopHit */
-      if (res.isTopArtist)
+      /*if (res.isTopArtist)
       {
         printf("TopHit Artist...\n");
         printf("Id: %zu\n", res.topArtist.id[0]);
@@ -236,7 +228,7 @@ int main(void)
           printf("ArtistId: %zu\n", res.topVideo.artistId[0][a]);
           printf("ArtistName: %s\n", res.topVideo.artistName[0][a]);
         }
-      }
+      }*/
     }
   }
   else

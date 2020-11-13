@@ -10,7 +10,7 @@
 int main(void)
 {
   size_t skipped;
-  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json", "LOSSLESS", "HIGH");
+  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
   printf("Testing openTIDAL User Endpoints...\n");
   /* get_user  */
   skipped = 1;

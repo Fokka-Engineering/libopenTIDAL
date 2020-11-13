@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 /* TODO: Remove email or check if != NULL & Improve Error Handling & Check if picture is != NULL */
@@ -19,88 +20,14 @@ user_model get_user()
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      cJSON *id = cJSON_GetObjectItemCaseSensitive(input_json, "id");
-      cJSON *username = cJSON_GetObjectItemCaseSensitive(input_json, "username");
-      cJSON *firstName = cJSON_GetObjectItemCaseSensitive(input_json, "firstName");
-      cJSON *lastName = cJSON_GetObjectItemCaseSensitive(input_json, "lastName");
-      cJSON *email = cJSON_GetObjectItemCaseSensitive(input_json, "email");
-      cJSON *countryCode = cJSON_GetObjectItemCaseSensitive(input_json, "countryCode");
-      cJSON *created = cJSON_GetObjectItemCaseSensitive(input_json, "created");
-      cJSON *picture = cJSON_GetObjectItemCaseSensitive(input_json, "picture");
-      cJSON *gender = cJSON_GetObjectItemCaseSensitive(input_json, "gender");
-      cJSON *dateOfBirth = cJSON_GetObjectItemCaseSensitive(input_json, "dateOfBirth"); 
-    
-      Value.id = id->valueint;
-      if (cJSON_IsString(username) != 1)
-      {
-        Value.status = -12;
-      }
-      else
-      {
-        Value.status = 1;
-        strncpy(Value.username, username->valuestring, sizeof(Value.username));
-	Value.hasFirstName = 0;
-	if (cJSON_IsNull(firstName) != 1)
-        {
-          Value.hasFirstName = 1;
-          strncpy(Value.firstName, firstName->valuestring, sizeof(Value.firstName));
-        }
-	Value.hasLastName = 0;
-	if (cJSON_IsNull(lastName) != 1)
-	{
-          Value.hasLastName = 1;
-	  strncpy(Value.lastName, lastName->valuestring, sizeof(Value.lastName));
-        }
-	Value.hasPicture = 0;
-        if (cJSON_IsNull(picture) != 1)
-        {
-          Value.hasPicture = 1;
-          strncpy(Value.picture, picture->valuestring, sizeof(Value.picture));
-        }
-	Value.hasGender = 0;
-	if (cJSON_IsNull(gender) != 1)
-        {
-          Value.hasGender = 1;
-          strncpy(Value.gender, gender->valuestring, sizeof(Value.gender));
-        }
-	Value.hasDateOfBirth = 0;
-	if (cJSON_IsNull(dateOfBirth) != 1)
-        {
-          Value.hasDateOfBirth = 1;
-          strncpy(Value.dateOfBirth, dateOfBirth->valuestring, sizeof(Value.dateOfBirth));
-        }
-	strncpy(Value.email, email->valuestring, sizeof(Value.email));
-        strncpy(Value.countryCode, countryCode->valuestring, sizeof(Value.countryCode));
-        strncpy(Value.created, created->valuestring, sizeof(Value.created));
-      }
+      Value.status = 1;
       cJSON_Delete(input_json);
       free(req.body);
       return Value; /*return data structure*/
     }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -133,35 +60,39 @@ get_user_album(size_t limit, size_t offset, char *order, char *orderDirection)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      album_model parse = parse_album(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_album_model processed_json = json_parse_album(innerItem);
+          Value = parse_album_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -193,35 +124,39 @@ get_user_artist(size_t limit, size_t offset, char *order, char *orderDirection)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      artist_model parse = parse_artist(input_json);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_artist_model processed_json = json_parse_artist(innerItem);
+          Value = parse_artist_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+
       cJSON_Delete(input_json);
       free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -253,35 +188,39 @@ get_user_playlist(size_t limit, size_t offset, char *order, char *orderDirection
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      playlist_model parse = parse_playlist(input_json);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "playlist");
+
+          json_playlist_model processed_json = json_parse_playlist(innerItem);
+          Value = parse_playlist_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+ 
       cJSON_Delete(input_json);
       free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -313,35 +252,39 @@ get_user_tracks(size_t limit, size_t offset, char *order, char *orderDirection)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_items_model processed_json = json_parse_items(innerItem);
+          Value = parse_items_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+ 
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -373,35 +316,40 @@ get_user_videos(size_t limit, size_t offset, char *order, char *orderDirection)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, userId);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_items_model processed_json = json_parse_items(innerItem);
+          Value = parse_items_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+ 
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -431,73 +379,26 @@ page_mix_model get_user_mixes()
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      cJSON *rows = cJSON_GetObjectItem(input_json, "rows");
+      /*cJSON *rows = cJSON_GetObjectItem(input_json, "rows");
       cJSON *rowsArray = cJSON_GetArrayItem(rows, 0);
       cJSON *modules = cJSON_GetObjectItem(rowsArray, "modules");
       cJSON *modulesArray = cJSON_GetArrayItem(modules, 0);
-      //cJSON *type = cJSON_GetObjectItemCaseSensitive(modulesArray, "type");
+      cJSON *type = cJSON_GetObjectItemCaseSensitive(modulesArray, "type");
       cJSON *pagedList = cJSON_GetObjectItem(modulesArray, "pagedList");
       cJSON *limit = cJSON_GetObjectItem(pagedList, "limit");
       cJSON *offset = cJSON_GetObjectItem(pagedList, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(pagedList, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(pagedList, "items");
       cJSON *item = NULL;
-      int i = 0;
-      
+      */
       Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items);
-      Value.limit = limit->valueint;
-      Value.offset = offset->valueint;
-      Value.totalNumberOfItems = totalNumberOfItems->valueint;
-      cJSON_ArrayForEach(item, items)
-      {
-        cJSON *id = cJSON_GetObjectItemCaseSensitive(item, "id");
-	cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
-	cJSON *subTitle = cJSON_GetObjectItemCaseSensitive(item, "subTitle");
-	cJSON *images = cJSON_GetObjectItem(item, "images");
-	cJSON *small = cJSON_GetObjectItem(images, "SMALL");
-	cJSON *medium = cJSON_GetObjectItem(images, "MEDIUM");
-	cJSON *large = cJSON_GetObjectItem(images, "LARGE");
-        cJSON *smallImageUrl = cJSON_GetObjectItemCaseSensitive(small, "url");
-        cJSON *mediumImageUrl = cJSON_GetObjectItemCaseSensitive(medium, "url");
-        cJSON *largeImageUrl = cJSON_GetObjectItemCaseSensitive(large, "url");
-        
-	strncpy(Value.id[i], id->valuestring, sizeof(Value.id[i]));
-	strncpy(Value.title[i], title->valuestring, sizeof(Value.title[i]));
-	strncpy(Value.subTitle[i], subTitle->valuestring, sizeof(Value.subTitle[i]));
-	strncpy(Value.smallImageUrl[i], smallImageUrl->valuestring, sizeof(Value.smallImageUrl[i]));
-	strncpy(Value.mediumImageUrl[i], mediumImageUrl->valuestring, sizeof(Value.mediumImageUrl[i]));
-	strncpy(Value.largeImageUrl[i], largeImageUrl->valuestring, sizeof(Value.largeImageUrl[i]));
-	i += 1;
-      }
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, 0, "mymixes");
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, 0, "mymixes");
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -755,35 +656,16 @@ playlist_model create_user_playlist(char *title, char *description)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 201 || req.responseCode == 200)
     {
-      playlist_model parse = parse_playlist(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, userId, NULL);
+      json_playlist_model processed_json = json_parse_playlist(input_json);
+      Value = parse_playlist_values(processed_json, 0);
+      Value.status = 1;
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, userId, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;

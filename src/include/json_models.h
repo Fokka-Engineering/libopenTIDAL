@@ -3,8 +3,48 @@
 
 /* structures used to parse a json response */
 
+typedef struct json_login_code_models
+{
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Login Code Values */
+  cJSON *deviceCode;
+  cJSON *userCode;
+  cJSON *verificationUri;
+  cJSON *verificationUriComplete;
+  cJSON *expiresIn;
+  cJSON *interval;
+} json_login_code_model;
+
+typedef struct json_login_token_models
+{
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Login Token Values */
+  cJSON *access_token;
+  cJSON *refresh_token;
+  cJSON *token_type;
+  cJSON *expires_in;
+  cJSON *userId;
+  cJSON *email;
+  cJSON *countryCode;
+  cJSON *fullName;
+  cJSON *firstName;
+  cJSON *lastName;
+  cJSON *nickname;
+  cJSON *username;
+  cJSON *imageId;
+  cJSON *created;
+  cJSON *updated;
+  cJSON *facebookUid;
+  cJSON *appleUid;
+} json_login_token_model;
+
 typedef struct json_user_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* User Values */
   cJSON *id;
   cJSON *firstName;
   cJSON *lastName;
@@ -18,6 +58,8 @@ typedef struct json_user_models
 
 typedef struct json_playlist_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -40,6 +82,8 @@ typedef struct json_playlist_models
 
 typedef struct json_items_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -64,6 +108,8 @@ typedef struct json_items_models
   cJSON *replayGain;
   cJSON *peak;
   cJSON *artists;
+  cJSON *artistId[15];
+  cJSON *artistName[15];
   cJSON *albumId;
   cJSON *albumTitle;
   cJSON *type;
@@ -71,6 +117,8 @@ typedef struct json_items_models
 
 typedef struct json_album_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -93,10 +141,14 @@ typedef struct json_album_models
   cJSON *numberOfVideos;
   cJSON *numberOfVolumes;
   cJSON *artists;
+  cJSON *artistId[15];
+  cJSON *artistName[15];
 } json_album_model;
 
 typedef struct json_artist_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -110,6 +162,8 @@ typedef struct json_artist_models
 
 typedef struct json_link_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -122,6 +176,8 @@ typedef struct json_link_models
 
 typedef struct json_credit_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -134,6 +190,8 @@ typedef struct json_credit_models
 
 typedef struct json_contributor_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -145,11 +203,17 @@ typedef struct json_contributor_models
 
 typedef struct json_mix_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Mix Value */
   cJSON *id;
 } json_mix_model;
 
 typedef struct json_stream_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Stream Values */
   cJSON *trackId;
   cJSON *videoId;
   cJSON *assetPresentation;
@@ -162,6 +226,9 @@ typedef struct json_stream_models
 
 typedef struct json_manifest_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Manifest Values */
   cJSON *mimeType;
   cJSON *codec;
   cJSON *encryptionType;
@@ -171,6 +238,8 @@ typedef struct json_manifest_models
 
 typedef struct json_page_mix_models
 {
+  /* Raw JSON Object */
+  cJSON *directObject;
   /* Pagination Values */
   cJSON *totalNumberOfItems;
   cJSON *limit;
@@ -179,7 +248,14 @@ typedef struct json_page_mix_models
   cJSON *id;
   cJSON *title;
   cJSON *subTitle;
+  cJSON *smallImageWidth;
+  cJSON *smallImageHeight;
   cJSON *smallImageUrl;
+  cJSON *mediumImageWidth;
+  cJSON *mediumImageHeight;
   cJSON *mediumImageUrl;
+  cJSON *largeImageWidth;
+  cJSON *largeImageHeight;
   cJSON *largeImageUrl;
+  cJSON *mixType;
 } json_page_mix_model;

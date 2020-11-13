@@ -9,20 +9,12 @@
 
 char *client_id = "8SEZWa4J1NVC5U5Y";
 char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-char *audioQuality = "LOSSLESS";
-char *videoQuality = "HIGH";
-char *countryCode = "DE";
-char *access_token;
 
 int main(void)
 {
   size_t skipped;
-  char input_token[1024];
-  
+  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json"); 
   printf("Testing openTIDAL Playlist Endpoints...\n");
-  printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token); /* Pls no BufferOverflow :( */
-  access_token = input_token;
 
   /* get_playlist  */
   skipped = 1;

@@ -14,7 +14,11 @@ typedef struct login_code_models
   int status;
   char deviceCode[37]; /* deviceCode is always 36 Chars long */
   char userCode[6]; /* userCode is always 5 Chars long */
+  char verificationUri[16];
+  char verificationUriComplete[21];
+  size_t timeFrame;
   time_t expires_in;
+  size_t interval;
 } login_code_model;
 
 typedef struct login_token_models
@@ -23,11 +27,21 @@ typedef struct login_token_models
   time_t expires_in;
   char access_token[1000];
   char refresh_token[1000];
+  char token_type[20];
+  size_t timeFrame;
+  char email[100];
   char countryCode[3];
-  char username[50];
+  char fullName[100];
+  char firstName[80];
+  char lastName[80];
+  char nickname[100];
+  char username[100];
+  char imageId[37];
+  size_t created;
+  size_t updated;
   size_t userId;
-  size_t appleUid;
   size_t facebookUid;
+  char appleUid[200];
   char error[50];
 } login_token_model;
 
@@ -64,7 +78,6 @@ typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
   size_t numberOfVideos[100];
   char uuid[100][37]; /* Always 36 Chars Long */
   char title[100][80];
-  size_t hasDescription[100];
   char description[100][1024]; /* 500 Char Limit */
   size_t duration[100];
   char lastUpdated[100][29];
@@ -98,11 +111,14 @@ typedef struct items_models
   size_t volumeNumber[100];
   size_t hasVersion[100];
   char version[100][50];
-  size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
-  char artistName[100][6][50];
+  size_t artistId[100][15]; /* 2D-Array for (featured) Artists  */
+  char artistName[100][15][50];
   size_t albumId[100];
   char albumTitle[100][80];
   char cover[100][37];
+  char videoCover[100][37];
+  char imageId[100][37];
+  char audioQuality[100][20];
   char quality[100][20];
   size_t hasReleaseDate[100];
   char releaseDate[100][11]; /* Only present in playlist_item response */
@@ -126,8 +142,8 @@ typedef struct albums_models
   size_t numberOfVideos[100];
   size_t numberOfVolumes[100];
   size_t popularity[100];
-  size_t artistId[100][6]; /* 2D-Array for (featured) Artists  */
-  char artistName[100][6][50];
+  size_t artistId[100][15]; /* 2D-Array for (featured) Artists  */
+  char artistName[100][15][50];
   char quality[100][20];
   size_t hasVersion[100];
   char version[100][50];
@@ -178,8 +194,8 @@ typedef struct artist_links_models
   size_t offset;
   size_t arraySize;
   size_t totalNumberOfItems;
-  char url[20][80];
-  char siteName[20][50];
+  char url[100][100];
+  char siteName[100][80];
   char source[25];
 } artist_link_model;
 
@@ -196,12 +212,19 @@ typedef struct pages_mix_models
   size_t limit;
   size_t offset;
   size_t totalNumberOfItems;
-  char id[20][32];
-  char title[20][50];
-  char subTitle[20][100];
-  char smallImageUrl[50][400];
-  char mediumImageUrl[20][400];
-  char largeImageUrl[20][400];
+  char id[100][32];
+  char title[100][50];
+  char subTitle[100][100];
+  size_t smallImageWidth[100];
+  size_t smallImageHeight[100];
+  char smallImageUrl[100][400];
+  size_t mediumImageWidth[100];
+  size_t mediumImageHeight[100];
+  char mediumImageUrl[100][400];
+  size_t largeImageWidth[100];
+  size_t largeImageHeight[100];
+  char largeImageUrl[100][400];
+  char mixType[100][20];
 } page_mix_model;
 
 typedef struct contributors_models
@@ -246,6 +269,9 @@ typedef struct stream_models
   char audioQuality[20];
   char audioMode[20];
   char videoQuality[20];
+  char manifestMimeType[30];
+  char *manifest; //Pointer to temporary allocated Manifest
   char mimeType[30];
   char codec[10];
+  char encryptionType[20];
 } stream_model;

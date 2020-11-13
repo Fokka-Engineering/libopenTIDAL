@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/base64.h"
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 contributor_model get_track_contributors(size_t trackid, size_t limit, size_t offset)
@@ -20,53 +21,37 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      Value.status = 1;
-      size_t i = 0;
-      cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      Value.limit = limit->valueint;
-      Value.offset = offset->valueint;
-      Value.totalNumberOfItems = totalNumberOfItems->valueint;
-      Value.arraySize = cJSON_GetArraySize(items);
-      cJSON_ArrayForEach(item, items)
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
       {
-        cJSON *name = cJSON_GetObjectItemCaseSensitive(item, "name");
-	cJSON *role = cJSON_GetObjectItemCaseSensitive(item, "role");
-        
-	if (cJSON_IsString(name))
-	{
-          strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
+        Value.arraySize = cJSON_GetArraySize(items);
+	cJSON_ArrayForEach(item, items)
+        {
+          json_contributor_model processed_json = json_parse_contributors(item);
+	  Value = parse_contributor_values(processed_json, i);
+	  i += 1;
 	}
-	if (cJSON_IsString(role))
-	{
-          strncpy(Value.role[i], role->valuestring, sizeof(Value.role[i]));
-        }
-	i = i + 1;
       }
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, trackid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, trackid, NULL);
+      
+      parse_number(limit, &Value.limit); 
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.status = 1;
+      Value.arraySize = cJSON_GetArraySize(items);
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, trackid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -97,31 +82,17 @@ mix_model get_track_mix(size_t trackid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      json_mix_model processed_json = json_parse_mix(input_json);
+      Value = parse_mix_values(processed_json);
       Value.status = 1;
-      cJSON *id = cJSON_GetObjectItemCaseSensitive(input_json, "id");
 
-      strncpy(Value.id, id->valuestring, sizeof(Value.id));
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, trackid);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, trackid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, trackid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -152,64 +123,38 @@ stream_model get_track_stream(size_t trackid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      cJSON *trackId = cJSON_GetObjectItem(input_json, "trackId");
-      cJSON *assetPresentation = cJSON_GetObjectItemCaseSensitive(input_json, "assetPresentation");
-      cJSON *audioMode = cJSON_GetObjectItemCaseSensitive(input_json, "audioMode");
-      cJSON *audioQuality = cJSON_GetObjectItemCaseSensitive(input_json, "audioQuality");
-      cJSON *manifestMimeType = cJSON_GetObjectItemCaseSensitive(input_json, "manifestMimeType");
-      cJSON *manifest = cJSON_GetObjectItemCaseSensitive(input_json, "manifest");
+      json_stream_model processed_json = json_parse_stream(input_json);
+      Value = parse_stream_values(processed_json);     
+      Value.status = 0;
       char manifest_decoded[1024];
 
-      Value.trackId = trackId->valueint;
-      strncpy(Value.assetPresentation, assetPresentation->valuestring, sizeof(Value.assetPresentation));
-      strncpy(Value.audioMode, audioMode->valuestring, sizeof(Value.audioMode));
-      strncpy(Value.audioQuality, audioQuality->valuestring, sizeof(Value.audioQuality)); 
-      
-      if (strcmp(manifestMimeType->valuestring, "application/vnd.tidal.bts") == 0)
+      if (strcmp(Value.manifestMimeType, "application/vnd.tidal.bts") == 0)
       {
         Value.status = 1;
-        Base64decode(manifest_decoded, manifest->valuestring);
-        cJSON *manifest_json = json_parse(manifest_decoded);
-	cJSON *mimeType = cJSON_GetObjectItemCaseSensitive(manifest_json, "mimeType");
-	cJSON *codecs = cJSON_GetObjectItemCaseSensitive(manifest_json, "codecs");
-	cJSON *urls = cJSON_GetObjectItemCaseSensitive(manifest_json, "urls");
-	cJSON *url = cJSON_GetArrayItem(urls, 0);
+	Base64decode(manifest_decoded, Value.manifest);
+	cJSON *manifest_json = json_parse(manifest_decoded);
+	json_manifest_model processed_manifest = json_parse_manifest(manifest_json);
+        
+        parse_string(processed_manifest.mimeType, Value.manifestMimeType, sizeof(Value.manifestMimeType));
+        parse_string(processed_manifest.codec, Value.codec, sizeof(Value.codec));
+        parse_string(processed_manifest.encryptionType, Value.encryptionType, sizeof(Value.encryptionType));
+        parse_string(processed_manifest.url, Value.url, sizeof(Value.url));
 	
-	strncpy(Value.mimeType, mimeType->valuestring, sizeof(Value.mimeType));
-	strncpy(Value.codec, codecs->valuestring, sizeof(Value.codec));
-	strncpy(Value.url, url->valuestring, sizeof(Value.url));
+	cJSON_Delete(manifest_json);
       }
       else
       {
         Value.status = -10;
 	fprintf(stderr, "[Request Error] Not a valid manifest. MimeType is not application/vnd.tidal.bts\n");
       }
-      return Value;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, trackid, NULL);
-      free(req.body);
+
       cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, trackid);
       free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, trackid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, trackid, NULL);
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -239,28 +184,17 @@ items_model get_track(size_t trackid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_tracks(input_json);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, trackid);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, trackid, NULL);
+      json_items_model processed_json = json_parse_items(input_json);
+      Value = parse_items_values(processed_json, 0);
+      Value.status = 1;
+
       cJSON_Delete(input_json);
       free(req.body);
       return Value;
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, trackid, NULL);
       cJSON_Delete(input_json);
       free(req.body);
       return Value;

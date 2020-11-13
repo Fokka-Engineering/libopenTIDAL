@@ -1,6 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
+
+int parse_status(cJSON *input_json, curl_model Value, size_t id, char *uuid)
+{
+  int status = 0;
+
+  if (Value.responseCode == 400)
+  {
+    status = parse_badrequest(input_json, id, uuid);
+  }
+  else if (Value.responseCode == 401)
+  {
+    status = parse_unauthorized(input_json, id);
+  }
+  else if (Value.responseCode == 404)
+  {
+    status = parse_notfound(input_json, id, uuid);
+  }
+  else
+  {
+    status = 0;
+  }
+
+  return status;
+}
 
 int parse_unauthorized(cJSON *input_json, size_t id)
 {

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 album_model parse_album(cJSON *input_json)

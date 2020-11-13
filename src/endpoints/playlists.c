@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
 playlist_model get_playlist(char *playlistid)
@@ -19,31 +20,9 @@ playlist_model get_playlist(char *playlistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      playlist_model parse = parse_playlist(input_json);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, 0, playlistid);
-      /* Cleanup */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, 0, playlistid);
+      json_playlist_model processed_json = json_parse_playlist(input_json);
+      Value = parse_playlist_values(processed_json, 0); 
+      Value.status = 1;
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);
@@ -51,7 +30,7 @@ playlist_model get_playlist(char *playlistid)
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, 0, playlistid);
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);
@@ -84,31 +63,30 @@ items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_items(input_json);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return parse;
-    }
-    else if (req.responseCode == 400)
-    {
-      Value.status = parse_badrequest(input_json, 0, playlistid);
-      /* Cleanup */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 401)
-    {
-      Value.status = parse_unauthorized(input_json, 0);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else if (req.responseCode == 404)
-    {
-      Value.status = parse_notfound(input_json, 0, playlistid);
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      size_t i = 0;
+            
+      if (cJSON_IsArray(items))
+      {
+	cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+          json_items_model processed_json = json_parse_items(innerItem);
+	  Value = parse_items_values(processed_json, i);
+	  i += 1;
+	}
+      }
+ 
+      parse_number(limit, &Value.limit); 
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.status = 1;
+      Value.arraySize = cJSON_GetArraySize(items); 
+      
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);
@@ -116,7 +94,7 @@ items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
     }
     else
     {
-      Value.status = 0;
+      Value.status = parse_status(input_json, req, 0, playlistid);
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);

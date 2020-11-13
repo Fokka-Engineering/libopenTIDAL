@@ -44,13 +44,6 @@ void read_persistent_stream(cJSON *input_json);
 /* encoding */
 char *url_encode(char *str);
 
-/* Parse Functions */
-cJSON *json_parse(char * input);
-int parse_unauthorized(cJSON *input_json, size_t id);
-int parse_notfound(cJSON *input_json, size_t id, char *uuid);
-int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
-int parse_badrequest(cJSON *input_json, size_t id, char *uuid);
-
 items_model parse_items(cJSON *input_json);
 items_model parse_tracks(cJSON *input_json);
 items_model parse_videos(cJSON *input_json);
@@ -58,7 +51,6 @@ playlist_model parse_playlist(cJSON *input_json);
 album_model parse_album(cJSON *input_json);
 artist_model parse_artist(cJSON *input_json);
 search_model parse_search(cJSON *input_json);
-
 
 /* OAuth Endpoints */
 login_code_model login_create_code();
@@ -70,6 +62,7 @@ void create_persistent(char *username, char *audio_quality, char *video_quality)
 void refresh_persistent();
 void init(char *file_location);
 void cleanup();
+
 /* User Endpoints */
 user_model get_user();
 playlist_model get_user_playlist(size_t limit,
