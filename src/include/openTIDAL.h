@@ -22,36 +22,6 @@ extern char *audioQuality;
 extern char *videoQuality;
 extern char *persistentFile;
 
-/* baseAPI cURL handle */
-curl_model curl_get(char *endpoint, char *data);
-curl_model curl_post(char *endpoint, char *data, char *optHeader);
-curl_model curl_delete(char *endpoint, char *data, char *optHeader);
-curl_model curl_head(char *endpoint, char *data);
-void curl_exit();
-
-/* authAPI cURL handle */
-curl_model curl_post_auth(char *endpoint, char *data);
-void curl_exit_auth();
-
-/* concatenation */
-char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode);
-char *url_cat_str(char *strOne, char *id, char *strTwo);
-
-/* persistentJSON */
-char *create_persistent_stream(char *username, char *audio_quality, char *video_quality);
-void read_persistent_stream(cJSON *input_json);
-
-/* encoding */
-char *url_encode(char *str);
-
-items_model parse_items(cJSON *input_json);
-items_model parse_tracks(cJSON *input_json);
-items_model parse_videos(cJSON *input_json);
-playlist_model parse_playlist(cJSON *input_json);
-album_model parse_album(cJSON *input_json);
-artist_model parse_artist(cJSON *input_json);
-search_model parse_search(cJSON *input_json);
-
 /* OAuth Endpoints */
 login_code_model login_create_code();
 login_token_model login_create_token(char *device_code);

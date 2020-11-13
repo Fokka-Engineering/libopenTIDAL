@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/base64.h"
 #include "../include/parse.h"
+#include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 contributor_model get_video_contributors(size_t videoid, size_t limit, size_t offset)

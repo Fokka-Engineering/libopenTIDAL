@@ -96,7 +96,6 @@ typedef struct json_items_models
   cJSON *trackNumber;
   cJSON *volumeNumber;
   cJSON *version;
-  cJSON *releaseDate;
   cJSON *cover;
   cJSON *videoCover;
   cJSON *imageId;

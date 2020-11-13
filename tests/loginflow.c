@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/openTIDAL.h"
+#include "../src/include/openTIDAL.h"
 #include <string.h>
 #include <curl/curl.h>
 #include <pthread.h>
@@ -13,11 +13,8 @@ void login_polling()
   {
     printf("DeviceCode: %s\n", ress.deviceCode);
     printf("UserCode: %s\n", ress.userCode);
-    printf("Timestamp: %zu\n", ress.timestamp);
-    int i;
-    time_t timestampExpired = ress.timestamp + 300;
-    printf("Timestamp Expired: %zu\n", timestampExpired);
-    while (time(NULL) <= timestampExpired) 
+    size_t i;
+    while (time(NULL) <= ress.expires_in)
     {
       sleep(2);
       login_token_model res = login_create_token(ress.deviceCode);
@@ -30,7 +27,7 @@ void login_polling()
         printf("%s\n", "Authorization Successfull!");
         printf("AccessToken: %s\n", res.access_token);
         printf("RefreshToken: %s\n", res.refresh_token);
-        printf("Timestamp: %zu\n", res.timestamp);
+        printf("Timestamp: %zu\n", res.expires_in);
 	printf("Username: %s\n", res.username);
 	printf("CountryCode: %s\n", res.countryCode);
 	printf("UserId: %zu\n", res.userId);
@@ -51,8 +48,7 @@ void login_polling()
 
 int main(void)
 {
-  init("/Users/admin/Desktop/test.json", "LOSSLESS", "HIGH");
+  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
   login_polling();
-  printf("%zu\n", userId);
-  curl_exit_auth();
+  cleanup();
 }

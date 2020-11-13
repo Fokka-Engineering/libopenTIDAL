@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "../include/parse.h"
+#include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 /* TODO: Improve Error Handling with HTTP Codes */
@@ -21,12 +22,18 @@ login_code_model login_create_code()
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    
-    json_login_code_model processed_json = json_parse_login_code(input_json);
-    Value = parse_login_code_values(processed_json);
-    Value.status = 1;
-    Value.expires_in = time(NULL) + Value.timeFrame;
-
+    if (req.responseCode == 200)
+    {
+      json_login_code_model processed_json = json_parse_login_code(input_json);
+      Value = parse_login_code_values(processed_json);
+      Value.status = 1;
+      Value.expires_in = time(NULL) + Value.timeFrame;
+    }
+    else
+    {
+      fprintf(stderr, "[Request Error] Not a 200 Response.\n");
+      Value.status = 0;
+    }
     /* Cleanup */
     cJSON_Delete(input_json);
     free(req.body);
@@ -57,28 +64,16 @@ login_token_model login_create_token(char *device_code)
     cJSON *input_json = json_parse(req.body);
     cJSON *check_status = cJSON_GetObjectItemCaseSensitive(input_json, "status");
     cJSON *check_error = cJSON_GetObjectItemCaseSensitive(input_json, "error");
-    cJSON *access_token_json = cJSON_GetObjectItemCaseSensitive(input_json, "access_token");
-    cJSON *refresh_token_json = cJSON_GetObjectItemCaseSensitive(input_json, "refresh_token");
-    cJSON *expires_in_json = cJSON_GetObjectItemCaseSensitive(input_json, "expires_in");
-    cJSON *user = cJSON_GetObjectItemCaseSensitive(input_json, "user");
-    cJSON *countryCode_json = cJSON_GetObjectItemCaseSensitive(user, "countryCode");
-    cJSON *username = cJSON_GetObjectItemCaseSensitive(user, "username");
-    cJSON *userId_json = cJSON_GetObjectItemCaseSensitive(user, "userId");
     
     if (cJSON_IsNumber(check_status) != 1)
     {
+      json_login_token_model processed_json = json_parse_login_token(input_json);
+      Value = parse_login_token_values(processed_json);
       Value.status = 1;
-      strncpy(Value.access_token, access_token_json->valuestring, sizeof(Value.access_token));
-      access_token = Value.access_token;
-      strncpy(Value.refresh_token, refresh_token_json->valuestring, sizeof(Value.refresh_token));
-      refresh_token = Value.refresh_token;
-      Value.expires_in = expires_in_json->valueint + time(NULL);
-      expires_in = expires_in_json->valueint + time(NULL);
-      strncpy(Value.countryCode, countryCode_json->valuestring, sizeof(Value.countryCode));
+      Value.expires_in = Value.timeFrame + time(NULL);
+      expires_in = Value.expires_in;
       countryCode = Value.countryCode;
-      strncpy(Value.username, username->valuestring, sizeof(Value.username));
-      Value.userId = userId_json->valueint;
-      userId = userId_json->valueint;
+      userId = Value.userId;
       create_persistent(Value.username, "HIGH", "HIGH"); /* Default Quality Settings  */
     }
     else
@@ -91,12 +86,12 @@ login_token_model login_create_token(char *device_code)
         }
         else
         {
-          Value.status = -1;
+          Value.status = 0;
         }
       }
       else
       {
-        Value.status = -1;
+        Value.status = 0;
       }
     }
     cJSON_Delete(input_json);
@@ -127,29 +122,22 @@ login_token_model login_refresh_token(char *refresh_token)
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
-    cJSON *access_token_json = cJSON_GetObjectItemCaseSensitive(input_json, "access_token");
-    cJSON *expires_in_json = cJSON_GetObjectItemCaseSensitive(input_json, "expires_in");
-    cJSON *user = cJSON_GetObjectItemCaseSensitive(input_json, "user");
-    cJSON *countryCode_json = cJSON_GetObjectItemCaseSensitive(user, "countryCode");
-    cJSON *username = cJSON_GetObjectItemCaseSensitive(user, "username");
-    cJSON *userId_json = cJSON_GetObjectItemCaseSensitive(user, "userId");
-    if (cJSON_IsString(access_token_json) == 1)
+    if (req.responseCode == 200)
     {
+      json_login_token_model processed_json = json_parse_login_token(input_json);
+      Value = parse_login_token_values(processed_json);
+
       Value.status = 1;
-      strncpy(Value.access_token, access_token_json->valuestring, sizeof(Value.access_token));
       access_token = Value.access_token;
-      Value.expires_in = expires_in_json->valueint;
       expires_in = Value.expires_in;
-      strncpy(Value.countryCode, countryCode_json->valuestring, sizeof(Value.countryCode));
       countryCode = Value.countryCode;
-      strncpy(Value.username, username->valuestring, sizeof(Value.username));
-      Value.userId = userId_json->valueint;
       userId = Value.userId;
     }
     else
     {
       Value.status = 0;
     }  
+    
     /* Cleanup */
     cJSON_Delete(input_json);
     free(req.body);

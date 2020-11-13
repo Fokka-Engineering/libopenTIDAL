@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include "include/handles.h"
 #include "include/openTIDAL.h"
 
 const char *baseUrl = "https://api.tidal.com/v1/";
@@ -504,6 +505,7 @@ curl_model curl_post_auth(char *endpoint, char *data)
     else
     {
       model.body = response.memory;
+      curl_easy_getinfo(curl_auth, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }
   }

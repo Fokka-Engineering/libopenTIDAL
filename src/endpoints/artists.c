@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/parse.h"
+#include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 artist_model get_artist(size_t artistid)

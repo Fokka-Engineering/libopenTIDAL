@@ -14,7 +14,7 @@ int parse_notfound(cJSON *input_json, size_t id, char *uuid);
 int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
 int parse_badrequest(cJSON *input_json, size_t id, char *uuid);
 
-
+/* parse Objects */
 json_login_code_model json_parse_login_code(cJSON *directObject);
 json_login_token_model json_parse_login_token(cJSON *directObject);
 json_playlist_model json_parse_playlist(cJSON *directObject);
@@ -29,6 +29,7 @@ json_page_mix_model json_parse_page_mix(cJSON *directObject);
 json_stream_model json_parse_stream(cJSON *directObject);
 json_manifest_model json_parse_manifest(cJSON *directObject);
 
+/* parse Values */
 login_code_model parse_login_code_values(json_login_code_model json);
 login_token_model parse_login_token_values(json_login_token_model json);
 playlist_model parse_playlist_values(json_playlist_model json, size_t i);
@@ -40,3 +41,18 @@ contributor_model parse_contributor_values(json_contributor_model json, size_t i
 mix_model parse_mix_values(json_mix_model json);
 page_mix_model parse_page_mix_values(json_page_mix_model json, size_t i);
 stream_model parse_stream_values(json_stream_model json);
+
+search_model parse_search(cJSON *input_json);
+
+/* concatenation */
+char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode);
+char *url_cat_str(char *strOne, char *id, char *strTwo);
+
+/* persistentJSON */
+char *create_persistent_stream(char *username, char *audio_quality, char *video_quality);
+void read_persistent_stream(cJSON *input_json);
+
+/* encoding */
+char *url_encode(char *str);
+
+

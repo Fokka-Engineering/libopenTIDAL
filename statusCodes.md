@@ -14,3 +14,4 @@
 -1 Critical cURL Error
  0 IDK man
  1 Success 
+ 2 OAuth2 Authorization Pending

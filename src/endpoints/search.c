@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/parse.h"
+#include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 /* Search */

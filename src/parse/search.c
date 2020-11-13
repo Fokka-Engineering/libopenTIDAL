@@ -188,6 +188,8 @@ search_model parse_search(cJSON *input_json)
     Value.topVideo.status = 1;
     Value.topVideo.arraySize = 1;
   }
+  
+  Value.status = 1;
 
   return Value;
 }

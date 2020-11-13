@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "include/parse.h"
+#include "include/handles.h"
 #include "include/openTIDAL.h"
 
 char *refresh_token;

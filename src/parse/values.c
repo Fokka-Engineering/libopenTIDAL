@@ -77,7 +77,6 @@ items_model parse_items_values(json_items_model json, size_t i)
   parse_number(json.trackNumber, &Value.trackNumber[i]);
   parse_number(json.volumeNumber, &Value.volumeNumber[i]);
   parse_string(json.version, Value.version[i], sizeof(Value.version[i]));
-  parse_string(json.releaseDate, Value.releaseDate[i], sizeof(Value.releaseDate[i]));
   parse_string(json.cover, Value.cover[i], sizeof(Value.cover[i]));
   parse_string(json.videoCover, Value.videoCover[i], sizeof(Value.videoCover[i]));
   parse_string(json.imageId, Value.imageId[i], sizeof(Value.imageId[i]));

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/parse.h"
+#include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 /* TODO: Remove email or check if != NULL & Improve Error Handling & Check if picture is != NULL */

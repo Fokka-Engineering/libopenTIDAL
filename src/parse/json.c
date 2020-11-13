@@ -100,7 +100,6 @@ json_items_model json_parse_items(cJSON *directObject)
   Value.trackNumber = cJSON_GetObjectItem(directObject, "trackNumber");
   Value.volumeNumber = cJSON_GetObjectItem(directObject, "volumeNumber");
   Value.version = cJSON_GetObjectItemCaseSensitive(directObject, "version");
-  Value.releaseDate = cJSON_GetObjectItem(directObject, "releaseDate");
   Value.cover = cJSON_GetObjectItemCaseSensitive(album, "cover");
   Value.videoCover = cJSON_GetObjectItemCaseSensitive(album, "videoCover");
   Value.imageId = cJSON_GetObjectItemCaseSensitive(directObject, "imageId");
