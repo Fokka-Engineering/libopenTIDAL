@@ -187,6 +187,7 @@ items_model get_track(size_t trackid)
       json_items_model processed_json = json_parse_items(input_json);
       Value = parse_items_values(processed_json, 0);
       Value.status = 1;
+      Value.arraySize = 1;
 
       cJSON_Delete(input_json);
       free(req.body);

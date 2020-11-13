@@ -21,7 +21,8 @@ album_model get_album(size_t albumid)
       json_album_model processed_json = json_parse_album(input_json);
       Value = parse_album_values(processed_json, 0);
       Value.status = 1;
-      
+      Value.arraySize = 1;
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;

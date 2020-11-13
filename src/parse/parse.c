@@ -5,7 +5,7 @@
 
 void parse_string(cJSON *object, char *string, size_t length)
 {
-  if (cJSON_IsString(object)&& (!cJSON_IsNull(object)))
+  if (cJSON_IsString(object) && (!cJSON_IsNull(object)))
   {
     strncpy(string, object->valuestring, length);
   }

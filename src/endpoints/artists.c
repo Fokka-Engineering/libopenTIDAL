@@ -23,6 +23,7 @@ artist_model get_artist(size_t artistid)
       json_artist_model processed_json = json_parse_artist(input_json);
       Value = parse_artist_values(processed_json, 0);
       Value.status = 1;
+      Value.arraySize = 1;
 
       free(req.body);
       cJSON_Delete(input_json);

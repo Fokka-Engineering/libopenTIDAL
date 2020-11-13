@@ -21,33 +21,30 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      Value.status = 1;
-      size_t i = 0;
-      cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
+      size_t i = 0;
 
-      Value.limit = limit->valueint;
-      Value.offset = offset->valueint;
-      Value.totalNumberOfItems = totalNumberOfItems->valueint;
-      Value.arraySize = cJSON_GetArraySize(items);
-      cJSON_ArrayForEach(item, items)
+      if (cJSON_IsArray(items))
       {
-        cJSON *name = cJSON_GetObjectItemCaseSensitive(item, "name");
-        cJSON *role = cJSON_GetObjectItemCaseSensitive(item, "role");
-        
-	if (cJSON_IsString(name))
-	{
-          strncpy(Value.name[i], name->valuestring, sizeof(Value.name[i]));
+        Value.arraySize = cJSON_GetArraySize(items);
+	cJSON_ArrayForEach(item, items)
+        {
+          json_contributor_model processed_json = json_parse_contributors(item);
+	  Value = parse_contributor_values(processed_json, i);
+	  i += 1;
 	}
-	if (cJSON_IsString(role))
-	{
-	  strncpy(Value.role[i], role->valuestring, sizeof(Value.role[i]));
-	}
-	i = i + 1;
       }
+      
+      parse_number(limit, &Value.limit); 
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.status = 1;
+      Value.arraySize = cJSON_GetArraySize(items);
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;
@@ -84,10 +81,14 @@ items_model get_video(size_t videoid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      items_model parse = parse_videos(input_json);
+      json_items_model processed_json = json_parse_items(input_json);
+      Value = parse_items_values(processed_json, 0);
+      Value.status = 1;
+      Value.arraySize = 1;
+
       cJSON_Delete(input_json);
       free(req.body);
-      return parse;
+      return Value;
     }
     else
     {
@@ -121,28 +122,22 @@ stream_model get_video_stream(size_t videoid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      cJSON *videoId = cJSON_GetObjectItem(input_json, "videoId");
-      cJSON *assetPresentation = cJSON_GetObjectItemCaseSensitive(input_json, "assetPresentation");
-      cJSON *videoQuality = cJSON_GetObjectItemCaseSensitive(input_json, "videoQuality");
-      cJSON *manifestMimeType = cJSON_GetObjectItemCaseSensitive(input_json, "manifestMimeType");
-      cJSON *manifest = cJSON_GetObjectItemCaseSensitive(input_json, "manifest");
+      json_stream_model processed_json = json_parse_stream(input_json);
+      Value = parse_stream_values(processed_json);     
+      Value.status = 0;
       char manifest_decoded[1024];
 
-      Value.videoId = videoId->valueint;
-      strncpy(Value.assetPresentation, assetPresentation->valuestring, sizeof(Value.assetPresentation));
-      strncpy(Value.videoQuality, videoQuality->valuestring, sizeof(Value.videoQuality));
-
-      if (strcmp(manifestMimeType->valuestring, "application/vnd.tidal.emu") == 0)
+      if (strcmp(Value.manifestMimeType, "application/vnd.tidal.emu") == 0)
       {
         Value.status = 1;
-        Base64decode(manifest_decoded, manifest->valuestring);
+        Base64decode(manifest_decoded, Value.manifest);
         cJSON *manifest_json = json_parse(manifest_decoded);
-        cJSON *mimeType = cJSON_GetObjectItemCaseSensitive(manifest_json, "mimeType");
-        cJSON *urls = cJSON_GetObjectItemCaseSensitive(manifest_json, "urls");
-        cJSON *url = cJSON_GetArrayItem(urls, 0);
+        json_manifest_model processed_manifest = json_parse_manifest(manifest_json);
 
-        strncpy(Value.mimeType, mimeType->valuestring, sizeof(Value.mimeType));
-        strncpy(Value.url, url->valuestring, sizeof(Value.url));
+	parse_string(processed_manifest.mimeType, Value.manifestMimeType, sizeof(Value.manifestMimeType));
+        parse_string(processed_manifest.url, Value.url, sizeof(Value.url));
+	
+	cJSON_Delete(manifest_json);
       }
       else
       {

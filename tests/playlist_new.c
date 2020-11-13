@@ -27,10 +27,12 @@ int main()
     printf("SubArraySize: %zu\n", items_res.subArraySize[i]);
   }
   */
-  album_model res = get_album(1);
-  
-  printf("Title: %s\n", res.title[0]);
-  printf("Id: %zu\n", res.id[0]);
+  album_model res = get_album(4753719);
+  if (res.status == 1)
+  { 
+    printf("Title: %s\n", res.title[0]);
+    printf("Id: %zu\n", res.id[0]);
+  }
 
   items_model ress = get_album_items(4753719, 10, 0);
   
@@ -55,5 +57,10 @@ int main()
   printf("TrackId: %zu\n", resss.trackId);
   printf("Codec: %s\n", resss.codec);
   printf("Url: %s\n", resss.url);
+
+  stream_model ressss = get_video_stream(53654641);
+  printf("VideoId: %zu\n", ressss.videoId);
+  printf("Url: %s\n", ressss.url);
+
   return 0;
 }

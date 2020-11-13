@@ -659,6 +659,8 @@ playlist_model create_user_playlist(char *title, char *description)
       json_playlist_model processed_json = json_parse_playlist(input_json);
       Value = parse_playlist_values(processed_json, 0);
       Value.status = 1;
+      Value.arraySize = 1;
+
       free(req.body);
       cJSON_Delete(input_json);
       return Value;

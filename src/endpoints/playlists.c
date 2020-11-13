@@ -23,6 +23,8 @@ playlist_model get_playlist(char *playlistid)
       json_playlist_model processed_json = json_parse_playlist(input_json);
       Value = parse_playlist_values(processed_json, 0); 
       Value.status = 1;
+      Value.arraySize = 1;
+
       /* Cleanup  */
       cJSON_Delete(input_json);
       free(req.body);

@@ -45,17 +45,10 @@ typedef struct login_token_models
   char error[50];
 } login_token_model;
 
-/* GET  */
-
 typedef struct user_models
 {
   int status;
-  size_t id;
-  size_t hasFirstName;
-  size_t hasLastName;
-  size_t hasPicture;
-  size_t hasGender;
-  size_t hasDateOfBirth;
+  size_t userId;
   char username[50];
   char firstName[25];
   char lastName[25];
@@ -67,7 +60,7 @@ typedef struct user_models
   char dateOfBirth[11];
 } user_model;
 
-typedef struct playlist_models /* TODO: Check if ArrayLimit = 50 is enough */
+typedef struct playlist_models
 {
   int status;
   size_t limit;
@@ -96,7 +89,6 @@ typedef struct items_models
   size_t offset;
   size_t totalNumberOfItems;
   size_t arraySize;
-  size_t isVideo[100];
   size_t subArraySize[100]; /* 2nd ArraySize of Artist Array */
   size_t id[100];
   char title[100][80];
@@ -109,7 +101,6 @@ typedef struct items_models
   size_t popularity[100];
   size_t trackNumber[100];
   size_t volumeNumber[100];
-  size_t hasVersion[100];
   char version[100][50];
   size_t artistId[100][15]; /* 2D-Array for (featured) Artists  */
   char artistName[100][15][50];
@@ -120,7 +111,6 @@ typedef struct items_models
   char imageId[100][37];
   char audioQuality[100][20];
   char quality[100][20];
-  size_t hasReleaseDate[100];
   char releaseDate[100][11]; /* Only present in playlist_item response */
   char type[100][12];
 } items_model;
@@ -145,7 +135,6 @@ typedef struct albums_models
   size_t artistId[100][15]; /* 2D-Array for (featured) Artists  */
   char artistName[100][15][50];
   char quality[100][20];
-  size_t hasVersion[100];
   char version[100][50];
   size_t id[100];
   char title[100][80];
@@ -182,7 +171,6 @@ typedef struct artists_models
   size_t arraySize;
   size_t id[100];
   char name[100][50];
-  size_t hasPicture[100];
   char picture[100][37];
   size_t popularity[100];
 } artist_model;
@@ -242,11 +230,6 @@ typedef struct search_models
 {
   int status;
   char topHitType[10];
-  int isTopAlbum;
-  int isTopArtist;
-  int isTopTrack;
-  int isTopPlaylist;
-  int isTopVideo;
   album_model albums;
   artist_model artists;
   items_model tracks;
