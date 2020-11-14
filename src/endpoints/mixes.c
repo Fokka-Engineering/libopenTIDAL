@@ -44,18 +44,15 @@ items_model get_mix_items(char *mixid)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items);
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, 0, mixid);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -94,17 +91,15 @@ page_mix_model get_user_mixes()
       cJSON *item = NULL;
       */
       Value.status = 1;
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {

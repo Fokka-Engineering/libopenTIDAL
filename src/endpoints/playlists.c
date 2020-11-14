@@ -25,20 +25,15 @@ playlist_model get_playlist(char *playlistid)
       Value = parse_playlist_values(processed_json, 0); 
       Value.status = 1;
       Value.arraySize = 1;
-
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, 0, playlistid);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
+    
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -89,20 +84,15 @@ items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items); 
-      
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, 0, playlistid);
-      /* Cleanup  */
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
+    
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -155,20 +145,17 @@ get_user_playlist(size_t limit, size_t offset, char *order, char *orderDirection
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.arraySize = cJSON_GetArraySize(items);
       Value.status = 1;
- 
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+    
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
-else
+  else
   {
     Value.status = -1;
     free(req.body);
@@ -379,18 +366,15 @@ playlist_model create_user_playlist(char *title, char *description)
       Value = parse_playlist_values(processed_json, 0);
       Value.status = 1;
       Value.arraySize = 1;
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {

@@ -23,18 +23,15 @@ album_model get_album(size_t albumid)
       Value = parse_album_values(processed_json, 0);
       Value.status = 1;
       Value.arraySize = 1;
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, albumid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+    
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -87,18 +84,15 @@ items_model get_album_items(size_t albumid, size_t limit, size_t offset)
       parse_number(limit, &Value.limit);
       parse_number(offset, &Value.offset);
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, albumid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+    
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -152,18 +146,16 @@ get_user_album(size_t limit, size_t offset, char *order, char *orderDirection)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.arraySize = cJSON_GetArraySize(items);
       Value.status = 1;
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
+
   }
   else
   {
@@ -190,28 +182,26 @@ int add_user_album(size_t albumid)
   {
     if (req.responseCode == 200)
     {
-      return 1;
+      status = 1;
     }
     else if (req.responseCode == 400)
     {
       status = -11;
-      return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      return status;
     }
     else
     {
       status = 0;
-      return status;
     }
+
+    return status;
   }
   else
   {
@@ -232,28 +222,26 @@ int delete_user_album(size_t albumid)
   {
     if (req.responseCode == 200)
     {
-      return 1;
+      status = 1;
     }
     else if (req.responseCode == 400)
     {
       status = -11;
-      return status;
     }
     else if (req.responseCode == 401)
     {
       status = -8;
-      return status;
     }
     else if (req.responseCode == 404)
     {
       status = -2;
-      return status;
     }
     else
     {
       status = 0;
-      return status;
     }
+    
+    return status;
   }
   else
   {

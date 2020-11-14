@@ -25,18 +25,15 @@ items_model get_video(size_t videoid)
       Value = parse_items_values(processed_json, 0);
       Value.status = 1;
       Value.arraySize = 1;
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, videoid, NULL);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -89,19 +86,15 @@ get_user_videos(size_t limit, size_t offset, char *order, char *orderDirection)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.arraySize = cJSON_GetArraySize(items);
       Value.status = 1;
- 
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -152,18 +145,15 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items);
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, videoid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {
@@ -211,15 +201,15 @@ stream_model get_video_stream(size_t videoid)
         Value.status = -10;
         fprintf(stderr, "[Request Error] Not a valid manifest. MimeType is not application/vnd.tidal.emu\n");
       }
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, videoid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value;
   }
   else
   {

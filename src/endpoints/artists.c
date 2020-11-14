@@ -25,18 +25,15 @@ artist_model get_artist(size_t artistid)
       Value = parse_artist_values(processed_json, 0);
       Value.status = 1;
       Value.arraySize = 1;
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -87,18 +84,15 @@ artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
       parse_number(offset, &Value.offset);
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.arraySize = cJSON_GetArraySize(items);
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -127,18 +121,15 @@ mix_model get_artist_mix(size_t artistid)
       json_mix_model processed_json = json_parse_mix(input_json);
       Value = parse_mix_values(processed_json);
       Value.status = 1;
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -189,18 +180,15 @@ items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items);
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -251,18 +239,15 @@ items_model get_artist_videos(size_t artistid, size_t limit, size_t offset)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items);
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -313,18 +298,15 @@ album_model get_artist_albums(size_t artistid, size_t limit, size_t offset)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.status = 1;
       Value.arraySize = cJSON_GetArraySize(items);
-
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, artistid, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
@@ -377,18 +359,15 @@ get_user_artist(size_t limit, size_t offset, char *order, char *orderDirection)
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
       Value.arraySize = cJSON_GetArraySize(items);
       Value.status = 1;
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
     }
     else
     {
       Value.status = parse_status(input_json, req, userId, NULL);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return Value;
     }
+
+    free(req.body);
+    cJSON_Delete(input_json);
+    return Value; 
   }
   else
   {
