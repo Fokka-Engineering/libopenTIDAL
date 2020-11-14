@@ -44,6 +44,44 @@ login_token_model parse_login_token_values(json_login_token_model json)
   return Value;
 }
 
+user_model parse_user_values(json_user_model json)
+{
+  user_model Value;
+
+  parse_number(json.id, &Value.id);
+  parse_string(json.username, Value.username, sizeof(Value.username));
+  parse_string(json.firstName, Value.firstName, sizeof(Value.firstName));
+  parse_string(json.lastName, Value.lastName, sizeof(Value.lastName));
+  parse_string(json.email, Value.email, sizeof(Value.email));
+  parse_string(json.countryCode, Value.countryCode, sizeof(Value.countryCode));
+  parse_string(json.created, Value.created, sizeof(Value.created));
+  parse_string(json.picture, Value.picture, sizeof(Value.picture));
+  parse_bool(json.newsletter, &Value.newsletter);
+  parse_bool(json.acceptedEULA, &Value.acceptedEULA);
+  parse_string(json.gender, Value.gender, sizeof(Value.gender));
+  parse_string(json.dateOfBirth, Value.dateOfBirth, sizeof(Value.dateOfBirth));
+  parse_number(json.facebookUid, &Value.facebookUid);
+  parse_string(json.appleUid, Value.appleUid, sizeof(Value.appleUid));
+
+  return Value;
+}
+
+user_subscription_model parse_user_subscription_values(json_user_subscription_model json)
+{
+  user_subscription_model Value;
+
+  parse_string(json.validUntil, Value.validUntil, sizeof(Value.validUntil));
+  parse_string(json.status, Value.accountStatus, sizeof(Value.accountStatus));
+  parse_string(json.type, Value.type, sizeof(Value.type));
+  parse_number(json.offlineGracePeriod, &Value.offlineGracePeriod);
+  parse_string(json.highestSoundQuality, Value.highestSoundQuality, sizeof(Value.highestSoundQuality));
+  parse_bool(json.premiumAccess, &Value.premiumAccess);
+  parse_bool(json.canGetTrial, &Value.canGetTrial);
+  parse_string(json.paymentType, Value.paymentType, sizeof(Value.paymentType));
+
+  return Value;
+}
+
 playlist_model parse_playlist_values(json_playlist_model json, size_t i)
 {
   playlist_model Value;

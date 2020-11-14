@@ -46,15 +46,35 @@ typedef struct json_user_models
   cJSON *directObject;
   /* User Values */
   cJSON *id;
+  cJSON *username;
   cJSON *firstName;
   cJSON *lastName;
   cJSON *email;
   cJSON *countryCode;
   cJSON *created;
   cJSON *picture;
+  cJSON *newsletter;
+  cJSON *acceptedEULA;
   cJSON *gender;
   cJSON *dateOfBirth;
+  cJSON *facebookUid;
+  cJSON *appleUid;
 } json_user_model;
+
+typedef struct json_user_subscription_models
+{
+  /* Raw JSON Object */
+  cJSON *directObject;
+  /* Subscription Values */
+  cJSON *validUntil;
+  cJSON *status;
+  cJSON *type;
+  cJSON *offlineGracePeriod;
+  cJSON *highestSoundQuality;
+  cJSON *premiumAccess;
+  cJSON *canGetTrial;
+  cJSON *paymentType;
+} json_user_subscription_model;
 
 typedef struct json_playlist_models
 {

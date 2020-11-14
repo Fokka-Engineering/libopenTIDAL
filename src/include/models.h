@@ -48,7 +48,7 @@ typedef struct login_token_models
 typedef struct user_models
 {
   int status;
-  size_t userId;
+  size_t id;
   char username[50];
   char firstName[25];
   char lastName[25];
@@ -56,9 +56,26 @@ typedef struct user_models
   char countryCode[3];
   char created[29];
   char picture[37]; /* Always 36 Chars Long */
+  size_t newsletter;
+  size_t acceptedEULA;
   char gender[2];
   char dateOfBirth[11];
+  size_t facebookUid;
+  char appleUid[200];
 } user_model;
+
+typedef struct user_subscription_models
+{
+  int status;
+  char validUntil[30];
+  char accountStatus[20];
+  char type[20];
+  size_t offlineGracePeriod;
+  char highestSoundQuality[20];
+  size_t premiumAccess;
+  size_t canGetTrial;
+  char paymentType[20];
+} user_subscription_model;
 
 typedef struct playlist_models
 {

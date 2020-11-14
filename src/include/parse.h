@@ -17,6 +17,8 @@ int parse_badrequest(cJSON *input_json, size_t id, char *uuid);
 /* parse Objects */
 json_login_code_model json_parse_login_code(cJSON *directObject);
 json_login_token_model json_parse_login_token(cJSON *directObject);
+json_user_model json_parse_user(cJSON *directObject);
+json_user_subscription_model json_parse_user_subscription(cJSON *directObject);
 json_playlist_model json_parse_playlist(cJSON *directObject);
 json_items_model json_parse_items(cJSON *directObject);
 json_album_model json_parse_album(cJSON *directObject);
@@ -32,6 +34,8 @@ json_manifest_model json_parse_manifest(cJSON *directObject);
 /* parse Values */
 login_code_model parse_login_code_values(json_login_code_model json);
 login_token_model parse_login_token_values(json_login_token_model json);
+user_model parse_user_values(json_user_model json);
+user_subscription_model parse_user_subscription_values(json_user_subscription_model json);
 playlist_model parse_playlist_values(json_playlist_model json, size_t i);
 items_model parse_items_values(json_items_model json, size_t i);
 album_model parse_album_values(json_album_model json, size_t i);

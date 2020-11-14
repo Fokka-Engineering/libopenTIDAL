@@ -62,6 +62,48 @@ json_login_token_model json_parse_login_token(cJSON *directObject)
   return Value;
 }
 
+json_user_model json_parse_user(cJSON *directObject)
+{
+  json_user_model Value;
+
+  Value.directObject = directObject;
+  Value.id = cJSON_GetObjectItem(directObject, "id");
+  Value.username = cJSON_GetObjectItemCaseSensitive(directObject, "username");
+  Value.firstName = cJSON_GetObjectItemCaseSensitive(directObject, "firstName");
+  Value.lastName = cJSON_GetObjectItemCaseSensitive(directObject, "lastName");
+  Value.email = cJSON_GetObjectItemCaseSensitive(directObject, "email");
+  Value.countryCode = cJSON_GetObjectItemCaseSensitive(directObject, "countryCode");
+  Value.created = cJSON_GetObjectItemCaseSensitive(directObject, "created");
+  Value.picture = cJSON_GetObjectItemCaseSensitive(directObject, "picture");
+  Value.newsletter = cJSON_GetObjectItem(directObject, "newsletter");
+  Value.acceptedEULA = cJSON_GetObjectItem(directObject, "acceptedEULA");
+  Value.gender = cJSON_GetObjectItemCaseSensitive(directObject, "gender");
+  Value.dateOfBirth = cJSON_GetObjectItemCaseSensitive(directObject, "dateOfBirth");
+  Value.facebookUid = cJSON_GetObjectItem(directObject, "facebookUid");
+  Value.appleUid = cJSON_GetObjectItemCaseSensitive(directObject, "appleUid");
+
+  return Value;
+}
+
+json_user_subscription_model json_parse_user_subscription(cJSON *directObject)
+{
+  json_user_subscription_model Value;
+
+  cJSON *subscription = cJSON_GetObjectItem(directObject, "subscription");
+
+  Value.directObject = directObject;
+  Value.validUntil = cJSON_GetObjectItemCaseSensitive(directObject, "validUntil");
+  Value.status = cJSON_GetObjectItemCaseSensitive(directObject, "status");
+  Value.type = cJSON_GetObjectItemCaseSensitive(subscription, "type");
+  Value.offlineGracePeriod = cJSON_GetObjectItem(subscription, "offlineGracePeriod");
+  Value.highestSoundQuality = cJSON_GetObjectItemCaseSensitive(directObject, "highestSoundQuality");
+  Value.premiumAccess = cJSON_GetObjectItem(directObject, "premiumAccess");
+  Value.canGetTrial = cJSON_GetObjectItem(directObject, "canGetTrial");
+  Value.paymentType = cJSON_GetObjectItemCaseSensitive(directObject, "paymentType");
+
+  return Value;
+}
+
 json_playlist_model json_parse_playlist(cJSON *directObject)
 {
   json_playlist_model Value;
