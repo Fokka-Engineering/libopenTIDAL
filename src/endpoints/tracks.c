@@ -275,4 +275,91 @@ stream_model get_track_stream(size_t trackid)
   }
 }
 
+/* create & delete favourites */
+
+int add_user_track(size_t trackid)
+{
+  char *endpoint = url_cat("users/", userId, "/favorites/tracks", 1);
+  int status;
+  char buffer[60];
+  snprintf(buffer, 60, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
+
+  curl_model req = curl_post(endpoint, buffer, "");
+  free(endpoint);
+  free(req.body);
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+int delete_user_track(size_t trackid)
+{
+  int status;
+  char buffer[80];
+  snprintf(buffer, 80, "users/%zu/favorites/tracks/%zu?countryCode=%s", userId, trackid, countryCode);
+
+  curl_model req = curl_delete(buffer, "", "");
+  /*Cleanup*/
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
 

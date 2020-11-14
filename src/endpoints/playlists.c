@@ -351,3 +351,144 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eT
 {
   return 0;
 }
+
+/* create & delete favourites */
+
+playlist_model create_user_playlist(char *title, char *description)
+{
+  playlist_model Value;
+  char *endpoint = url_cat("users/", userId, "/playlists", 1);
+
+  char *data = malloc(strlen(title)+strlen(description)+7+14+1);
+  strcpy(data, "title=");
+  strcat(data, title);
+  strcat(data, "&description=");
+  strcat(data, description);
+
+  curl_model req = curl_post(endpoint, data, "");
+  /*Cleanup*/
+  free(endpoint);
+  free(data);
+
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 201 || req.responseCode == 200)
+    {
+      json_playlist_model processed_json = json_parse_playlist(input_json);
+      Value = parse_playlist_values(processed_json, 0);
+      Value.status = 1;
+      Value.arraySize = 1;
+
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = parse_status(input_json, req, userId, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+  }
+  else
+  {
+    printf("[Request Error] CURLE_OK Check failed.\n");
+    playlist_model Value;
+    Value.status = -1;
+    free(req.body);
+    return Value;
+  }
+}
+
+
+int add_user_playlist(char *playlistid)
+{
+  char *endpoint = url_cat("users/", userId, "/favorites/playlists", 1);
+  int status;
+  char *data = malloc(strlen(playlistid)+10+25+1);
+  strcpy(data, "uuids=");
+  strcat(data, playlistid);
+  strcat(data, "&onArtifactNotFound=FAIL");
+
+  curl_model req = curl_post(endpoint, data, "");
+  free(endpoint);
+  free(data);
+  free(req.body);
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+int delete_user_playlist(char *playlistid)
+{
+  int status;
+  char buffer[80];
+  snprintf(buffer, 80, "users/%zu/favorites/playlists/%s?countryCode=%s", userId, playlistid, countryCode);
+
+  curl_model req = curl_delete(buffer, "", "");
+  /*Cleanup*/
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
+

@@ -229,3 +229,93 @@ stream_model get_video_stream(size_t videoid)
     return Value;
   }
 }
+
+/* create & delete favourites */
+
+int add_user_video(size_t videoid)
+{
+  char *endpoint = url_cat("users/", userId, "/favorites/videos", 1);
+  int status;
+  char buffer[60];
+  snprintf(buffer, 60, "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
+  
+  curl_model req = curl_post(endpoint, buffer, "");
+  /*Cleanup*/
+  free(endpoint);
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+int delete_user_video(size_t videoid)
+{
+  int status;
+  char buffer[80];
+  snprintf(buffer, 80, "users/%zu/favorites/videos/%zu?countryCode=%s", userId, videoid, countryCode);
+
+  curl_model req = curl_delete(buffer, "", "");
+  /*Cleanup*/
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      status = -11;
+      return status;
+    }
+    else if (req.responseCode == 401)
+    {
+      status = -8;
+      return status;
+    }
+    else if (req.responseCode == 404)
+    {
+      status = -2;
+      return status;
+    }
+    else
+    {
+      status = 0;
+      return status;
+    }
+  }
+  else
+  {
+    return -1;
+  }
+}
