@@ -17,25 +17,39 @@ char *audioQuality;
 char *videoQuality;
 char *persistentFile;
 size_t userId;
+size_t demoEnabled;
 time_t expires_in;
 
 char *json_stream;
 int isStream = 0;
 cJSON *json_scan_stream;
 int isScanStream = 0;
+int updated = 0;
 
 void init(char *file_location)
 {
   persistentFile = malloc(strlen(file_location) + 1);
   strcpy(persistentFile, file_location);
   scan_persistent();
+  demoEnabled = 0;
+}
+
+void init_demo()
+{
+  demoEnabled = 1;
+  countryCode = "US";
+  audioQuality = "LOW";
+  videoQuality = "LOW";
 }
 
 void cleanup()
 {
   curl_exit_auth();
   curl_exit();
-  free(persistentFile);
+  if (demoEnabled != 1)
+  {
+    free(persistentFile);
+  }
   if (isStream == 1)
   {
     free(json_stream);
@@ -43,6 +57,11 @@ void cleanup()
   if (isScanStream == 1)
   {
     cJSON_Delete(json_scan_stream);
+  }
+  if (updated == 1)
+  {
+    free(audioQuality);
+    free(videoQuality);
   }
 }
 
@@ -192,8 +211,12 @@ void refresh_persistent()
 {
   /* start OAuth refresh routine  */
   time_t currentTime = time(NULL);
+  size_t skip;
   double diff_t;
-
+  if (demoEnabled == 1)
+  {
+    goto end;
+  }
   /* Check if ExpiryDate is in the future  */
   if (currentTime > expires_in)
   {
@@ -236,7 +259,10 @@ void refresh_persistent()
     else
     {
       fprintf(stderr, "[OAuth] Auto Refresh failed.\n");
-      sleep(30);
+      demoEnabled = 1;
+      countryCode = "US";
     }
   }
+end:
+  skip = 1;    
 }

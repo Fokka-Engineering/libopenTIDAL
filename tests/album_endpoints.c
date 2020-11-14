@@ -10,8 +10,8 @@ int main(void)
   char input_token[1024];
 
   printf("Testing openTIDAL Album Endpoints...\n");
-  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
-
+  //init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
+  init_demo();
   /* get_album  */
   skipped = 1;
   printf("[CI] Testing get_album (0 to skip)...: ");

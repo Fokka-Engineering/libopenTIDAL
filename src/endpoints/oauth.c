@@ -8,8 +8,6 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-/* TODO: Improve Error Handling with HTTP Codes */
-
 login_code_model login_create_code()
 {
   login_code_model Value;
@@ -67,6 +65,9 @@ login_token_model login_create_token(char *device_code)
     
     if (cJSON_IsNumber(check_status) != 1)
     {
+      char *audio_quality;
+      char *video_quality;
+
       json_login_token_model processed_json = json_parse_login_token(input_json);
       Value = parse_login_token_values(processed_json);
       Value.status = 1;
@@ -74,7 +75,34 @@ login_token_model login_create_token(char *device_code)
       expires_in = Value.expires_in;
       countryCode = Value.countryCode;
       userId = Value.userId;
-      create_persistent(Value.username, "HIGH", "HIGH"); /* Default Quality Settings  */
+      access_token = Value.access_token;
+      refresh_token = Value.refresh_token;
+
+      /* get subscription info */
+      user_subscription_model subscription = get_user_subscription();
+      if (subscription.status == 1)
+      { 
+        if (strcmp(subscription.highestSoundQuality, "\0") == 0)
+        {
+          /* free subscription without streaming privileges */
+          audio_quality = "LOW";
+	  video_quality = "LOW";
+        }
+        else
+        {
+          /* active subscription with streaming privileges */
+          audio_quality = subscription.highestSoundQuality;
+  	  video_quality = "HIGH";
+        }
+      }
+      else
+      {
+        /* failed to retrieve acurate settings use minimum */
+        audio_quality = "LOW";
+	video_quality = "LOW";
+      }
+
+      create_persistent(Value.username, audio_quality, video_quality);
     }
     else
     {
@@ -149,5 +177,32 @@ login_token_model login_refresh_token(char *refresh_token)
     Value.status = -1;
     fprintf(stderr, "[Request Error] Refresh Token: CURLE_OK Check failed.\n");
     return Value;
+  }
+}
+
+int logout()
+{
+  int status = 0;
+
+  curl_model req = curl_post("logout", "", "");
+  if (req.status != 1)
+  {
+    if (req.responseCode == 204)
+    {
+      status = 1;
+    }
+    else
+    {
+      status = 0;
+    }
+
+    return status;
+  }
+  else
+  {
+    free(req.body);
+    status = -1;
+    fprintf(stderr, "[Request Error] Logout: CURLE_OK Check failed.\n");
+    return status;
   }
 }

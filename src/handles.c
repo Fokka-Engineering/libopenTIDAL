@@ -3,12 +3,11 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "include/handles.h"
+#include "include/parse.h"
 #include "include/openTIDAL.h"
 
 const char *baseUrl = "https://api.tidal.com/v1/";
 const char *authUrl = "https://auth.tidal.com/v1/";
-/* if Demo is 1 -> login not required & Full Playback not available */
-size_t demoEnabled = 0;
 
 /* struct used to parse raw libcurl response  */
 struct MemoryStruct {
@@ -92,7 +91,7 @@ curl_model curl_get(char *endpoint, char *data)
   }
   else
   {
-    char client_header_key[] = "x-tidal-token: ";
+    char client_header_key[] = "X-Tidal-Token: ";
     /* allocate size of client_id and header  */
     client_header = malloc(strlen(client_id)+strlen(client_header_key)+1);
     strcpy(client_header, client_header_key);
@@ -111,7 +110,7 @@ curl_model curl_get(char *endpoint, char *data)
     }
     else
     {
-      /* append client_id header  */
+      /* append client_id header */
       chunk = curl_slist_append(chunk, client_header);
     }
     curl_easy_setopt(curl, CURLOPT_URL, url);

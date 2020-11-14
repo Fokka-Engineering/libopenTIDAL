@@ -229,7 +229,7 @@ stream_model get_track_stream(size_t trackid)
 	cJSON *manifest_json = json_parse(manifest_decoded);
 	json_manifest_model processed_manifest = json_parse_manifest(manifest_json);
         
-        parse_string(processed_manifest.mimeType, Value.manifestMimeType, sizeof(Value.manifestMimeType));
+        parse_string(processed_manifest.mimeType, Value.mimeType, sizeof(Value.mimeType));
         parse_string(processed_manifest.codec, Value.codec, sizeof(Value.codec));
         parse_string(processed_manifest.encryptionType, Value.encryptionType, sizeof(Value.encryptionType));
         parse_string(processed_manifest.url, Value.url, sizeof(Value.url));

@@ -1,7 +1,8 @@
 CC = gcc
 CFLAGS = -fPIC -Wall -Werror
-LDFLAGS = -dynamiclib -lcURL
 RM = rm -f
+
+LDFLAGS = -dynamiclib -lcURL
 TARGET_LIB = libopenTIDAL.dylib
 
 SRCS = $(wildcard src/*.c) $(wildcard src/endpoints/*.c) $(wildcard src/parse/*.c)

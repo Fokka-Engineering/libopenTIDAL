@@ -59,4 +59,7 @@ void read_persistent_stream(cJSON *input_json);
 /* encoding */
 char *url_encode(char *str);
 
-
+/* persistent json  */
+void scan_persistent();
+void create_persistent(char *username, char *audio_quality, char *video_quality);
+void refresh_persistent();
