@@ -65,3 +65,53 @@ items_model get_mix_items(char *mixid)
     return Value;
   }
 }
+
+page_mix_model get_user_mixes()
+{
+  page_mix_model Value;
+  char *endpoint = "pages/my_collection_my_mixes";
+  
+  char baseparams[40];
+  snprintf(baseparams, 40, "countryCode=%s&deviceType=BROWSER", countryCode);
+  
+  curl_model req = curl_get(endpoint, baseparams);
+
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 200)
+    {
+      /*cJSON *rows = cJSON_GetObjectItem(input_json, "rows");
+      cJSON *rowsArray = cJSON_GetArrayItem(rows, 0);
+      cJSON *modules = cJSON_GetObjectItem(rowsArray, "modules");
+      cJSON *modulesArray = cJSON_GetArrayItem(modules, 0);
+      cJSON *type = cJSON_GetObjectItemCaseSensitive(modulesArray, "type");
+      cJSON *pagedList = cJSON_GetObjectItem(modulesArray, "pagedList");
+      cJSON *limit = cJSON_GetObjectItem(pagedList, "limit");
+      cJSON *offset = cJSON_GetObjectItem(pagedList, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(pagedList, "totalNumberOfItems");
+      cJSON *items = cJSON_GetObjectItem(pagedList, "items");
+      cJSON *item = NULL;
+      */
+      Value.status = 1;
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = parse_status(input_json, req, userId, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+  }
+  else
+  {
+    printf("[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
+    Value.status = -1;
+    free(req.body);
+    return Value;
+  }
+}
+

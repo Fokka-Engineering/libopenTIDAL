@@ -6,6 +6,111 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
+items_model get_track(size_t trackid)
+{
+  items_model Value;
+  char *endpoint = url_cat("tracks/", trackid, "", 0);
+  
+  char baseparams[20];
+  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+
+  curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 200)
+    {
+      json_items_model processed_json = json_parse_items(input_json);
+      Value = parse_items_values(processed_json, 0);
+      Value.status = 1;
+      Value.arraySize = 1;
+
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+    else
+    {
+      Value.status = parse_status(input_json, req, trackid, NULL);
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+  }
+  else
+  {
+    Value.status = -1;
+    free(req.body);
+    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
+    return Value;
+  }
+}
+
+items_model
+get_user_tracks(size_t limit, size_t offset, char *order, char *orderDirection)
+{
+  items_model Value;
+  char *endpoint = url_cat("users/", userId, "/favorites/tracks", 0);
+  
+  char baseparams[150];
+  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset%zu&order%s&orderDirection=%s",
+             countryCode, limit, offset, order, orderDirection);
+
+  curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 200)
+    {
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+
+          json_items_model processed_json = json_parse_items(innerItem);
+          Value = parse_items_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+ 
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+    else
+    {
+      Value.status = parse_status(input_json, req, userId, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+  }
+  else
+  {
+    Value.status = -1;
+    free(req.body);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
+    return Value;
+  }
+}
+
 contributor_model get_track_contributors(size_t trackid, size_t limit, size_t offset)
 {
   contributor_model Value;
@@ -170,43 +275,4 @@ stream_model get_track_stream(size_t trackid)
   }
 }
 
-items_model get_track(size_t trackid)
-{
-  items_model Value;
-  char *endpoint = url_cat("tracks/", trackid, "", 0);
-  
-  char baseparams[20];
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
 
-  curl_model req = curl_get(endpoint, baseparams);
-  free(endpoint);
-  if (req.status != -1)
-  {
-    cJSON *input_json = json_parse(req.body);
-    if (req.responseCode == 200)
-    {
-      json_items_model processed_json = json_parse_items(input_json);
-      Value = parse_items_values(processed_json, 0);
-      Value.status = 1;
-      Value.arraySize = 1;
-
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-    else
-    {
-      Value.status = parse_status(input_json, req, trackid, NULL);
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
-    }
-  }
-  else
-  {
-    Value.status = -1;
-    free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
-    return Value;
-  }
-}

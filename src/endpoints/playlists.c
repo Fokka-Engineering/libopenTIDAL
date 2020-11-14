@@ -113,6 +113,71 @@ items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
   }
 }
 
+playlist_model
+get_user_playlist(size_t limit, size_t offset, char *order, char *orderDirection)
+{
+  playlist_model Value;
+  char *endpoint = url_cat("users/", userId, "/playlistsAndFavoritePlaylists", 0);
+  
+  char baseparams[150];
+  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset%zu&order%s&orderDirection=%s",
+             countryCode, limit, offset, order, orderDirection);
+
+  curl_model req = curl_get(endpoint, baseparams);
+  free(endpoint);
+  if (req.status != -1)
+  {
+    cJSON *input_json = json_parse(req.body);
+    if (req.responseCode == 200)
+    {
+      cJSON *items = cJSON_GetObjectItem(input_json, "items");
+      cJSON *item = NULL;
+      cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
+      cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
+      cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+      size_t i = 0;
+
+      if (cJSON_IsArray(items))
+      {
+        cJSON_ArrayForEach(item, items)
+        {
+          cJSON *innerItem = cJSON_GetObjectItem(item, "playlist");
+
+          json_playlist_model processed_json = json_parse_playlist(innerItem);
+          Value = parse_playlist_values(processed_json, i);
+  	  i += 1;
+        }
+      }
+      
+      parse_number(limit, &Value.limit);
+      parse_number(offset, &Value.offset);
+      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      Value.arraySize = cJSON_GetArraySize(items);
+      Value.status = 1;
+ 
+      cJSON_Delete(input_json);
+      free(req.body);
+      return Value;
+    }
+    else
+    {
+      Value.status = parse_status(input_json, req, userId, NULL);
+      free(req.body);
+      cJSON_Delete(input_json);
+      return Value;
+    }
+  }
+else
+  {
+    Value.status = -1;
+    free(req.body);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
+    return Value;
+  }
+}
+
+
 char *get_playlist_etag(char *playlistid)
 {
   /* Request playlist endpoint to scrape eTag Header  */
