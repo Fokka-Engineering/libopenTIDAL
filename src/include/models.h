@@ -128,7 +128,6 @@ typedef struct items_models
   char imageId[100][37];
   char audioQuality[100][20];
   char quality[100][20];
-  char releaseDate[100][11]; /* Only present in playlist_item response */
   char type[100][12];
 } items_model;
 

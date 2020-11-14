@@ -66,6 +66,7 @@ artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+      cJSON *source = cJSON_GetObjectItemCaseSensitive(input_json, "source");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
       
@@ -83,6 +84,7 @@ artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
       parse_number(limit, &Value.limit);
       parse_number(offset, &Value.offset);
       parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      parse_string(source, Value.source, sizeof(Value.source));
       Value.arraySize = cJSON_GetArraySize(items);
     }
     else
