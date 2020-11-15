@@ -40,3 +40,8 @@ MIT License
 ## Disclaimer
 
 I deeply discourage you from building and distributing copyright-infringing apps. Create something that adds up to TIDAL's Service.
+
+## Credits
+* cURL (Daniel Stenberg & Contributors)
+* cJSON (Dave Gamble & Contributors)
+* Base64 (Apple Inc.)
