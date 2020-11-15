@@ -29,14 +29,58 @@ MIT License
 ## Usage
 
 ### Introduction
+openTIDAL is a TIDAL API wrapper written in ANSI C. It's lightweight, fast and easy to use.
+
+After reverse-engineering the TIDAL API and documenting all endpoints, I had the idea to write a portable C library. The goal was to integrate the OAuth2 Device-Flow, auto-refreshing sessions and all endpoints. 
+
+A python module using libopenTIDAL is also available and easy to install.
+
+##### What is implemented?
+* OAuth Log-In/Logout and Automatic Session Renewal
+* Playlist Creation, Deletion and Manipulation
+* Mixes
+* Favourites Management
+* Pagination
+* Order & Sort Filters
+* DRM-Free Content HTTP Streams (Audio & Video)
+* Easy and Extensive Error Handling
 
 ### Building
+Currently the compilation has only been tested on macOS and GNU/Linux.
 
-#### Dependencies
+Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
+The created library will be copied to the working directory.
+```
+$ make
+```
+Cleanup the working directory:
+```
+$ make clean
+```
+##### Dependencies
+openTIDAL uses libcURL for HTTP Requests. In modern systems curl is preinstalled (macOS, Windows 10 (1803 or later) and most Linux distributions).
 
-### Wiki
+You need the development package on some Linux distributions.
 
+On Debian & other APT-based Distros:
+```
+$ apt install libcurl-dev
+```
+
+On CentOS:
+```
+$ dnf install libcurl-devel
+```
+
+##### Wiki
+Functions and Usage are documented in the GitHub wiki.\
+You can check it out here!
 
 ## Disclaimer
 
 I deeply discourage you from building and distributing copyright-infringing apps. Create something that adds up to TIDAL's Service.
+
+## Credits
+* cURL (Daniel Stenberg & Contributors)
+* cJSON (Dave Gamble & Contributors)
+* Base64 (Apple Inc.)
