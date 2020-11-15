@@ -7,11 +7,9 @@
 int main(void)
 {
   size_t skipped;
-  char input_token[1024];
 
   printf("Testing openTIDAL Album Endpoints...\n");
-  //init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
-  init_demo();
+  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
   /* get_album  */
   skipped = 1;
   printf("[CI] Testing get_album (0 to skip)...: ");
@@ -21,22 +19,26 @@ int main(void)
     album_model res = get_album(4123207);
     if (res.status == 1)
     {
-      int i;
-      printf("Id: %zu\n", res.id[0]);
-      printf("Title: %s\n", res.title[0]);
-      printf("Duration: %zu\n", res.duration[0]);
-      printf("Popularity: %zu\n", res.popularity[0]);
-      printf("NumberOfTracks: %zu\n", res.numberOfTracks[0]);
-      printf("NumberOfVideos: %zu\n", res.numberOfVideos[0]);
-      printf("NumberOfVolumes: %zu\n", res.numberOfVolumes[0]);
-      printf("ReleaseDate: %s\n", res.releaseDate[0]);
-      printf("Copyright: %s\n", res.copyright[0]);
-      printf("Quality: %s\n", res.quality[0]);
-      printf("Cover: %s\n", res.cover[0]);
-      for (i = 0; i < res.subArraySize[0]; ++i)
+      size_t i;
+      size_t a;
+      for (i = 0; i < res.arraySize; ++i)
       {
-        printf("ArtistId: %zu\n", res.artistId[0][i]);
-        printf("ArtistName %s\n", res.artistName[0][i]);
+        printf("Id: %zu\n", res.id[i]);
+        printf("Title: %s\n", res.title[i]);
+        printf("Duration: %zu\n", res.duration[i]);
+        printf("Popularity: %zu\n", res.popularity[i]);
+        printf("NumberOfTracks: %zu\n", res.numberOfTracks[i]);
+        printf("NumberOfVideos: %zu\n", res.numberOfVideos[i]);
+        printf("NumberOfVolumes: %zu\n", res.numberOfVolumes[i]);
+        printf("ReleaseDate: %s\n", res.releaseDate[i]);
+        printf("Copyright: %s\n", res.copyright[i]);
+        printf("Quality: %s\n", res.quality[i]);
+        printf("Cover: %s\n", res.cover[i]);
+        for (a = 0; a < res.subArraySize[i]; ++a)
+        {
+          printf("ArtistId: %zu\n", res.artistId[i][a]);
+          printf("ArtistName %s\n", res.artistName[i][a]);
+        }
       }
     }
   }
@@ -62,8 +64,8 @@ int main(void)
     items_model res = get_album_items(4123207, limit, offset);
     if (res.status == 1)
     {
-      int i;
-      int a;
+      size_t i;
+      size_t a;
       for (i = 0; i < res.arraySize; ++i)
       {
         printf("Id: %zu\n", res.id[i]);
@@ -97,4 +99,82 @@ int main(void)
     printf("[CI] Skipping...\n");
   }
 
+  /* get_favorite_albums  */
+  skipped = 1;
+  printf("[CI] Testing get_favorite_albums (0 to skip)...: ");
+  scanf("%zu", &skipped);
+  if (skipped != 0)
+  {
+    size_t limit = 10;
+    size_t offset = 0;
+    char *order = "DATE";
+    char *orderDirection = "DESC";
+    album_model res = get_favorite_album(limit, offset, order, orderDirection);
+    if (res.status == 1)
+    {
+      size_t i;
+      size_t a;
+      for (i = 0; i < res.arraySize; ++i)
+      {
+        printf("Id: %zu\n", res.id[i]);
+        printf("Title: %s\n", res.title[i]);
+        printf("Duration: %zu\n", res.duration[i]);
+        printf("Popularity: %zu\n", res.popularity[i]);
+        printf("NumberOfTracks: %zu\n", res.numberOfTracks[i]);
+        printf("NumberOfVideos: %zu\n", res.numberOfVideos[i]);
+        printf("NumberOfVolumes: %zu\n", res.numberOfVolumes[i]);
+        printf("ReleaseDate: %s\n", res.releaseDate[i]);
+        printf("Copyright: %s\n", res.copyright[i]);
+        printf("Quality: %s\n", res.quality[i]);
+        printf("Cover: %s\n", res.cover[i]);
+        for (a = 0; a < res.subArraySize[i]; ++a)
+        {
+          printf("ArtistId: %zu\n", res.artistId[i][a]);
+          printf("ArtistName %s\n", res.artistName[i][a]);
+        }
+      }
+    }
+  }
+  else
+  {
+    printf("[CI] Skipping...\n");
+  }
+  
+  /* add_favorite_album  */
+  skipped = 1;
+  printf("[CI] Testing add_favorite_album (0 to skip)...: ");
+  scanf("%zu", &skipped);
+  if (skipped != 0)
+  {
+    size_t albumId = 25934525;
+    int res = add_favorite_album(albumId);
+    if (res == 1)
+    {
+      printf("Success!\n");
+    }
+  }
+  else
+  {
+    printf("[CI] Skipping...\n");
+  }
+ 
+  /* delete_favorite_album  */
+  skipped = 1;
+  printf("[CI] Testing delete_favorite_album (0 to skip)...: ");
+  scanf("%zu", &skipped);
+  if (skipped != 0)
+  {
+    size_t albumId = 25934525;
+    int res = delete_favorite_album(albumId);
+    if (res == 1)
+    {
+      printf("Success!\n");
+    }
+  }
+  else
+  {
+    printf("[CI] Skipping...\n");
+  }
+
+  cleanup();
 }

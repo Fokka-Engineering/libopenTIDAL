@@ -1,3 +1,25 @@
+/*
+  Copyright (c) 2020 Hugo Melder and openTIDAL contributors
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+*/
+
 #include "cJSON.h"
 #include "models.h"
 #include "json_models.h"
@@ -60,9 +82,9 @@ user_subscription_model get_user_subscription();
 
 
 playlist_model get_playlist(char *playlistid);
-playlist_model get_user_playlist(size_t limit,
+playlist_model get_favorite_playlist(size_t limit,
                               size_t offset, char *order, char *orderDirection);
-playlist_model create_user_playlist(char *title, char *description);
+playlist_model create_playlist(char *title, char *description);
 
 items_model get_playlist_items(char *playlistid, size_t limit, size_t offset);
 
@@ -72,8 +94,8 @@ int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader);
 int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTagHeader);
 int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTagHeader);
 int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eTagHeader);
-int delete_user_playlist(char *playlistid);
-int add_user_playlist(char *playlistid);
+int delete_favorite_playlist(char *playlistid);
+int add_favorite_playlist(char *playlistid);
 
 
 
@@ -82,18 +104,18 @@ int add_user_playlist(char *playlistid);
 
 album_model get_album(size_t albumid);
 items_model get_album_items(size_t albumid, size_t limit, size_t offset);
-album_model get_user_album(size_t limit,
+album_model get_favorite_album(size_t limit,
                               size_t offset, char *order, char *orderDirection);
 
-int add_user_album(size_t albumid);
-int delete_user_album(size_t albumid);
+int add_favorite_album(size_t albumid);
+int delete_favorite_album(size_t albumid);
 
 
 /* Artist Endpoints */
 
 
 artist_model get_artist(size_t artistid);
-artist_model get_user_artist(size_t limit,
+artist_model get_favorite_artist(size_t limit,
                               size_t offset, char *order, char *orderDirection);
 artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset);
 mix_model get_artist_mix(size_t artistid);
@@ -101,8 +123,8 @@ items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset);
 items_model get_artist_videos(size_t artistid, size_t limit, size_t offset);
 album_model get_artist_albums(size_t artistid, size_t limit, size_t offset);
 
-int add_user_artist(size_t artistid);
-int delete_user_artist(size_t artistid);
+int add_favorite_artist(size_t artistid);
+int delete_favorite_artist(size_t artistid);
 
 
 /* Track Endpoints  */
@@ -112,31 +134,31 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
 mix_model get_track_mix(size_t trackid);
 stream_model get_track_stream(size_t trackid);
 items_model get_track(size_t trackid);
-items_model get_user_tracks(size_t limit,
+items_model get_favorite_tracks(size_t limit,
                               size_t offset, char *order, char *orderDirection);
 
-int delete_user_track(size_t trackid);
-int add_user_track(size_t trackid);
+int delete_favorite_track(size_t trackid);
+int add_favorite_track(size_t trackid);
 
 
 /* Video Endpoints  */
 
 
 items_model get_video(size_t videoid);
-items_model get_user_videos(size_t limit,
+items_model get_favorite_videos(size_t limit,
                               size_t offset, char *order, char *orderDirection);
 contributor_model get_video_contributors(size_t videoid, size_t limit, size_t offset);
 stream_model get_video_stream(size_t videoid);
 
-int add_user_video(size_t videoid);
-int delete_user_video(size_t videoid);
+int add_favorite_video(size_t videoid);
+int delete_favorite_video(size_t videoid);
 
 
 /* Mix Endpoints  */
 
 
 items_model get_mix_items(char *mixid);
-page_mix_model get_user_mixes();
+page_mix_model get_favorite_mixes();
 
 
 /* Search Endpoints */

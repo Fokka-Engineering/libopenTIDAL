@@ -1,11 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "../include/openTIDAL.h"
-#include <string.h>
-#include <curl/curl.h>
-
-#include <unistd.h>
-#include "../include/base64.h"
+#include "../src/include/openTIDAL.h"
 
 char *client_id = "8SEZWa4J1NVC5U5Y";
 char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
@@ -20,8 +15,8 @@ int main(void)
   char input_token[1024];
 
   printf("Testing openTIDAL Artist Endpoints...\n");
-  printf("[CI] Enter your access_token: ");
-  scanf("%s", input_token); /* Pls no BufferOverflow :( */
+  init_demo();
+
   access_token = input_token;
   
   /* get_artist  */
@@ -30,15 +25,16 @@ int main(void)
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    artist_model res = get_artist(9606);
+    artist_model res = get_artist(4764457);
     if (res.status == 1)
     {
-      printf("Id: %zu\n", res.id[0]);
-      printf("Name: %s\n", res.name[0]);
-      printf("Popularity: %zu\n", res.popularity[0]);
-      if (res.hasPicture[0])
+      size_t i;
+      for (i = 0; i < res.arraySize; ++i)
       {
-        printf("Picture: %s\n", res.picture[0]);
+        printf("Id: %zu\n", res.id[i]);
+        printf("Name: %s\n", res.name[i]);
+        printf("Popularity: %zu\n", res.popularity[i]);
+        printf("Picture: %s\n", res.picture[i]);
       }
     }
   }
@@ -61,7 +57,7 @@ int main(void)
     printf("Offset: ");
     scanf("%zu", &offset);
 
-    artist_link_model res = get_artist_link(9606, limit, offset);
+    artist_link_model res = get_artist_link(4764457, limit, offset);
     if (res.status == 1)
     {
       int i;
@@ -87,7 +83,7 @@ int main(void)
   scanf("%zu", &skipped);
   if (skipped != 0)
   {
-    mix_model res = get_artist_mix(9606);
+    mix_model res = get_artist_mix(4764457);
     if (res.status == 1)
     {
       printf("Id: %s\n", res.id);
@@ -112,11 +108,11 @@ int main(void)
     printf("Offset: ");
     scanf("%zu", &offset);
 
-    items_model res = get_artist_toptracks(9606, limit, offset);
+    items_model res = get_artist_toptracks(4764457, limit, offset);
     if (res.status == 1)
     {
-      int i;
-      int a;
+      size_t i;
+      size_t a;
       for (i = 0; i < res.arraySize; ++i)
       {
         printf("Id: %zu\n", res.id[i]);
@@ -125,21 +121,18 @@ int main(void)
         printf("Popularity: %zu\n", res.popularity[i]);
         printf("TrackNumber: %zu\n", res.trackNumber[i]);
         printf("VolumeNumber: %zu\n", res.volumeNumber[i]);
-        if (res.hasVersion[i] == 1)
-        {
-          printf("Version: %s\n", res.version[i]);
-        }
-        if (res.hasReleaseDate[i] == 1)
-        {
-	  printf("ReleaseDate: %s\n", res.releaseDate[i]);
-	}
-	printf("Quality: %s\n", res.quality[i]);
+        printf("Version: %s\n", res.version[i]);
+        printf("Quality: %s\n", res.audioQuality[i]);
         printf("Cover: %s\n", res.cover[i]);
-        if (res.isVideo[i] != 1)
-        {
-          printf("AlbumId: %zu\n", res.albumId[i]);
-          printf("AlbumTitle: %s\n", res.albumTitle[i]);
-        }
+        printf("VideoCover: %s\n", res.videoCover[i]);
+	printf("Explicit: %zu\n", res.explicitItem[i]);
+	printf("AllowStreaming: %zu\n", res.allowStreaming[i]);
+	printf("StreamReady: %zu\n", res.streamReady[i]);
+	printf("ReplayGain: %f\n", res.replayGain[i]);
+	printf("Peak: %f\n", res.peak[i]);
+	printf("AlbumId: %zu\n", res.albumId[i]);
+        printf("AlbumTitle: %s\n", res.albumTitle[i]);
+	printf("Type: %s\n", res.type[i]);
         for (a = 0; a < res.subArraySize[i]; ++a)
         {
           printf("ArtistId: %zu\n", res.artistId[i][a]);
@@ -167,11 +160,11 @@ int main(void)
     printf("Offset: ");
     scanf("%zu", &offset);
 
-    items_model res = get_artist_videos(9606, limit, offset);
+    items_model res = get_artist_videos(4764457, limit, offset);
     if (res.status == 1)
     {
-      int i;
-      int a;
+      size_t i;
+      size_t a;
       for (i = 0; i < res.arraySize; ++i)
       {
         printf("Id: %zu\n", res.id[i]);
@@ -180,21 +173,12 @@ int main(void)
         printf("Popularity: %zu\n", res.popularity[i]);
         printf("TrackNumber: %zu\n", res.trackNumber[i]);
         printf("VolumeNumber: %zu\n", res.volumeNumber[i]);
-        if (res.hasVersion[i] == 1)
-        {
-          printf("Version: %s\n", res.version[i]);
-        }
-        if (res.hasReleaseDate[i] == 1)
-        {
-	  printf("ReleaseDate: %s\n", res.releaseDate[i]);
-	}
-	printf("Quality: %s\n", res.quality[i]);
-        printf("Cover: %s\n", res.cover[i]);
-        if (res.isVideo[i] != 1)
-        {
-          printf("AlbumId: %zu\n", res.albumId[i]);
-          printf("AlbumTitle: %s\n", res.albumTitle[i]);
-        }
+        printf("Quality: %s\n", res.quality[i]);
+        printf("ImageId: %s\n", res.imageId[i]);
+	printf("Explicit: %zu\n", res.explicitItem[i]);
+	printf("AllowStreaming: %zu\n", res.allowStreaming[i]);
+	printf("StreamReady: %zu\n", res.streamReady[i]);
+	printf("Type: %s\n", res.type[i]);
         for (a = 0; a < res.subArraySize[i]; ++a)
         {
           printf("ArtistId: %zu\n", res.artistId[i][a]);
@@ -222,7 +206,7 @@ int main(void)
     printf("Offset: ");
     scanf("%zu", &offset);
 
-    album_model res = get_artist_albums(9606, limit, offset);
+    album_model res = get_artist_albums(4764457, limit, offset);
     if (res.status == 1)
     {
       int i;

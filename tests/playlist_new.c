@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/openTIDAL.h"
+#include "../src/include/openTIDAL.h"
 
 int main()
 {
