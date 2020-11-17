@@ -45,7 +45,7 @@ extern char *videoQuality;
 extern char *persistentFile;
 
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
-void init(char *file_location);
+int init(char *file_location);
 
 /* use client_id based login (No streaming privileges & user based endpoints) */
 void init_demo();

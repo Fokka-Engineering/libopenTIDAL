@@ -23,8 +23,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../src/include/openTIDAL.h"
-#include <string.h>
-#include <curl/curl.h>
 
 int main(void)
 {

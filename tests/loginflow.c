@@ -23,9 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../src/include/openTIDAL.h"
-#include <string.h>
-#include <curl/curl.h>
-#include <pthread.h>
 #include <unistd.h>
 
 void login_polling()

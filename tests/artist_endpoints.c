@@ -24,23 +24,13 @@
 #include <stdio.h>
 #include "../src/include/openTIDAL.h"
 
-char *client_id = "8SEZWa4J1NVC5U5Y";
-char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-char *audioQuality = "LOSSLESS";
-char *videoQuality = "HIGH";
-char *countryCode = "DE";
-char *access_token;
-
 int main(void)
 {
   size_t skipped;
-  char input_token[1024];
 
   printf("Testing openTIDAL Artist Endpoints...\n");
   init_demo();
 
-  access_token = input_token;
-  
   /* get_artist  */
   skipped = 1;
   printf("[CI] Testing get_artist (0 to skip)...: ");

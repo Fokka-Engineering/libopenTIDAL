@@ -48,12 +48,14 @@ cJSON *json_scan_stream;
 int isScanStream = 0;
 int updated = 0;
 
-void init(char *file_location)
+int init(char *file_location)
 {
+  int status;
   persistentFile = malloc(strlen(file_location) + 1);
   strcpy(persistentFile, file_location);
-  scan_persistent();
+  status = scan_persistent();
   demoEnabled = 0;
+  return status;
 }
 
 void init_demo()
@@ -159,7 +161,7 @@ void read_persistent_stream(cJSON *input_json)
   videoQuality = video_quality_json->valuestring;
 }
 
-void scan_persistent()
+int scan_persistent()
 {
   FILE *persistentJSON;
   long streamSize;
@@ -206,11 +208,14 @@ void scan_persistent()
   isScanStream = 1;
   json_scan_stream = input_json;
   free(stream);
+  
 end:
   if (error == 1)
   {
     fprintf(stderr, "[OAuth] Scan persistentFile failed!\n");
+    return 0;
   }
+  return 1;
 }
 
 void create_persistent(char *username, char *audio_quality, char *video_quality)
