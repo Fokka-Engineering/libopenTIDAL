@@ -225,6 +225,12 @@ typedef struct artist_links_models
   char source[25];
 } artist_link_model;
 
+typedef struct playlist_etag_models
+{
+  int status;
+  char id[32];
+} playlist_etag_model;
+
 typedef struct mix_models
 {
   int status;

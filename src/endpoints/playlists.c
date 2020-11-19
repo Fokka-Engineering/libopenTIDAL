@@ -187,12 +187,12 @@ get_favorite_playlist(size_t limit, size_t offset, char *order, char *orderDirec
 }
 
 
-char *get_playlist_etag(char *playlistid)
+playlist_etag_model get_playlist_etag(char *playlistid)
 {
+  playlist_etag_model Value;
   /* Request playlist endpoint to scrape eTag Header  */
   char *endpoint;
   char baseparams[20];
-  char *eTagHeader = malloc(30);
 
   endpoint = url_cat_str("playlists/", playlistid, "");
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
@@ -206,7 +206,7 @@ char *get_playlist_etag(char *playlistid)
       size_t i = 0; /* Counter for Buffer (Header) Splitter  */
       size_t e; /* Counter for ETag-String Extraction  */
       char *p = strtok (req.header, "\n");
-      char eTag[20];
+      char eTag[32];
       /* Buffer for splitted HTTP-Header  */ 
       char *array[30];
       while (p != NULL)
@@ -234,22 +234,24 @@ char *get_playlist_etag(char *playlistid)
           strcat(&eTag[eTagCounter + 1], "\0");
         }
       }
-      snprintf(eTagHeader, 30, "if-none-match: %s", eTag);
-      free(req.header);
-      return eTagHeader;
+      /* copy eTag to struct */
+      strncpy(Value.id, eTag, sizeof(Value.id));
+      Value.status = 1;
     }
     else
     {
       fprintf(stderr, "[Request Error] Could not parse eTag-Header. Not a 200 Response.\n");
-      free(req.header);
-      return 0;
+      Value.status = 0;
     }
+    free(req.header);
+    return Value;
   }
   else
   {
     free(req.header);
     fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return 0;
+    Value.status = -1;
+    return Value;
   }
 }
 
@@ -298,15 +300,20 @@ int delete_playlist(char *playlistid)
   }  
 }
 
-int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader)
-{
-  char buffer[80];
+int delete_playlist_item(char *playlistid, size_t index)
+{ 
+  char buffer[100];
+  char etag_buffer[50];
+
+  playlist_etag_model etag = get_playlist_etag(playlistid);
+  
+  snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(buffer, 80, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
-  curl_model req = curl_delete(buffer, "", eTagHeader);
+  curl_model req = curl_delete(buffer, "", etag_buffer);
   
   /* cleanup */
   free(req.body);
-  
+
   if (req.status != -1)
   {
     if (req.responseCode == 200)
@@ -346,19 +353,170 @@ int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader)
 }
 
 /* TODO: FIX THIS SHIT!  */
-int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTagHeader)
+int move_playlist_item(char *playlistid, size_t index, size_t toIndex)
 {
-  return 0;
+  char buffer[100];
+  char etag_buffer[50];
+  char index_buffer[20];
+
+  playlist_etag_model etag = get_playlist_etag(playlistid);
+  
+  snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
+  snprintf(index_buffer, 20, "toIndex=%zu", toIndex);
+  snprintf(buffer, 100, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
+  
+  curl_model req = curl_post(buffer, index_buffer, etag_buffer);
+  
+  /* cleanup */
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
+      return -9;
+    }
+    else if (req.responseCode == 401)
+    {
+      fprintf(stderr, "[401] Unauthorized\n");
+      return -8;
+    }
+    else if (req.responseCode == 404)
+    {
+      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
+      return -2;
+    }
+    else if (req.responseCode == 412)
+    {
+      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
+      return -4;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
+    return -1;
+  }
 }
 
-int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTagHeader)
+int add_playlist_item(char *playlistid, size_t trackid, char *onDupes)
 {
-  return 0;
+  char buffer[100];
+  char etag_buffer[50];
+  char index_buffer[100];
+
+  playlist_etag_model etag = get_playlist_etag(playlistid);
+  
+  snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
+  snprintf(index_buffer, 100, "trackIds=%zu&onArtifactNotFound=%s&onDupes=%s", trackid, "FAIL", onDupes);
+  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
+   
+  curl_model req = curl_post(buffer, index_buffer, etag_buffer);
+  /* cleanup */
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
+      return -9;
+    }
+    else if (req.responseCode == 401)
+    {
+      fprintf(stderr, "[401] Unauthorized\n");
+      return -8;
+    }
+    else if (req.responseCode == 404)
+    {
+      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
+      return -2;
+    }
+    else if (req.responseCode == 412)
+    {
+      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
+      return -4;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
+    return -1;
+  }
+
 }
 
-int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eTagHeader)
+int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
 {
-  return 0;
+  char buffer[100];
+  char etag_buffer[50];
+  char index_buffer[20];
+
+  playlist_etag_model etag = get_playlist_etag(playlistid);
+  
+  snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
+  snprintf(index_buffer, 20, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
+  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
+  
+  curl_model req = curl_post(buffer, index_buffer, etag_buffer);
+  
+  /* cleanup */
+  free(req.body);
+
+  if (req.status != -1)
+  {
+    if (req.responseCode == 200)
+    {
+      return 1;
+    }
+    else if (req.responseCode == 400)
+    {
+      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
+      return -9;
+    }
+    else if (req.responseCode == 401)
+    {
+      fprintf(stderr, "[401] Unauthorized\n");
+      return -8;
+    }
+    else if (req.responseCode == 404)
+    {
+      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
+      return -2;
+    }
+    else if (req.responseCode == 412)
+    {
+      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
+      return -4;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  else
+  {
+    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
+    return -1;
+  }
+
 }
 
 /* create & delete favourites */

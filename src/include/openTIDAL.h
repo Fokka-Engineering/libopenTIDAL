@@ -20,7 +20,6 @@
   THE SOFTWARE.
 */
 
-#include "cJSON.h"
 #include "models.h"
 #include "json_models.h"
 
@@ -88,12 +87,12 @@ playlist_model create_playlist(char *title, char *description);
 
 items_model get_playlist_items(char *playlistid, size_t limit, size_t offset);
 
-char *get_playlist_etag(char *playlistid);
+playlist_etag_model get_playlist_etag(char *playlistid);
 int delete_playlist(char *playlistid);
-int delete_playlist_item(char *playlistid, size_t index, char *eTagHeader);
-int move_playlist_item(char *playlistid, size_t index, size_t toIndex, char *eTagHeader);
-int add_playlist_item(char *playlistid, size_t trackid, char *onDupes, char *eTagHeader);
-int add_playlist_items(char *playlistid, char *trackids, char *onDupes, char *eTagHeader);
+int delete_playlist_item(char *playlistid, size_t index);
+int move_playlist_item(char *playlistid, size_t index, size_t toIndex);
+int add_playlist_item(char *playlistid, size_t trackid, char *onDupes);
+int add_playlist_items(char *playlistid, char *trackids, char *onDupes);
 int delete_favorite_playlist(char *playlistid);
 int add_favorite_playlist(char *playlistid);
 

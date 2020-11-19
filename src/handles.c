@@ -136,6 +136,7 @@ curl_model curl_get(char *endpoint, char *data)
       chunk = curl_slist_append(chunk, client_header);
     }
     curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
@@ -187,7 +188,7 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   char *url;
   char *header;
   char *client_header;
-  
+
   /* check if access_token has expired  */
   refresh_persistent();
   /* will be grown as needed by the realloc above */
@@ -199,8 +200,7 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   url = malloc(strlen(baseUrl)+1+strlen(endpoint));
   strcpy(url, baseUrl);
   strcat(url, endpoint);
- 
-  /* Specify Authorization Header or Demo Header  */
+  /* specify Authorization Header or Demo Header  */
   if (demoEnabled != 1)
   {
     /* allocate size of access_token and header  */
@@ -230,15 +230,16 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     else
     {
       /* append client_id header  */
-      chunk = curl_slist_append(chunk, client_header);
+      //chunk = curl_slist_append(chunk, client_header);
     }
     /* append optional header (like If-None-Match)  */
     chunk = curl_slist_append(chunk, optHeader);
     curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-    /*append (x-www-form-urlencoded) parameters*/
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     res = curl_easy_perform(curl);
 
@@ -338,7 +339,7 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     res = curl_easy_perform(curl);
-
+    
     /* cleanup */
     curl_slist_free_all(chunk);
     free(url);
@@ -373,14 +374,15 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
 /* persistent cURL handle for API HEAD requests */
 curl_model curl_head(char *endpoint, char *data)
 {
-  if(curl_init == 0)
-    {
-      curl = curl_session();
-      curl_init = 1;
-    }
+  /* Create a new cURL handle for the head request
+   * because of a cURL bug. If a head request is
+   * performed with a persistent cURL handle a
+   * Segmentation Fault occurs. Other requests
+   * perform flawlessly -_- */
+  CURL *curlHead = curl_easy_init();
   CURLcode res;
   curl_model model;
-  struct MemoryStruct headerResponse;
+  struct MemoryStruct response;
   char *url;
   char *header;
   char *client_header;
@@ -388,9 +390,9 @@ curl_model curl_head(char *endpoint, char *data)
   /* check if access_token has expired  */
   refresh_persistent();
   /* will be grown as needed by the realloc above */ 
-  headerResponse.memory = malloc(1);
+  response.memory = malloc(1);
   /* no data at this point */
-  headerResponse.size = 0;
+  response.size = 0;
 
   /*char concatenation*/
   url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
@@ -416,7 +418,7 @@ curl_model curl_head(char *endpoint, char *data)
     strcat(client_header, client_id);
   }
 
-  if(curl_init == 1) {
+  if(curlHead) {
     struct curl_slist *chunk = NULL;
     /* append the right header  */
     if (demoEnabled != 1)
@@ -429,16 +431,13 @@ curl_model curl_head(char *endpoint, char *data)
       /* append client_id header  */
       chunk = curl_slist_append(chunk, client_header);
     }
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-    curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headerResponse); 
-    res = curl_easy_perform(curl);
+    curl_easy_setopt(curlHead, CURLOPT_URL, url);
+    curl_easy_setopt(curlHead, CURLOPT_HTTPHEADER, chunk);
+    curl_easy_setopt(curlHead, CURLOPT_NOBODY, 1L);
+    curl_easy_setopt(curlHead, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(curlHead, CURLOPT_HEADERDATA, &response); 
+    res = curl_easy_perform(curlHead);
     
-    /* cleanup  */
-    curl_slist_free_all(chunk);
-    free(url);
     if (demoEnabled != 1)
     {
       free(header);
@@ -455,10 +454,15 @@ curl_model curl_head(char *endpoint, char *data)
     }
     else
     {
-      model.header = headerResponse.memory;
-      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
+      model.header = response.memory;
+      curl_easy_getinfo(curlHead, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }
+
+    /* cleanup  */
+    curl_slist_free_all(chunk);
+    free(url);
+    curl_easy_cleanup(curlHead);
   }
   else
   {
