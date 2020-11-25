@@ -29,7 +29,7 @@ int main(void)
   size_t skipped;
 
   printf("Testing openTIDAL Album Endpoints...\n");
-  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
+  init("location/of/your/configfile");
   /* get_album  */
   skipped = 1;
   printf("[CI] Testing get_album (0 to skip)...: ");

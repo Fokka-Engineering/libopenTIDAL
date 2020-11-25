@@ -67,7 +67,8 @@ void login_polling()
 
 int main(void)
 {
-  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
+  /* specify a file location (config will be created automatically) */
+  init("location/of/future/configfile");
   login_polling();
   cleanup();
 }

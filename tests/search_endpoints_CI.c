@@ -27,7 +27,7 @@
 int main(void)
 {
   size_t skipped;
-  init("/Users/admin/Documents/Git/openTIDAL/bin/persistent.json");
+  init("location/of/your/configfile");
   printf("Testing openTIDAL Search Endpoints...\n");
   
   /* get_search  */
@@ -114,7 +114,6 @@ int main(void)
 	printf("Title: %s\n", res.tracks.title[i]);
 	printf("Duration: %zu\n", res.tracks.duration[i]);
 	printf("Popularity: %zu\n", res.tracks.popularity[i]);
-	printf("ReleaseDate: %s\n", res.tracks.releaseDate[i]);
 	printf("Cover: %s\n", res.tracks.cover[i]);
 	printf("AlbumId: %zu\n", res.tracks.albumId[i]);
 	printf("AlbumTitle: %s\n", res.tracks.albumTitle[i]);
@@ -137,7 +136,6 @@ int main(void)
         printf("Title: %s\n", res.videos.title[i]);
         printf("Duration: %zu\n", res.videos.duration[i]);
         printf("Popularity: %zu\n", res.videos.popularity[i]);
-        printf("ReleaseDate: %s\n", res.videos.releaseDate[i]);
         printf("Cover: %s\n", res.videos.cover[i]);
         printf("Quality: %s\n", res.videos.quality[i]);
 	for (a = 0; a < res.videos.subArraySize[i]; ++a)
@@ -198,7 +196,6 @@ int main(void)
         printf("Title: %s\n", res.topTrack.title[0]);
         printf("Duration: %zu\n", res.topTrack.duration[0]);
         printf("Popularity: %zu\n", res.topTrack.popularity[0]);
-        printf("ReleaseDate: %s\n", res.topTrack.releaseDate[0]);
         printf("Cover: %s\n", res.topTrack.cover[0]);
         printf("AlbumId: %zu\n", res.topTrack.albumId[0]);
         printf("AlbumTitle: %s\n", res.topTrack.albumTitle[0]);
@@ -217,7 +214,6 @@ int main(void)
         printf("Title: %s\n", res.topVideo.title[0]);
         printf("Duration: %zu\n", res.topVideo.duration[0]);
         printf("Popularity: %zu\n", res.topVideo.popularity[0]);
-        printf("ReleaseDate: %s\n", res.topVideo.releaseDate[0]);
         printf("Cover: %s\n", res.topVideo.cover[0]);
         for (a = 0; a < res.topVideo.subArraySize[0]; ++a)
         {
