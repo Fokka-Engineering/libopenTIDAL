@@ -1,6 +1,7 @@
 # openTIDAL
 
 An effort to make the Streaming Service TIDAL more open.
+(Alpha Release)
 
 ## License
 
@@ -37,6 +38,7 @@ A python module using libopenTIDAL is also available and easy to install.
 
 ##### What is implemented?
 * OAuth Log-In/Logout and Automatic Session Renewal
+* Demo Session (still buggy)
 * Playlist Creation, Deletion and Manipulation
 * Mixes
 * Favourites Management
@@ -46,7 +48,7 @@ A python module using libopenTIDAL is also available and easy to install.
 * Easy and Extensive Error Handling
 
 ### Building
-Currently the compilation has only been tested on macOS and GNU/Linux.
+Currently the compilation has only been tested on macOS and GNU/Linux. Keep in mind that the Makefile is currently macOS only. It generates a dylib.
 
 Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
@@ -73,8 +75,7 @@ $ dnf install libcurl-devel
 ```
 
 ##### Wiki
-Functions and Usage are documented in the GitHub wiki.\
-You can check it out here!
+I'm still working on a detailed wiki that documents every function. Meanwhile check out the [docs](docs) folder!
 
 ## Disclaimer
 
