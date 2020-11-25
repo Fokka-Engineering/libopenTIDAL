@@ -75,7 +75,7 @@ $ dnf install libcurl-devel
 ```
 
 ##### Wiki
-I'm still working on a detailed wiki that documents every function.
+I'm still working on a detailed wiki that documents every function. Meanwhile check out the [https://github.com/openTIDAL/libopenTIDAL/tree/main/docs](docs) folder!
 
 ## Disclaimer
 
