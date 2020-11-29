@@ -2,13 +2,21 @@ CC = gcc
 CFLAGS = -fPIC -Wall -Werror
 RM = rm -f
 
-LDFLAGS = -dynamiclib -lcURL
-TARGET_LIB = libopenTIDAL.dylib
+LDFLAGS = -shared -lcURL
+TARGET_LIB = libopenTIDAL.so
+
+uname := $(shell sh -c 'uname -s 2>/dev/null || echo false')
+
+ifeq (Darwin, $(uname))
+	LDFLAGS = -dynamiclib -lcURL
+	TARGET_LIB = libopenTIDAL.dylib
+endif
 
 SRCS = $(wildcard src/*.c) $(wildcard src/endpoints/*.c) $(wildcard src/parse/*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
+
 all: ${TARGET_LIB}
 
 $(TARGET_LIB): $(OBJS)
