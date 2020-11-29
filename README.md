@@ -48,7 +48,7 @@ A python module using libopenTIDAL is also available and easy to install.
 * Easy and Extensive Error Handling
 
 ### Building
-Currently the compilation has only been tested on macOS and GNU/Linux. Keep in mind that the Makefile is currently macOS only. It generates a dylib.
+Currently the compilation has only been tested on macOS and GNU/Linux. Keep in mind that the Makefile is currently macOS/LINUX/UNIX only. It generates a dylib.
 
 Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
