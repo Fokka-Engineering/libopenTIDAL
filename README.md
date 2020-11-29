@@ -34,7 +34,7 @@ openTIDAL is a TIDAL API wrapper written in ANSI C. It's lightweight, fast and e
 
 After reverse-engineering the TIDAL API and documenting all endpoints, I had the idea to write a portable C library. The goal was to integrate the OAuth2 Device-Flow, auto-refreshing sessions and all endpoints. 
 
-A python module using libopenTIDAL is also available and easy to install.
+A python module using openTIDAL is also available and easy to install.
 
 ##### What is implemented?
 * OAuth Log-In/Logout and Automatic Session Renewal
