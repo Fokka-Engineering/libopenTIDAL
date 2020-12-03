@@ -21,7 +21,7 @@
 */
 
 #include "cJSON.h"
-#include "models.h"
+#include "openTIDAL.h"
 #include "json_models.h"
 
 cJSON *json_parse(char * input);

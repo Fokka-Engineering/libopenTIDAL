@@ -68,7 +68,7 @@ void login_polling()
 int main(void)
 {
   /* specify a file location (config will be created automatically) */
-  init("location/of/future/configfile");
+  init("/tmp/oT-config");
   login_polling();
   cleanup();
 }

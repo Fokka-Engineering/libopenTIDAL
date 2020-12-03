@@ -20,7 +20,7 @@
   THE SOFTWARE.
 */
 
-#include "models.h"
+#include "openTIDAL.h"
 
 /* baseAPI cURL handle */
 curl_model curl_get(char *endpoint, char *data);
