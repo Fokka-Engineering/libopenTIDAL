@@ -467,12 +467,12 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
 {
   char buffer[100];
   char etag_buffer[50];
-  char index_buffer[20];
+  char index_buffer[100];
 
   playlist_etag_model etag = get_playlist_etag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-  snprintf(index_buffer, 20, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
+  snprintf(index_buffer, 100, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
   snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
   
   curl_model req = curl_post(buffer, index_buffer, etag_buffer);

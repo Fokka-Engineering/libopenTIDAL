@@ -238,7 +238,7 @@ void refresh_persistent()
 {
   /* start OAuth refresh routine  */
   time_t currentTime = time(NULL);
-  size_t skip;
+  size_t skip = 0;
   double diff_t;
   if (demoEnabled == 1)
   {
@@ -291,5 +291,5 @@ void refresh_persistent()
     }
   }
 end:
-  skip = 1;    
+  skip = 1;
 }

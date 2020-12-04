@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -fPIC -Wall -Werror
 RM = rm -f
 
-LDFLAGS = -shared -lcURL
+LDFLAGS = -shared -lcurl
 TARGET_LIB = libopenTIDAL.so
 
 PREFIX ?= /usr/local
@@ -16,7 +16,7 @@ INSTALL ?= cp -a
 uname := $(shell sh -c 'uname -s 2>/dev/null || echo false')
 
 ifeq (Darwin, $(uname))
-	LDFLAGS = -dynamiclib -lcURL
+	LDFLAGS = -dynamiclib -lcurl
 	TARGET_LIB = libopenTIDAL.dylib
 endif
 
