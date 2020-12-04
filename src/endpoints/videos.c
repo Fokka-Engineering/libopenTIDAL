@@ -73,7 +73,7 @@ get_favorite_videos(size_t limit, size_t offset, char *order, char *orderDirecti
   char *endpoint = url_cat("users/", userId, "/favorites/videos", 0);
   
   char baseparams[150];
-  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset%zu&order%s&orderDirection=%s",
+  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
   
   curl_model req = curl_get(endpoint, baseparams);

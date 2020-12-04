@@ -132,7 +132,7 @@ get_favorite_playlist(size_t limit, size_t offset, char *order, char *orderDirec
   char *endpoint = url_cat("users/", userId, "/playlistsAndFavoritePlaylists", 0);
   
   char baseparams[150];
-  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset%zu&order%s&orderDirection=%s",
+  snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
 
   curl_model req = curl_get(endpoint, baseparams);
