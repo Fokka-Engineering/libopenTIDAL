@@ -28,7 +28,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-items_model get_track(size_t trackid)
+items_model get_track(const size_t trackid)
 {
   items_model Value;
   char *endpoint = url_cat("tracks/", trackid, "", 0);
@@ -67,7 +67,7 @@ items_model get_track(size_t trackid)
 }
 
 items_model
-get_favorite_tracks(size_t limit, size_t offset, char *order, char *orderDirection)
+get_favorite_tracks(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   items_model Value;
   char *endpoint = url_cat("users/", userId, "/favorites/tracks", 0);
@@ -75,7 +75,6 @@ get_favorite_tracks(size_t limit, size_t offset, char *order, char *orderDirecti
   char baseparams[150];
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
-  printf("Offset: %s\n", baseparams);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
   if (req.status != -1)
@@ -127,7 +126,7 @@ get_favorite_tracks(size_t limit, size_t offset, char *order, char *orderDirecti
   }
 }
 
-contributor_model get_track_contributors(size_t trackid, size_t limit, size_t offset)
+contributor_model get_track_contributors(const size_t trackid, const size_t limit, const size_t offset)
 {
   contributor_model Value;
   char *endpoint = url_cat("tracks/", trackid, "/contributors", 0);
@@ -185,7 +184,7 @@ contributor_model get_track_contributors(size_t trackid, size_t limit, size_t of
   }
 }
 
-mix_model get_track_mix(size_t trackid)
+mix_model get_track_mix(const size_t trackid)
 {
   mix_model Value;
   char *endpoint = url_cat("tracks/", trackid, "/mix", 0);
@@ -223,7 +222,7 @@ mix_model get_track_mix(size_t trackid)
   }
 }
 
-stream_model get_track_stream(size_t trackid)
+stream_model get_track_stream(const size_t trackid)
 {
   stream_model Value;
   char *endpoint = url_cat("tracks/", trackid, "/playbackinfopostpaywall", 0);
@@ -284,7 +283,7 @@ stream_model get_track_stream(size_t trackid)
 
 /* create & delete favourites */
 
-int add_favorite_track(size_t trackid)
+int add_favorite_track(const size_t trackid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/tracks", 1);
   int status;
@@ -327,7 +326,7 @@ int add_favorite_track(size_t trackid)
   }
 }
 
-int delete_favorite_track(size_t trackid)
+int delete_favorite_track(const size_t trackid)
 {
   int status;
   char buffer[80];

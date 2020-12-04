@@ -25,7 +25,7 @@
 #include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
-int parse_status(cJSON *input_json, curl_model Value, size_t id, char *uuid)
+int parse_status(cJSON *input_json, curl_model Value, const size_t id, const char *uuid)
 {
   int status = 0;
 
@@ -49,7 +49,7 @@ int parse_status(cJSON *input_json, curl_model Value, size_t id, char *uuid)
   return status;
 }
 
-int parse_unauthorized(cJSON *input_json, size_t id)
+int parse_unauthorized(cJSON *input_json, const size_t id)
 {
   int status = 0;
   const cJSON *subStatus = NULL;
@@ -90,7 +90,7 @@ int parse_unauthorized(cJSON *input_json, size_t id)
   return status;
 }
 
-int parse_notfound(cJSON *input_json, size_t id, char *uuid)
+int parse_notfound(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
   const cJSON *subStatus = NULL;
@@ -118,7 +118,7 @@ int parse_notfound(cJSON *input_json, size_t id, char *uuid)
   return status;
 }
 
-int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
+int parse_preconditionfailed(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
   const cJSON *subStatus = NULL;
@@ -146,7 +146,7 @@ int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid)
   return status;
 }
 
-int parse_badrequest(cJSON *input_json, size_t id, char *uuid)
+int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
   const cJSON *subStatus = NULL;

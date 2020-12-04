@@ -28,7 +28,7 @@
 
 /* Search */
 
-search_model get_search(char *term, size_t limit)
+search_model get_search(const char *term, const size_t limit)
 {
   search_model Value;
   char *encodedTerm = url_encode(term);

@@ -27,7 +27,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-items_model get_mix_items(char *mixid)
+items_model get_mix_items(const char *mixid)
 {
   items_model Value;
   char buffer[50];

@@ -1,4 +1,4 @@
-	/*
+/*
   Copyright (c) 2020 Hugo Melder and openTIDAL contributors
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,8 +30,8 @@ extern "C"
 {
 #endif
 
-extern char *client_id;
-extern char *client_secret;
+extern const char *client_id;
+extern const char *client_secret;
 extern char *access_token;
 extern char *refresh_token;
 extern time_t expires_in;
@@ -323,7 +323,7 @@ typedef struct stream_models
 } stream_model;
 
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
-int init(char *file_location);
+int init(const char *file_location);
 
 /* use client_id based login (No streaming privileges & user based endpoints) */
 void init_demo();
@@ -359,90 +359,90 @@ user_subscription_model get_user_subscription();
 /* Playlist Endpoints */
 
 
-playlist_model get_playlist(char *playlistid);
-playlist_model get_favorite_playlist(size_t limit,
-                              size_t offset, char *order, char *orderDirection);
-playlist_model create_playlist(char *title, char *description);
+playlist_model get_playlist(const char *playlistid);
+playlist_model get_favorite_playlist(const size_t limit,
+                              const size_t offset, const char *order, const char *orderDirection);
+playlist_model create_playlist(const char *title, const char *description);
 
-items_model get_playlist_items(char *playlistid, size_t limit, size_t offset);
+items_model get_playlist_items(const char *playlistid, const size_t limit, const size_t offset);
 
-playlist_etag_model get_playlist_etag(char *playlistid);
-int delete_playlist(char *playlistid);
-int delete_playlist_item(char *playlistid, size_t index);
-int move_playlist_item(char *playlistid, size_t index, size_t toIndex);
-int add_playlist_item(char *playlistid, size_t trackid, char *onDupes);
-int add_playlist_items(char *playlistid, char *trackids, char *onDupes);
-int delete_favorite_playlist(char *playlistid);
-int add_favorite_playlist(char *playlistid);
+playlist_etag_model get_playlist_etag(const char *playlistid);
+int delete_playlist(const char *playlistid);
+int delete_playlist_item(const char *playlistid, const size_t index);
+int move_playlist_item(const char *playlistid, const size_t index, const size_t toIndex);
+int add_playlist_item(const char *playlistid, const size_t trackid, const char *onDupes);
+int add_playlist_items(const char *playlistid, const char *trackids, const char *onDupes);
+int delete_favorite_playlist(const char *playlistid);
+int add_favorite_playlist(const char *playlistid);
 
 
 
 /* Album Endpoints */
 
 
-album_model get_album(size_t albumid);
-items_model get_album_items(size_t albumid, size_t limit, size_t offset);
-album_model get_favorite_album(size_t limit,
-                              size_t offset, char *order, char *orderDirection);
+album_model get_album(const size_t albumid);
+items_model get_album_items(const size_t albumid, const size_t limit, const size_t offset);
+album_model get_favorite_album(const size_t limit,
+                              const size_t offset, const char *order, const char *orderDirection);
 
-int add_favorite_album(size_t albumid);
-int delete_favorite_album(size_t albumid);
+int add_favorite_album(const size_t albumid);
+int delete_favorite_album(const size_t albumid);
 
 
 /* Artist Endpoints */
 
 
-artist_model get_artist(size_t artistid);
-artist_model get_favorite_artist(size_t limit,
-                              size_t offset, char *order, char *orderDirection);
-artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset);
-mix_model get_artist_mix(size_t artistid);
-items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset);
-items_model get_artist_videos(size_t artistid, size_t limit, size_t offset);
-album_model get_artist_albums(size_t artistid, size_t limit, size_t offset);
+artist_model get_artist(const size_t artistid);
+artist_model get_favorite_artist(const size_t limit,
+                              size_t const offset, const char *order, const char *orderDirection);
+artist_link_model get_artist_link(const size_t artistid, const size_t limit, const size_t offset);
+mix_model get_artist_mix(const size_t artistid);
+items_model get_artist_toptracks(const size_t artistid, const size_t limit, const size_t offset);
+items_model get_artist_videos(const size_t artistid, const size_t limit, const size_t offset);
+album_model get_artist_albums(const size_t artistid, const size_t limit, const size_t offset);
 
-int add_favorite_artist(size_t artistid);
-int delete_favorite_artist(size_t artistid);
+int add_favorite_artist(const size_t artistid);
+int delete_favorite_artist(const size_t artistid);
 
 
 /* Track Endpoints  */
 
 
-contributor_model get_track_contributors(size_t trackid, size_t limit, size_t offset);
-mix_model get_track_mix(size_t trackid);
-stream_model get_track_stream(size_t trackid);
-items_model get_track(size_t trackid);
-items_model get_favorite_tracks(size_t limit,
-                              size_t offset, char *order, char *orderDirection);
+contributor_model get_track_contributors(const size_t trackid, const size_t limit, const size_t offset);
+mix_model get_track_mix(const size_t trackid);
+stream_model get_track_stream(const size_t trackid);
+items_model get_track(const size_t trackid);
+items_model get_favorite_tracks(const size_t limit,
+                              const size_t offset, const char *order, const char *orderDirection);
 
-int delete_favorite_track(size_t trackid);
-int add_favorite_track(size_t trackid);
+int delete_favorite_track(const size_t trackid);
+int add_favorite_track(const size_t trackid);
 
 
 /* Video Endpoints  */
 
 
-items_model get_video(size_t videoid);
-items_model get_favorite_videos(size_t limit,
-                              size_t offset, char *order, char *orderDirection);
-contributor_model get_video_contributors(size_t videoid, size_t limit, size_t offset);
-stream_model get_video_stream(size_t videoid);
+items_model get_video(const size_t videoid);
+items_model get_favorite_videos(const size_t limit,
+                              const size_t offset, const char *order, const char *orderDirection);
+contributor_model get_video_contributors(const size_t videoid, const size_t limit, const size_t offset);
+stream_model get_video_stream(const size_t videoid);
 
-int add_favorite_video(size_t videoid);
-int delete_favorite_video(size_t videoid);
+int add_favorite_video(const size_t videoid);
+int delete_favorite_video(const size_t videoid);
 
 
 /* Mix Endpoints  */
 
 
-items_model get_mix_items(char *mixid);
+items_model get_mix_items(const char *mixid);
 page_mix_model get_favorite_mixes();
 
 
 /* Search Endpoints */
 
 
-search_model get_search(char *term, size_t limit);
+search_model get_search(const char *term, const size_t limit);
 
 #ifdef __cplusplus
 }

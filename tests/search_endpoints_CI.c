@@ -27,7 +27,7 @@
 int main(void)
 {
   size_t skipped;
-  init("location/of/your/configfile");
+  init_demo();
   printf("Testing openTIDAL Search Endpoints...\n");
   
   /* get_search  */

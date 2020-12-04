@@ -27,7 +27,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-playlist_model get_playlist(char *playlistid)
+playlist_model get_playlist(const char *playlistid)
 {
   playlist_model Value;
   char *endpoint;
@@ -66,7 +66,7 @@ playlist_model get_playlist(char *playlistid)
   }
 }
 
-items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
+items_model get_playlist_items(const char *playlistid, const size_t limit, const size_t offset)
 {
   items_model Value;
   char *endpoint;
@@ -126,7 +126,7 @@ items_model get_playlist_items(char *playlistid, size_t limit, size_t offset)
 }
 
 playlist_model
-get_favorite_playlist(size_t limit, size_t offset, char *order, char *orderDirection)
+get_favorite_playlist(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   playlist_model Value;
   char *endpoint = url_cat("users/", userId, "/playlistsAndFavoritePlaylists", 0);
@@ -187,7 +187,7 @@ get_favorite_playlist(size_t limit, size_t offset, char *order, char *orderDirec
 }
 
 
-playlist_etag_model get_playlist_etag(char *playlistid)
+playlist_etag_model get_playlist_etag(const char *playlistid)
 {
   playlist_etag_model Value;
   /* Request playlist endpoint to scrape eTag Header  */
@@ -255,7 +255,7 @@ playlist_etag_model get_playlist_etag(char *playlistid)
   }
 }
 
-int delete_playlist(char *playlistid)
+int delete_playlist(const char *playlistid)
 {
   char buffer[80];
   snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
@@ -300,7 +300,7 @@ int delete_playlist(char *playlistid)
   }  
 }
 
-int delete_playlist_item(char *playlistid, size_t index)
+int delete_playlist_item(const char *playlistid, const size_t index)
 { 
   char buffer[100];
   char etag_buffer[50];
@@ -353,7 +353,7 @@ int delete_playlist_item(char *playlistid, size_t index)
 }
 
 /* TODO: FIX THIS SHIT!  */
-int move_playlist_item(char *playlistid, size_t index, size_t toIndex)
+int move_playlist_item(const char *playlistid, const size_t index, const size_t toIndex)
 {
   char buffer[100];
   char etag_buffer[50];
@@ -408,7 +408,7 @@ int move_playlist_item(char *playlistid, size_t index, size_t toIndex)
   }
 }
 
-int add_playlist_item(char *playlistid, size_t trackid, char *onDupes)
+int add_playlist_item(const char *playlistid, const size_t trackid, const char *onDupes)
 {
   char buffer[100];
   char etag_buffer[50];
@@ -463,7 +463,7 @@ int add_playlist_item(char *playlistid, size_t trackid, char *onDupes)
 
 }
 
-int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
+int add_playlist_items(const char *playlistid, const char *trackids, const char *onDupes)
 {
   char buffer[100];
   char etag_buffer[50];
@@ -521,7 +521,7 @@ int add_playlist_items(char *playlistid, char *trackids, char *onDupes)
 
 /* create & delete favourites */
 
-playlist_model create_playlist(char *title, char *description)
+playlist_model create_playlist(const char *title, const char *description)
 {
   playlist_model Value;
   char *endpoint = url_cat("users/", userId, "/playlists", 1);
@@ -567,7 +567,7 @@ playlist_model create_playlist(char *title, char *description)
 }
 
 
-int add_favorite_playlist(char *playlistid)
+int add_favorite_playlist(const char *playlistid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/playlists", 1);
   int status;
@@ -613,7 +613,7 @@ int add_favorite_playlist(char *playlistid)
   }
 }
 
-int delete_favorite_playlist(char *playlistid)
+int delete_favorite_playlist(const char *playlistid)
 {
   int status;
   char buffer[80];

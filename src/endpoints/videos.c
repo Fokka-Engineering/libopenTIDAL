@@ -28,7 +28,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-items_model get_video(size_t videoid)
+items_model get_video(const size_t videoid)
 {
   items_model Value;
   char buffer[20];
@@ -67,7 +67,7 @@ items_model get_video(size_t videoid)
 }
 
 items_model
-get_favorite_videos(size_t limit, size_t offset, char *order, char *orderDirection)
+get_favorite_videos(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   items_model Value;
   char *endpoint = url_cat("users/", userId, "/favorites/videos", 0);
@@ -128,7 +128,7 @@ get_favorite_videos(size_t limit, size_t offset, char *order, char *orderDirecti
 }
 
 
-contributor_model get_video_contributors(size_t videoid, size_t limit, size_t offset)
+contributor_model get_video_contributors(const size_t videoid, const size_t limit, const size_t offset)
 {
   contributor_model Value;
   char buffer[50];
@@ -186,7 +186,7 @@ contributor_model get_video_contributors(size_t videoid, size_t limit, size_t of
   }
 }
 
-stream_model get_video_stream(size_t videoid)
+stream_model get_video_stream(const size_t videoid)
 {
   stream_model Value;
   char endpoint[80];
@@ -244,7 +244,7 @@ stream_model get_video_stream(size_t videoid)
 
 /* create & delete favourites */
 
-int add_favorite_video(size_t videoid)
+int add_favorite_video(const size_t videoid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/videos", 1);
   int status;
@@ -289,7 +289,7 @@ int add_favorite_video(size_t videoid)
   }
 }
 
-int delete_favorite_video(size_t videoid)
+int delete_favorite_video(const size_t videoid)
 {
   int status;
   char buffer[80];

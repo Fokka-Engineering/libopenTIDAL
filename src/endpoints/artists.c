@@ -26,7 +26,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-artist_model get_artist(size_t artistid)
+artist_model get_artist(const size_t artistid)
 {
   artist_model Value;
   char *endpoint;
@@ -65,7 +65,7 @@ artist_model get_artist(size_t artistid)
   }
 }
 
-artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
+artist_link_model get_artist_link(const size_t artistid, const size_t limit, const size_t offset)
 {
   artist_link_model Value;
   int i = 0;
@@ -126,7 +126,7 @@ artist_link_model get_artist_link(size_t artistid, size_t limit, size_t offset)
   }
 }
 
-mix_model get_artist_mix(size_t artistid)
+mix_model get_artist_mix(const size_t artistid)
 {
   mix_model Value;
   char *endpoint;
@@ -163,7 +163,7 @@ mix_model get_artist_mix(size_t artistid)
   }
 }
 
-items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset)
+items_model get_artist_toptracks(const size_t artistid, const size_t limit, const size_t offset)
 {
   items_model Value;
   char *endpoint;
@@ -222,7 +222,7 @@ items_model get_artist_toptracks(size_t artistid, size_t limit, size_t offset)
   }
 }
 
-items_model get_artist_videos(size_t artistid, size_t limit, size_t offset)
+items_model get_artist_videos(const size_t artistid, const size_t limit, const size_t offset)
 {
   items_model Value;
   char *endpoint;
@@ -281,7 +281,7 @@ items_model get_artist_videos(size_t artistid, size_t limit, size_t offset)
   }
 }
 
-album_model get_artist_albums(size_t artistid, size_t limit, size_t offset)
+album_model get_artist_albums(const size_t artistid, const size_t limit, const size_t offset)
 {
   album_model Value;
   char *endpoint;
@@ -341,7 +341,7 @@ album_model get_artist_albums(size_t artistid, size_t limit, size_t offset)
 }
 
 artist_model
-get_favorite_artist(size_t limit, size_t offset, char *order, char *orderDirection)
+get_favorite_artist(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   artist_model Value;
   char *endpoint = url_cat("users/", userId, "/favorites/artists", 0);
@@ -403,7 +403,7 @@ get_favorite_artist(size_t limit, size_t offset, char *order, char *orderDirecti
 
 /* create & delete favourites */
 
-int add_favorite_artist(size_t artistid)
+int add_favorite_artist(const size_t artistid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/artists", 1);
   int status;
@@ -446,7 +446,7 @@ int add_favorite_artist(size_t artistid)
   }
 }
 
-int delete_favorite_artist(size_t artistid)
+int delete_favorite_artist(const size_t artistid)
 {
   int status;
   char buffer[80];

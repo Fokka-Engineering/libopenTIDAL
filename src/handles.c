@@ -451,19 +451,18 @@ curl_model curl_head(char *endpoint, char *data)
     if (res != CURLE_OK)
     {
       model.status = -1;
-      return model;
     }
     else
     {
       model.header = response.memory;
       curl_easy_getinfo(curlHead, CURLINFO_RESPONSE_CODE, &model.responseCode);
-      return model;
     }
 
     /* cleanup  */
     curl_slist_free_all(chunk);
     free(url);
     curl_easy_cleanup(curlHead);
+    return model;
   }
   else
   {

@@ -32,8 +32,8 @@
 
 char *refresh_token;
 char *access_token;
-char *client_id = "8SEZWa4J1NVC5U5Y";
-char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
+const char *client_id = "8SEZWa4J1NVC5U5Y";
+const char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
 char *countryCode;
 char *audioQuality;
 char *videoQuality;
@@ -48,7 +48,7 @@ cJSON *json_scan_stream;
 int isScanStream = 0;
 int updated = 0;
 
-int init(char *file_location)
+int init(const char *file_location)
 {
   int status;
   persistentFile = malloc(strlen(file_location) + 1);

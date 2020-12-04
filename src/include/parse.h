@@ -30,11 +30,11 @@ void parse_number(cJSON *object, size_t *number);
 void parse_bool(cJSON *object, size_t *number);
 void parse_string(cJSON *object, char *string, size_t length);
 
-int parse_status(cJSON *input_json, curl_model Value, size_t id, char *uuid);
-int parse_unauthorized(cJSON *input_json, size_t id);
-int parse_notfound(cJSON *input_json, size_t id, char *uuid);
-int parse_preconditionfailed(cJSON *input_json, size_t id, char *uuid);
-int parse_badrequest(cJSON *input_json, size_t id, char *uuid);
+int parse_status(cJSON *input_json, curl_model Value, const size_t id, const char *uuid);
+int parse_unauthorized(cJSON *input_json, const size_t id);
+int parse_notfound(cJSON *input_json, const size_t id, const char *uuid);
+int parse_preconditionfailed(cJSON *input_json, const size_t id, const char *uuid);
+int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid);
 
 /* parse Objects */
 json_login_code_model json_parse_login_code(cJSON *directObject);
@@ -71,15 +71,15 @@ stream_model parse_stream_values(json_stream_model json);
 search_model parse_search(cJSON *input_json);
 
 /* concatenation */
-char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode);
-char *url_cat_str(char *strOne, char *id, char *strTwo);
+char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode);
+char *url_cat_str(const char *strOne, const char *id, const char *strTwo);
 
 /* persistentJSON */
 char *create_persistent_stream(char *username, char *audio_quality, char *video_quality);
 void read_persistent_stream(cJSON *input_json);
 
 /* encoding */
-char *url_encode(char *str);
+char *url_encode(const char *str);
 
 /* persistent json  */
 int scan_persistent();

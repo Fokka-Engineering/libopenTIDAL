@@ -26,7 +26,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-album_model get_album(size_t albumid)
+album_model get_album(const size_t albumid)
 {
   album_model Value;
   char *endpoint;
@@ -64,7 +64,7 @@ album_model get_album(size_t albumid)
   }
 }
 
-items_model get_album_items(size_t albumid, size_t limit, size_t offset)
+items_model get_album_items(const size_t albumid, const size_t limit, const size_t offset)
 {
   items_model Value;
   char *endpoint;
@@ -126,7 +126,7 @@ items_model get_album_items(size_t albumid, size_t limit, size_t offset)
 }
 
 album_model
-get_favorite_album(size_t limit, size_t offset, char *order, char *orderDirection)
+get_favorite_album(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   album_model Value;
   char *endpoint = url_cat("users/", userId, "/favorites/albums", 0);
@@ -190,7 +190,7 @@ get_favorite_album(size_t limit, size_t offset, char *order, char *orderDirectio
 
 /* create & delete favourites */
 
-int add_favorite_album(size_t albumid)
+int add_favorite_album(const size_t albumid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/albums", 1);
   int status;
@@ -231,7 +231,7 @@ int add_favorite_album(size_t albumid)
   }
 }
 
-int delete_favorite_album(size_t albumid)
+int delete_favorite_album(const size_t albumid)
 {
   int status;
   char buffer[80];

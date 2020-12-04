@@ -26,7 +26,7 @@
 #include "include/openTIDAL.h"
 
 /* concatenate endpoint with an id  */
-char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode)
+char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode)
 {
   char *urlcat;
   char buffer[20];
@@ -46,7 +46,7 @@ char *url_cat(char *strOne, size_t id, char *strTwo, int appendCountryCode)
 }
 
 /* concatenate endpoint with an uuid */
-char *url_cat_str(char *strOne, char *id, char *strTwo)
+char *url_cat_str(const char *strOne, const char *id, const char *strTwo)
 {
   char *urlcat;
   urlcat = malloc(strlen(strOne)+1+strlen(id)+strlen(strTwo));
