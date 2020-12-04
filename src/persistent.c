@@ -292,4 +292,8 @@ void refresh_persistent()
   }
 end:
   skip = 1;
+  if (skip == 1)
+  {
+    //fprintf(stderr, "[OAuth] Auto Refresh skipped.\n");
+  }
 }
