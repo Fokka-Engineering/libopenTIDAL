@@ -28,7 +28,7 @@
 cJSON *json_parse(char * input)
 {
   cJSON *input_json = cJSON_Parse(input);
-  int status = 0;
+  //int status = 0;
   if (input_json == NULL)
   {
       const char *error_ptr = cJSON_GetErrorPtr();
@@ -37,7 +37,7 @@ cJSON *json_parse(char * input)
           /*JSON Input empty*/
           fprintf(stderr, "[Request] JSON Input empty\n");
       }
-      status = 0;
+      //status = 0;
   }
   return input_json;
 }
