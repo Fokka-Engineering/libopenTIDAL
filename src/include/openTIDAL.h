@@ -184,7 +184,7 @@ typedef struct albums_models
   size_t duration[100];
   size_t allowStreaming[100];
   size_t streamReady[100];
-  char copyright[100][50];
+  char copyright[100][150];
   size_t numberOfTracks[100];
   size_t numberOfVideos[100];
   size_t numberOfVolumes[100];
@@ -442,7 +442,7 @@ page_mix_model get_favorite_mixes();
 /* Search Endpoints */
 
 
-search_model get_search(const char *term, const size_t limit);
+search_model get_search(char *term, const size_t limit);
 
 #ifdef __cplusplus
 }

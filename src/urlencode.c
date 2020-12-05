@@ -33,8 +33,8 @@ char to_hex(char code) {
 }
 
 /* returns a url-encoded version of str */
-char *url_encode(const char *str) {
-  char *pstr = (char *)str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
+char *url_encode(char *str) {
+  char *pstr = str, *buf = malloc(strlen(str) * 3 + 1), *pbuf = buf;
   while (*pstr) {
     if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
       *pbuf++ = *pstr;
