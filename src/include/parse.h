@@ -55,21 +55,46 @@ json_stream_model json_parse_stream(cJSON *directObject);
 json_manifest_model json_parse_manifest(cJSON *directObject);
 
 /* parse Values */
-login_code_model parse_login_code_values(json_login_code_model json);
-login_token_model parse_login_token_values(json_login_token_model json);
-user_model parse_user_values(json_user_model json);
-user_subscription_model parse_user_subscription_values(json_user_subscription_model json);
-playlist_model parse_playlist_values(json_playlist_model json, size_t i);
-items_model parse_items_values(json_items_model json, size_t i);
-album_model parse_album_values(json_album_model json, size_t i);
-artist_model parse_artist_values(json_artist_model json, size_t i);
-artist_link_model parse_link_values(json_links_model json, size_t i);
-contributor_model parse_contributor_values(json_contributor_model json, size_t i);
-mix_model parse_mix_values(json_mix_model json);
-page_mix_model parse_page_mix_values(json_page_mix_model json, size_t i);
-stream_model parse_stream_values(json_stream_model json);
+openTIDAL_LoginCodeModel
+parse_login_code_values(json_login_code_model json);
 
-search_model parse_search(cJSON *input_json);
+openTIDAL_LoginTokenModel
+parse_login_token_values(json_login_token_model json);
+
+openTIDAL_UserModel
+parse_user_values(json_user_model json);
+
+openTIDAL_UserSubscriptionModel
+parse_user_subscription_values(json_user_subscription_model json);
+
+openTIDAL_PlaylistModel
+parse_playlist_values(json_playlist_model json, size_t i);
+
+openTIDAL_ItemsModel
+parse_items_values(json_items_model json, size_t i);
+
+openTIDAL_AlbumModel
+parse_album_values(json_album_model json, size_t i);
+
+openTIDAL_ArtistModel
+parse_artist_values(json_artist_model json, size_t i);
+
+openTIDAL_LinkModel
+parse_link_values(json_links_model json, size_t i);
+
+openTIDAL_ContributorModel
+parse_contributor_values(json_contributor_model json, size_t i);
+
+openTIDAL_MixModel
+parse_mix_values(json_mix_model json);
+
+openTIDAL_MixModel
+parse_page_mix_values(json_page_mix_model json, size_t i);
+
+openTIDAL_StreamModel
+parse_stream_values(json_stream_model json);
+
+//search_model parse_search(cJSON *input_json);
 
 /* concatenation */
 char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode);

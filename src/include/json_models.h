@@ -25,7 +25,7 @@
 
 /* structures used to parse a json response */
 
-typedef struct json_login_code_models
+typedef struct json_login_code_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -38,7 +38,7 @@ typedef struct json_login_code_models
   cJSON *interval;
 } json_login_code_model;
 
-typedef struct json_login_token_models
+typedef struct json_login_token_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -62,7 +62,7 @@ typedef struct json_login_token_models
   cJSON *appleUid;
 } json_login_token_model;
 
-typedef struct json_user_models
+typedef struct json_user_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -83,7 +83,7 @@ typedef struct json_user_models
   cJSON *appleUid;
 } json_user_model;
 
-typedef struct json_user_subscription_models
+typedef struct json_user_subscription_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -98,7 +98,7 @@ typedef struct json_user_subscription_models
   cJSON *paymentType;
 } json_user_subscription_model;
 
-typedef struct json_playlist_models
+typedef struct json_playlist_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -122,7 +122,7 @@ typedef struct json_playlist_models
   cJSON *type;
 } json_playlist_model;
 
-typedef struct json_items_models
+typedef struct json_items_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -149,14 +149,14 @@ typedef struct json_items_models
   cJSON *replayGain;
   cJSON *peak;
   cJSON *artists;
-  cJSON *artistId[15];
-  cJSON *artistName[15];
+  cJSON **artistId;
+  cJSON **artistName;
   cJSON *albumId;
   cJSON *albumTitle;
   cJSON *type;
 } json_items_model;
 
-typedef struct json_album_models
+typedef struct json_album_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -182,11 +182,11 @@ typedef struct json_album_models
   cJSON *numberOfVideos;
   cJSON *numberOfVolumes;
   cJSON *artists;
-  cJSON *artistId[15];
-  cJSON *artistName[15];
+  cJSON **artistId;
+  cJSON **artistName;
 } json_album_model;
 
-typedef struct json_artist_models
+typedef struct json_artist_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -201,7 +201,7 @@ typedef struct json_artist_models
   cJSON *popularity;
 } json_artist_model;
 
-typedef struct json_link_models
+typedef struct json_link_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -215,7 +215,7 @@ typedef struct json_link_models
   cJSON *source;
 } json_links_model;
 
-typedef struct json_credit_models
+typedef struct json_credit_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -229,7 +229,7 @@ typedef struct json_credit_models
   cJSON *id;
 } json_credit_model;
 
-typedef struct json_contributor_models
+typedef struct json_contributor_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -242,15 +242,7 @@ typedef struct json_contributor_models
   cJSON *role;
 } json_contributor_model;
 
-typedef struct json_mix_models
-{
-  /* Raw JSON Object */
-  cJSON *directObject;
-  /* Mix Value */
-  cJSON *id;
-} json_mix_model;
-
-typedef struct json_stream_models
+typedef struct json_stream_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -265,7 +257,7 @@ typedef struct json_stream_models
   cJSON *manifest;
 } json_stream_model;
 
-typedef struct json_manifest_models
+typedef struct json_manifest_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
@@ -277,7 +269,7 @@ typedef struct json_manifest_models
   cJSON *url;
 } json_manifest_model;
 
-typedef struct json_page_mix_models
+typedef struct json_mix_model
 {
   /* Raw JSON Object */
   cJSON *directObject;
