@@ -50,7 +50,6 @@ json_links_model json_parse_links(cJSON *directObject);
 json_credit_model json_parse_credits(cJSON *directObject);
 json_contributor_model json_parse_contributors(cJSON *directObject);
 json_mix_model json_parse_mix(cJSON *directObject);
-json_page_mix_model json_parse_page_mix(cJSON *directObject);
 json_stream_model json_parse_stream(cJSON *directObject);
 json_manifest_model json_parse_manifest(cJSON *directObject);
 
@@ -81,7 +80,7 @@ void parse_link_values(openTIDAL_LinkModel *link, json_links_model *json);
 void parse_contributor_values(openTIDAL_ContributorModel *contrib,
                               json_contributor_model *json);
 
-void parse_mix_values(openTIDAL_MixModel *mix, json_page_mix_model *json);
+void parse_mix_values(openTIDAL_MixModel *mix, json_mix_model *json);
 
 void parse_stream_values(openTIDAL_StreamModel *stream, json_stream_model *json);
 

@@ -198,89 +198,56 @@ parse_album_values(openTIDAL_AlbumModel *Value, json_album_model *json)
   }
 }
 
-artist_model parse_artist_values(json_artist_model json, size_t i)
+void
+parse_artist_values(openTIDAL_ArtistModel *Value, json_artist_model *json)
 {
-  artist_model Value;
-  
-  parse_number(json.id, &Value.id[i]);
-  parse_string(json.name, Value.name[i], sizeof(Value.name[i]));
-  parse_string(json.picture, Value.picture[i], sizeof(Value.picture[i]));
-  parse_number(json.popularity, &Value.popularity[i]);
-
-  return Value;
+  parse_number(json->id, &Value->id);
+  parse_string(json->name, &Value->name);
+  parse_string(json->picture, &Value->picture);
+  parse_number(json->popularity, &Value->popularity);
 }
 
-artist_link_model parse_link_values(json_links_model json, size_t i)
+void
+parse_link_values(openTIDAL_LinkModel *Value, json_links_model *json)
 {
-  artist_link_model Value;
-
-  parse_string(json.url, Value.url[i], sizeof(Value.url[i]));
-  parse_string(json.siteName, Value.siteName[i], sizeof(Value.siteName[i]));
-
-  return Value;
+  parse_string(json->url, &Value->url);
+  parse_string(json->siteName, &Value->siteName);
 }
 
-contributor_model parse_contributor_values(json_contributor_model json, size_t i)
+void
+parse_contributor_values(openTIDAL_ContributorModel *Value, json_contributor_model *json)
 {
-  contributor_model Value;
-
-  parse_string(json.name, Value.name[i], sizeof(Value.name[i]));
-  parse_string(json.role, Value.role[i], sizeof(Value.role[i]));
-
-  return Value;
+  parse_string(json->name, &Value->name);
+  parse_string(json->role, &Value->role);
 }
 
-mix_model parse_mix_values(json_mix_model json)
+void
+parse_mix_values(openTIDAL_MixModel *Value, json_mix_model *json)
 {
-  mix_model Value;
-
-  parse_string(json.id, Value.id, sizeof(Value.id));
-
-  return Value;
+  parse_string(json->id, &Value->id);
+  parse_string(json->title, &Value->title);
+  parse_string(json->subTitle, &Value->subTitle);
+  parse_number(json->smallImageWidth, &Value->smallImageWidth);
+  parse_number(json->smallImageHeight, &Value->smallImageHeight);
+  parse_string(json->smallImageUrl, &Value->smallImageUrl);
+  parse_number(json->mediumImageWidth, &Value->mediumImageWidth);
+  parse_number(json->mediumImageHeight, &Value->mediumImageHeight);
+  parse_string(json->mediumImageUrl, &Value->mediumImageUrl);
+  parse_number(json->largeImageWidth, &Value->largeImageWidth);
+  parse_number(json->largeImageHeight, &Value->largeImageHeight);
+  parse_string(json->largeImageUrl, &Value->largeImageUrl);
+  parse_string(json->mixType, &Value->mixType);
 }
 
-page_mix_model parse_page_mix_values(json_page_mix_model json, size_t i)
+void
+parse_stream_values(openTIDAL_StreamModel *Value, json_stream_model *json)
 {
-  page_mix_model Value;
-
-  parse_string(json.id, Value.id[i], sizeof(Value.id[i]));
-  parse_string(json.title, Value.title[i], sizeof(Value.title[i]));
-  parse_string(json.subTitle, Value.subTitle[i], sizeof(Value.subTitle[i]));
-  parse_number(json.smallImageWidth, &Value.smallImageWidth[i]);
-  parse_number(json.smallImageHeight, &Value.smallImageHeight[i]);
-  parse_string(json.smallImageUrl, Value.smallImageUrl[i], sizeof(Value.smallImageUrl[i]));
-  parse_number(json.mediumImageWidth, &Value.mediumImageWidth[i]);
-  parse_number(json.mediumImageHeight, &Value.mediumImageHeight[i]);
-  parse_string(json.mediumImageUrl, Value.mediumImageUrl[i], sizeof(Value.mediumImageUrl[i]));
-  parse_number(json.largeImageWidth, &Value.largeImageWidth[i]);
-  parse_number(json.largeImageHeight, &Value.largeImageHeight[i]);
-  parse_string(json.largeImageUrl, Value.largeImageUrl[i], sizeof(Value.largeImageUrl[i]));
-  parse_string(json.mixType, Value.mixType[i], sizeof(Value.mixType[i]));
-
-  return Value;
-}
-
-stream_model parse_stream_values(json_stream_model json)
-{
-  stream_model Value;
-
-  parse_number(json.trackId, &Value.trackId);
-  parse_number(json.videoId, &Value.videoId);
-  parse_string(json.assetPresentation, Value.assetPresentation, sizeof(Value.assetPresentation));
-  parse_string(json.audioQuality, Value.audioQuality, sizeof(Value.audioQuality));
-  parse_string(json.audioMode, Value.audioMode, sizeof(Value.audioMode));
-  parse_string(json.videoQuality, Value.videoQuality, sizeof(Value.videoQuality));
-  parse_string(json.manifestMimeType, Value.manifestMimeType, sizeof(Value.manifestMimeType));
-  
-  /* Pointing to temporary allocated json value */ 
-  if (cJSON_IsString(json.manifest) && (!cJSON_IsNull(json.manifest)))
-  {
-    Value.manifest = json.manifest->valuestring;
-  }
-  else
-  {
-    Value.manifest = NULL;
-  }
-
-  return Value;
+  parse_number(json->trackId, &Value->trackId);
+  parse_number(json->videoId, &Value->videoId);
+  parse_string(json->assetPresentation, &Value->assetPresentation);
+  parse_string(json->audioQuality, &Value->audioQuality);
+  parse_string(json->audioMode, &Value->audioMode);
+  parse_string(json->videoQuality, &Value->videoQuality);
+  parse_string(json->manifestMimeType, &Value->manifestMimeType);
+  parse_string(json->manifest, &Value->manifest);
 }

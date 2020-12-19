@@ -291,4 +291,4 @@ typedef struct json_mix_model
   cJSON *largeImageHeight;
   cJSON *largeImageUrl;
   cJSON *mixType;
-} json_page_mix_model;
+} json_mix_model;

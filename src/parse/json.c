@@ -295,16 +295,6 @@ json_contributor_model json_parse_contributors(cJSON *directObject)
 json_mix_model json_parse_mix(cJSON *directObject)
 {
   json_mix_model Value;
-  
-  Value.directObject = directObject;
-  Value.id = cJSON_GetObjectItemCaseSensitive(directObject, "id");
-
-  return Value;
-}
-
-json_page_mix_model json_parse_page_mix(cJSON *directObject)
-{
-  json_page_mix_model Value;
 
   cJSON *images = cJSON_GetObjectItem(directObject, "images");
   cJSON *SMALL = cJSON_GetObjectItem(images, "SMALL");
