@@ -26,12 +26,15 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-artist_model get_artist(const size_t artistid)
+openTIDAL openTIDAL_GetArtist(const size_t artistid)
 {
-  artist_model Value;
+  openTIDAL o; 
   char *endpoint;
   char baseparams[20];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 2);
+
   endpoint = url_cat("artists/", artistid, "", 0);
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
   curl_model req = curl_get(endpoint, baseparams);
@@ -42,36 +45,41 @@ artist_model get_artist(const size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_ArtistModel artist;
       json_artist_model processed_json = json_parse_artist(input_json);
-      Value = parse_artist_values(processed_json, 0);
-      Value.status = 1;
-      Value.arraySize = 1;
+      artist = parse_artist_values(processed_json, 0);
+      
+      o.status = 1;
+      openTIDAL_StructAddArtist(&o, artist);
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-artist_link_model get_artist_link(const size_t artistid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, const size_t offset)
 {
-  artist_link_model Value;
+  openTIDAL o;
   int i = 0;
   char *endpoint;
   char baseparams[50];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 7); 
+
   endpoint = url_cat("artists/", artistid, "/links", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
@@ -83,7 +91,6 @@ artist_link_model get_artist_link(const size_t artistid, const size_t limit, con
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      Value.status = 1;
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
@@ -93,44 +100,49 @@ artist_link_model get_artist_link(const size_t artistid, const size_t limit, con
       
       if (cJSON_IsArray(items))
       {
-        Value.arraySize = cJSON_GetArraySize(items);
         cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_LinkModel Value;
           json_links_model processed_json = json_parse_links(item);
           Value = parse_link_values(processed_json, i);
+
+          parse_number(limit, &Value.limit);
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+          parse_string(source, &Value.source);
+
+	  openTIDAL_StructAddLink(&o, Value);
   	  i += 1;
         }
       }
-      Value.status = 1;
-      parse_number(limit, &Value.limit);
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      parse_string(source, Value.source, sizeof(Value.source));
-      Value.arraySize = cJSON_GetArraySize(items);
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-mix_model get_artist_mix(const size_t artistid)
+openTIDAL openTIDAL_GetArtistMix(const size_t artistid)
 {
-  mix_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[20];
+
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 4);
 
   endpoint = url_cat("artists/", artistid, "/mix", 0);
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
@@ -141,34 +153,40 @@ mix_model get_artist_mix(const size_t artistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_MixModel Value;
+      
       json_mix_model processed_json = json_parse_mix(input_json);
       Value = parse_mix_values(processed_json);
-      Value.status = 1;
+      o.status = 1;
+      openTIDAL_StructAddMix(&o, Value);
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-items_model get_artist_toptracks(const size_t artistid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit, const size_t offset)
 {
-  items_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[50];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 1);
+
   endpoint = url_cat("artists/", artistid, "/toptracks", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
@@ -189,45 +207,50 @@ items_model get_artist_toptracks(const size_t artistid, const size_t limit, cons
 
       if (cJSON_IsArray(items))
       {
-        Value.arraySize = cJSON_GetArraySize(items);
 	cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
 	  Value = parse_items_values(processed_json, i);
+	  
+	  parse_number(limit, &Value.limit); 
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+
+	  openTIDAL_StructAddItem(&o, Value);
 	  i += 1;
 	}
       }
-      
-      parse_number(limit, &Value.limit); 
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items);
+    
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-items_model get_artist_videos(const size_t artistid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, const size_t offset)
 {
-  items_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[50];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 1);
+
   endpoint = url_cat("artists/", artistid, "/videos", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
@@ -248,45 +271,50 @@ items_model get_artist_videos(const size_t artistid, const size_t limit, const s
 
       if (cJSON_IsArray(items))
       {
-        Value.arraySize = cJSON_GetArraySize(items);
 	cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
 	  Value = parse_items_values(processed_json, i);
+          
+          parse_number(limit, &Value.limit); 
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+
+	  openTIDAL_StructAddItem(&o, Value);
 	  i += 1;
 	}
       }
       
-      parse_number(limit, &Value.limit); 
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items);
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-album_model get_artist_albums(const size_t artistid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, const size_t offset)
 {
-  album_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[50];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 0);
+
   endpoint = url_cat("artists/", artistid, "/albums", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
@@ -307,46 +335,51 @@ album_model get_artist_albums(const size_t artistid, const size_t limit, const s
 
       if (cJSON_IsArray(items))
       {
-        Value.arraySize = cJSON_GetArraySize(items);
 	cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_AlbumModel Value;
           json_album_model processed_json = json_parse_album(item);
 	  Value = parse_album_values(processed_json, i);
+	  
+          parse_number(limit, &Value.limit); 
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+          
+	  openTIDAL_StructAddAlbum(&o, Value);
 	  i += 1;
 	}
       }
       
-      parse_number(limit, &Value.limit); 
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items);
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, artistid, NULL);
+      o.status = parse_status(input_json, req, artistid, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
-    return Value;
+    return o;
   }
 }
 
-artist_model
-get_favorite_artist(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
+openTIDAL
+openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
-  artist_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "/favorites/artists", 0);
-  
   char baseparams[150];
+  
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 2);
+
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
 
@@ -369,41 +402,44 @@ get_favorite_artist(const size_t limit, const size_t offset, const char *order, 
       {
         cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ArtistModel artist;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_artist_model processed_json = json_parse_artist(innerItem);
-          Value = parse_artist_values(processed_json, i);
-  	  i += 1;
+          artist = parse_artist_values(processed_json, i);
+  	  
+	  parse_number(limit, &artist.limit);
+          parse_number(offset, &artist.offset);
+          parse_number(totalNumberOfItems, &artist.totalNumberOfItems);
+
+	  openTIDAL_StructAddArtist(&o, artist);
+	  i += 1;
         }
       }
       
-      parse_number(limit, &Value.limit);
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.arraySize = cJSON_GetArraySize(items);
-      Value.status = 1;
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value; 
+    o.json = input_json;
+    return o; 
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
-    return Value;
+    return o;
   }
 }
 
 /* create & delete favourites */
 
-int add_favorite_artist(const size_t artistid)
+int openTIDAL_AddFavoriteArtist(const size_t artistid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/artists", 1);
   int status;
@@ -446,7 +482,7 @@ int add_favorite_artist(const size_t artistid)
   }
 }
 
-int delete_favorite_artist(const size_t artistid)
+int openTIDAL_DeleteFavoriteArtist(const size_t artistid)
 {
   int status;
   char buffer[80];

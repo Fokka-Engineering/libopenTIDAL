@@ -48,7 +48,7 @@ cJSON *json_scan_stream;
 int isScanStream = 0;
 int updated = 0;
 
-int init(const char *file_location)
+int openTIDAL_Init(const char *file_location)
 {
   int status;
   persistentFile = malloc(strlen(file_location) + 1);
@@ -58,7 +58,7 @@ int init(const char *file_location)
   return status;
 }
 
-void init_demo()
+void openTIDAL_InitDemo()
 {
   demoEnabled = 1;
   countryCode = "US";
@@ -66,7 +66,7 @@ void init_demo()
   videoQuality = "LOW";
 }
 
-void cleanup()
+void openTIDAL_Cleanup()
 {
   curl_exit_auth();
   curl_exit();
@@ -263,18 +263,19 @@ void refresh_persistent()
   /* Start renewal process  */
   else
   {
-    login_token_model res = login_refresh_token(refresh_token);
+    openTIDAL res = login_refresh_token(refresh_token);
     if (res.status == 1)
     {
+      openTIDAL_LoginTokenModel code;
       FILE *fp;
-      access_token = res.access_token;
-      userId = res.userId;
+      access_token = code.access_token;
+      userId = code.userId;
       expires_in = time(NULL) + 604800; /* Calculate new ExpiryDate */
 
       fp = fopen(persistentFile, "w");
       if (fp != NULL)
       {
-        char *json = create_persistent_stream(res.username, audioQuality, videoQuality);
+        char *json = create_persistent_stream(code.username, audioQuality, videoQuality);
         fprintf(fp, "%s", json);
       }
       else

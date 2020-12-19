@@ -30,12 +30,14 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-login_code_model login_create_code()
+openTIDAL openTIDAL_CreateLoginCode()
 {
-  login_code_model Value;
+  openTIDAL o;
   char data[50];
   char scopes[] = "r_usr+w_usr";
- 
+
+  openTIDAL_StructInit(&o);
+
   snprintf(data, 50, "client_id=%s&scope=%s", client_id, scopes); 
   
   curl_model req = curl_post_auth("oauth2/device_authorization", data);
@@ -44,33 +46,34 @@ login_code_model login_create_code()
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_LoginCodeModel Value;
       json_login_code_model processed_json = json_parse_login_code(input_json);
       Value = parse_login_code_values(processed_json);
-      Value.status = 1;
+      o.status = 1;
       Value.expires_in = time(NULL) + Value.timeFrame;
     }
     else
     {
       fprintf(stderr, "[Request Error] Not a 200 Response.\n");
-      Value.status = 0;
+      o.status = 0;
     }
     /* Cleanup */
-    cJSON_Delete(input_json);
+    o.json = input_json;
     free(req.body);
-    return Value;
+    return o;
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Device Authorization: CURLE_OK Check failed.\n");
     free(req.body);
-    return Value; 
+    return o; 
   }
 }
 
-login_token_model login_create_token(char *device_code)
+openTIDAL openTIDAL_CreateLoginToken(char *device_code)
 {
-  login_token_model Value;
+  openTIDAL o;
   char data[256];
   char grant_type[] = "urn:ietf:params:oauth:grant-type:device_code";
   char scopes[] = "r_usr+w_usr"; 
@@ -80,7 +83,8 @@ login_token_model login_create_token(char *device_code)
   
   curl_model req = curl_post_auth("oauth2/token", data);
   if (req.status != -1)
-  { 
+  {
+    openTIDAL_LoginTokenModel Value;
     cJSON *input_json = json_parse(req.body);
     cJSON *check_status = cJSON_GetObjectItemCaseSensitive(input_json, "status");
     cJSON *check_error = cJSON_GetObjectItemCaseSensitive(input_json, "error");
@@ -92,7 +96,7 @@ login_token_model login_create_token(char *device_code)
 
       json_login_token_model processed_json = json_parse_login_token(input_json);
       Value = parse_login_token_values(processed_json);
-      Value.status = 1;
+      o.status = 1;
       Value.expires_in = Value.timeFrame + time(NULL);
       expires_in = Value.expires_in;
       countryCode = Value.countryCode;
@@ -100,11 +104,12 @@ login_token_model login_create_token(char *device_code)
       access_token = Value.access_token;
       refresh_token = Value.refresh_token;
 
+      /* TODO: MEM MANAGEMENT */
       /* get subscription info */
-      user_subscription_model subscription = get_user_subscription();
-      if (subscription.status == 1)
+      openTIDAL sub = openTIDAL_GetUserSubscription();
+      if (sub.status == 1)
       { 
-        if (strcmp(subscription.highestSoundQuality, "\0") == 0)
+        if (strcmp(sub.subscription.highestSoundQuality, "\0") == 0)
         {
           /* free subscription without streaming privileges */
           audio_quality = "LOW";
@@ -113,7 +118,7 @@ login_token_model login_create_token(char *device_code)
         else
         {
           /* active subscription with streaming privileges */
-          audio_quality = subscription.highestSoundQuality;
+          audio_quality = sub.subscription.highestSoundQuality;
   	  video_quality = "HIGH";
         }
       }
@@ -132,34 +137,34 @@ login_token_model login_create_token(char *device_code)
       {
         if (strcmp(check_error->valuestring, "authorization_pending") == 0)
         {
-          Value.status = 2;
+          o.status = 2;
         }
         else
         {
-          Value.status = 0;
+          o.status = 0;
         }
       }
       else
       {
-        Value.status = 0;
+        o.status = 0;
       }
     }
-    cJSON_Delete(input_json);
+    o.json = input_json;
     free(req.body);
-    return Value;
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Token Request: CURLE_OK Check failed.\n");
-    return Value;
+    return o;
   }
 }
 
-login_token_model login_refresh_token(char *refresh_token)
+openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
 {
-  login_token_model Value;
+  openTIDAL o;
   char data[2048];
   char grant_type[] = "refresh_token";
   char scopes[] = "r_usr+w_usr";
@@ -174,35 +179,37 @@ login_token_model login_refresh_token(char *refresh_token)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_LoginTokenModel Value;
       json_login_token_model processed_json = json_parse_login_token(input_json);
       Value = parse_login_token_values(processed_json);
 
-      Value.status = 1;
+      o.status = 1;
       access_token = Value.access_token;
       expires_in = Value.expires_in;
       countryCode = Value.countryCode;
       userId = Value.userId;
+
     }
     else
     {
-      Value.status = 0;
+      o.status = 0;
     }  
     
     /* Cleanup */
-    cJSON_Delete(input_json);
+    o.json = input_json;
     free(req.body);
-    return Value;
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Refresh Token: CURLE_OK Check failed.\n");
-    return Value;
+    return o;
   }
 }
 
-int logout()
+int openTIDAL_Logout()
 {
   int status = 0;
 

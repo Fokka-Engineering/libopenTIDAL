@@ -20,7 +20,16 @@
   THE SOFTWARE.
 */
 
+#pragma once
 #include "openTIDAL.h"
+
+typedef struct curl_model
+{
+  int status; /* custom status codes for error handling  */
+  size_t responseCode;
+  char *body;
+  char *header;
+} curl_model;
 
 /* baseAPI cURL handle */
 curl_model curl_get(char *endpoint, char *data);

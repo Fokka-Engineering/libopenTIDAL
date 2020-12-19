@@ -25,15 +25,15 @@
 #include <string.h>
 #include "../include/parse.h"
 
-void parse_string(cJSON *object, char *string, size_t length)
+void parse_string(cJSON *object, char **string)
 {
   if (cJSON_IsString(object) && (!cJSON_IsNull(object)))
   {
-    strncpy(string, object->valuestring, length);
+    *string = object->valuestring; 
   }
   else
   {
-    strcpy(string, "\0");
+    *string = NULL; 
   }
 }
 

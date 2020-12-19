@@ -26,12 +26,15 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-album_model get_album(const size_t albumid)
+openTIDAL openTIDAL_GetAlbum(const size_t albumid)
 {
-  album_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[20];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 0);
+
   endpoint = url_cat("albums/", albumid, "", 0);
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
   curl_model req = curl_get(endpoint, baseparams);
@@ -41,35 +44,41 @@ album_model get_album(const size_t albumid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_AlbumModel album;
       json_album_model processed_json = json_parse_album(input_json);
-      Value = parse_album_values(processed_json, 0);
-      Value.status = 1;
-      Value.arraySize = 1;
+      album = parse_album_values(processed_json, 0);
+      
+      o.status = 1;
+      openTIDAL_StructAddAlbum(&o, album);
     }
     else
     {
-      Value.status = parse_status(input_json, req, albumid, NULL);
+      o.status = parse_status(input_json, req, albumid, NULL);
     }
-    
+   
+    o.json = input_json; 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.\n", albumid);
-    return Value;
+    return o;
   }
 }
 
-items_model get_album_items(const size_t albumid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, const size_t offset)
 {
-  items_model Value;
+  openTIDAL o;
+
   char *endpoint;
   char baseparams[50];
   
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 1);
+
   endpoint = url_cat("albums/", albumid, "/items", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
@@ -86,52 +95,57 @@ items_model get_album_items(const size_t albumid, const size_t limit, const size
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-      Value.totalNumberOfItems = totalNumberOfItems->valueint;
       size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
         cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_items_model processed_json = json_parse_items(innerItem);
           Value = parse_items_values(processed_json, i);
+	  
+	  parse_number(limit, &Value.limit);
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+
+          openTIDAL_StructAddItem(&o, Value);
 	  i += 1;
         }
       }
 
-      Value.arraySize = cJSON_GetArraySize(items);
-      Value.status = 1;
-      parse_number(limit, &Value.limit);
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, albumid, NULL);
+      o.status = parse_status(input_json, req, albumid, NULL);
     }
     
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.\n", albumid);
-    return Value;
+    return o;
   }
 }
 
-album_model
-get_favorite_album(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
+openTIDAL
+openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
-  album_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "/favorites/albums", 0);
-  
   char baseparams[150];
+  
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 0);
+
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
   
@@ -155,42 +169,45 @@ get_favorite_album(const size_t limit, const size_t offset, const char *order, c
       {
         cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_AlbumModel album;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_album_model processed_json = json_parse_album(innerItem);
-          Value = parse_album_values(processed_json, i);
-  	  i += 1;
+          album = parse_album_values(processed_json, i);
+  	  
+	  parse_number(limit, &album.limit);
+          parse_number(offset, &album.offset);
+          parse_number(totalNumberOfItems, &album.totalNumberOfItems);
+
+	  openTIDAL_StructAddAlbum(&o, album);
+	  i += 1;
         }
       }
       
-      parse_number(limit, &Value.limit);
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.arraySize = cJSON_GetArraySize(items);
-      Value.status = 1;
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
 
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
-    return Value;
+    return o;
   }
 }
 
 /* create & delete favourites */
 
-int add_favorite_album(const size_t albumid)
+int openTIDAL_AddFavoriteAlbum(const size_t albumid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/albums", 1);
   int status;
@@ -231,7 +248,7 @@ int add_favorite_album(const size_t albumid)
   }
 }
 
-int delete_favorite_album(const size_t albumid)
+int openTIDAL_DeleteFavoriteAlbum(const size_t albumid)
 {
   int status;
   char buffer[80];

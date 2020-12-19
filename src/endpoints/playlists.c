@@ -27,12 +27,15 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-playlist_model get_playlist(const char *playlistid)
+openTIDAL openTIDAL_GetPlaylist(const char *playlistid)
 {
-  playlist_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[20];
-  
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 3);
+
   endpoint = url_cat_str("playlists/", playlistid, "");
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
   curl_model req = curl_get(endpoint, baseparams);
@@ -43,37 +46,41 @@ playlist_model get_playlist(const char *playlistid)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_PlaylistModel Value;
       json_playlist_model processed_json = json_parse_playlist(input_json);
       Value = parse_playlist_values(processed_json, 0); 
-      Value.status = 1;
-      Value.arraySize = 1;
+      o.status = 1;
+      openTIDAL_StructAddPlaylist(&o, Value);
     }
     else
     {
-      Value.status = parse_status(input_json, req, 0, playlistid);
+      o.status = parse_status(input_json, req, 0, playlistid);
     }
     
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return Value;
+    return o;
   }
 }
 
-items_model get_playlist_items(const char *playlistid, const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit, const size_t offset)
 {
-  items_model Value;
+  openTIDAL o;
   char *endpoint;
   char baseparams[50];
   
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 1);
+
   endpoint = url_cat_str("playlists/", playlistid, "/items");
-  snprintf(baseparams, 50, "countryCode=%s&limit%zu&offset=%zu", countryCode,
+  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -94,44 +101,50 @@ items_model get_playlist_items(const char *playlistid, const size_t limit, const
       {
 	cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_items_model processed_json = json_parse_items(innerItem);
 	  Value = parse_items_values(processed_json, i);
+	  
+	  parse_number(limit, &Value.limit); 
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+
+	  openTIDAL_StructAddItem(&o, Value);
 	  i += 1;
 	}
       }
  
-      parse_number(limit, &Value.limit); 
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items); 
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, 0, playlistid);
+      o.status = parse_status(input_json, req, 0, playlistid);
     }
     
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json; 
+    return o;
   }
   else
   {
     free(req.body);
-    Value.status = -1;
+    o.status = -1;
     fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
-    return Value;
+    return o;
   }
 }
 
-playlist_model
-get_favorite_playlist(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
+openTIDAL
+openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
-  playlist_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "/playlistsAndFavoritePlaylists", 0);
-  
   char baseparams[150];
+  
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 3);
+
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
              countryCode, limit, offset, order, orderDirection);
 
@@ -154,42 +167,45 @@ get_favorite_playlist(const size_t limit, const size_t offset, const char *order
       {
         cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_PlaylistModel playlist;
           cJSON *innerItem = cJSON_GetObjectItem(item, "playlist");
 
           json_playlist_model processed_json = json_parse_playlist(innerItem);
-          Value = parse_playlist_values(processed_json, i);
-  	  i += 1;
+          playlist = parse_playlist_values(processed_json, i);
+  	  
+          parse_number(limit, &playlist.limit);
+          parse_number(offset, &playlist.offset);
+          parse_number(totalNumberOfItems, &playlist.totalNumberOfItems);
+
+	  openTIDAL_StructAddPlaylist(&o, playlist);
+	  i += 1;
         }
       }
       
-      parse_number(limit, &Value.limit);
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.arraySize = cJSON_GetArraySize(items);
-      Value.status = 1;
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
     
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
-    return Value;
+    return o;
   }
 }
 
 
-playlist_etag_model get_playlist_etag(const char *playlistid)
+openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
 {
-  playlist_etag_model Value;
+  openTIDAL_ETagModel Value;
   /* Request playlist endpoint to scrape eTag Header  */
   char *endpoint;
   char baseparams[20];
@@ -235,7 +251,7 @@ playlist_etag_model get_playlist_etag(const char *playlistid)
         }
       }
       /* copy eTag to struct */
-      strncpy(Value.id, eTag, sizeof(Value.id));
+      Value.id = eTag;
       Value.status = 1;
     }
     else
@@ -255,7 +271,7 @@ playlist_etag_model get_playlist_etag(const char *playlistid)
   }
 }
 
-int delete_playlist(const char *playlistid)
+int openTIDAL_DeletePlaylist(const char *playlistid)
 {
   char buffer[80];
   snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
@@ -300,12 +316,12 @@ int delete_playlist(const char *playlistid)
   }  
 }
 
-int delete_playlist_item(const char *playlistid, const size_t index)
+int openTIDAL_DeletePlaylistItem(const char *playlistid, const size_t index)
 { 
   char buffer[100];
   char etag_buffer[50];
 
-  playlist_etag_model etag = get_playlist_etag(playlistid);
+  openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(buffer, 80, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
@@ -353,13 +369,13 @@ int delete_playlist_item(const char *playlistid, const size_t index)
 }
 
 /* TODO: FIX THIS SHIT!  */
-int move_playlist_item(const char *playlistid, const size_t index, const size_t toIndex)
+int openTIDAL_MovePlaylistItem(const char *playlistid, const size_t index, const size_t toIndex)
 {
   char buffer[100];
   char etag_buffer[50];
   char index_buffer[20];
 
-  playlist_etag_model etag = get_playlist_etag(playlistid);
+  openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 20, "toIndex=%zu", toIndex);
@@ -408,13 +424,13 @@ int move_playlist_item(const char *playlistid, const size_t index, const size_t 
   }
 }
 
-int add_playlist_item(const char *playlistid, const size_t trackid, const char *onDupes)
+int openTIDAL_AddPlaylistItem(const char *playlistid, const size_t trackid, const char *onDupes)
 {
   char buffer[100];
   char etag_buffer[50];
   char index_buffer[100];
 
-  playlist_etag_model etag = get_playlist_etag(playlistid);
+  openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 100, "trackIds=%zu&onArtifactNotFound=%s&onDupes=%s", trackid, "FAIL", onDupes);
@@ -463,13 +479,13 @@ int add_playlist_item(const char *playlistid, const size_t trackid, const char *
 
 }
 
-int add_playlist_items(const char *playlistid, const char *trackids, const char *onDupes)
+int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, const char *onDupes)
 {
   char buffer[100];
   char etag_buffer[50];
   char index_buffer[100];
 
-  playlist_etag_model etag = get_playlist_etag(playlistid);
+  openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 100, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
@@ -521,16 +537,18 @@ int add_playlist_items(const char *playlistid, const char *trackids, const char 
 
 /* create & delete favourites */
 
-playlist_model create_playlist(const char *title, const char *description)
+openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
 {
-  playlist_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "/playlists", 1);
-
   char *data = malloc(strlen(title)+strlen(description)+7+14+1);
   strcpy(data, "title=");
   strcat(data, title);
   strcat(data, "&description=");
   strcat(data, description);
+
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 3);
 
   curl_model req = curl_post(endpoint, data, "");
   /*Cleanup*/
@@ -542,32 +560,33 @@ playlist_model create_playlist(const char *title, const char *description)
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 201 || req.responseCode == 200)
     {
+      openTIDAL_PlaylistModel playlist;
+
       json_playlist_model processed_json = json_parse_playlist(input_json);
-      Value = parse_playlist_values(processed_json, 0);
-      Value.status = 1;
-      Value.arraySize = 1;
+      playlist = parse_playlist_values(processed_json, 0);
+      o.status = 1;
+      openTIDAL_StructAddPlaylist(&o, playlist);
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
     printf("[Request Error] CURLE_OK Check failed.\n");
-    playlist_model Value;
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
-    return Value;
+    return o;
   }
 }
 
 
-int add_favorite_playlist(const char *playlistid)
+int openTIDAL_AddFavoritePlaylist(const char *playlistid)
 {
   char *endpoint = url_cat("users/", userId, "/favorites/playlists", 1);
   int status;
@@ -613,7 +632,7 @@ int add_favorite_playlist(const char *playlistid)
   }
 }
 
-int delete_favorite_playlist(const char *playlistid)
+int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
 {
   int status;
   char buffer[80];

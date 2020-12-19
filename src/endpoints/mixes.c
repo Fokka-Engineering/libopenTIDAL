@@ -27,11 +27,14 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-items_model get_mix_items(const char *mixid)
+openTIDAL openTIDAL_GetMixItems(const char *mixid)
 {
-  items_model Value;
+  openTIDAL o;
   char buffer[50];
   char baseparams[20];
+
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 1);
 
   snprintf(buffer, 50, "mixes/%s/items", mixid);
   snprintf(baseparams, 20, "countryCode=%s", countryCode); 
@@ -51,46 +54,52 @@ items_model get_mix_items(const char *mixid)
 
       if (cJSON_IsArray(items))
       {
-        Value.arraySize = cJSON_GetArraySize(items);
 	cJSON_ArrayForEach(item, items)
         {
+          openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_items_model processed_json = json_parse_items(innerItem);
 	  Value = parse_items_values(processed_json, i);
+
+          parse_number(limit, &Value.limit); 
+          parse_number(offset, &Value.offset);
+          parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
+	  
+	  openTIDAL_StructAddItem(&o, Value);
 	  i += 1;
 	}
       }
       
-      parse_number(limit, &Value.limit); 
-      parse_number(offset, &Value.offset);
-      parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
-      Value.status = 1;
-      Value.arraySize = cJSON_GetArraySize(items);
+      
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, 0, mixid);
+      o.status = parse_status(input_json, req, 0, mixid);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] Mix %s: CURLE_OK Check failed.\n", mixid);
-    return Value;
+    return o;
   }
 }
 
-page_mix_model get_favorite_mixes()
+openTIDAL openTIDAL_GetFavoriteMixes()
 {
-  page_mix_model Value;
+  openTIDAL o;
   char *endpoint = "pages/my_collection_my_mixes";
-  
   char baseparams[40];
+  
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 4);
+
   snprintf(baseparams, 40, "countryCode=%s&deviceType=BROWSER", countryCode);
   
   curl_model req = curl_get(endpoint, baseparams);
@@ -112,23 +121,23 @@ page_mix_model get_favorite_mixes()
       cJSON *items = cJSON_GetObjectItem(pagedList, "items");
       cJSON *item = NULL;
       */
-      Value.status = 1;
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
 
     free(req.body);
-    cJSON_Delete(input_json);
-    return Value;
+    o.json = input_json;
+    return o;
   }
   else
   {
     printf("[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
-    return Value;
+    return o;
   }
 }
 

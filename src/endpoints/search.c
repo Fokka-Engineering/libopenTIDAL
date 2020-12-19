@@ -28,9 +28,9 @@
 
 /* Search */
 
-search_model get_search(char *term, const size_t limit)
+/*openTIDAL openTIDAL_SearchAll(char *term, const size_t limit)
 {
-  search_model Value;
+  openTIDAl o;
   char *encodedTerm = url_encode(term);
   char *endpoint = "search/";
   char baseparams[128];
@@ -65,4 +65,4 @@ search_model get_search(char *term, const size_t limit)
     fprintf(stderr, "[Request Error] CURLE_OK Check failed.\n");
     return Value;
   }
-}
+}*/

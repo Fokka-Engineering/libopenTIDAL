@@ -83,7 +83,6 @@
  */
 
 #include <string.h>
-
 #include "include/base64.h"
 
 /* aaaack but it's fast and const should make it shared text page. */

@@ -22,13 +22,14 @@
 
 #include "cJSON.h"
 #include "openTIDAL.h"
+#include "handles.h"
 #include "json_models.h"
 
 cJSON *json_parse(char * input);
 void parse_double(cJSON *object, double *number);
 void parse_number(cJSON *object, size_t *number);
 void parse_bool(cJSON *object, size_t *number);
-void parse_string(cJSON *object, char *string, size_t length);
+void parse_string(cJSON *object, char **string);
 
 int parse_status(cJSON *input_json, curl_model Value, const size_t id, const char *uuid);
 int parse_unauthorized(cJSON *input_json, const size_t id);

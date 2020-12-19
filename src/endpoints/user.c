@@ -27,12 +27,14 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-user_model get_user()
+openTIDAL openTIDAL_GetUser()
 {
-  user_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "", 0);
-   
   char baseparams[20];
+  
+  openTIDAL_StructInit(&o);
+
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
 
   curl_model req = curl_get(endpoint, baseparams);
@@ -42,35 +44,39 @@ user_model get_user()
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_UserModel user;
       json_user_model processed_json = json_parse_user(input_json);
-      Value = parse_user_values(processed_json);
-      Value.status = 1;
+      user = parse_user_values(processed_json);
+      o.status = 1;
+      o.user = user;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
     
-    cJSON_Delete(input_json);
+    o.json = input_json;
     free(req.body);
-    return Value; /*return data structure*/
+    return o; /*return data structure*/
 
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
-    return Value;
+    return o;
   }
 }
 
-user_subscription_model get_user_subscription()
+openTIDAL openTIDAL_GetUserSubscription()
 {
-  user_subscription_model Value;
+  openTIDAL o;
   char *endpoint = url_cat("users/", userId, "/subscription", 0);
-
   char baseparams[20];
+  
+  openTIDAL_StructInit(&o);
+
   snprintf(baseparams, 20, "countryCode=%s", countryCode);
 
   curl_model req = curl_get(endpoint, baseparams);
@@ -80,25 +86,27 @@ user_subscription_model get_user_subscription()
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
+      openTIDAL_UserSubscriptionModel Value;
       json_user_subscription_model processed_json = json_parse_user_subscription(input_json);
       Value = parse_user_subscription_values(processed_json);
-      Value.status = 1;
+      o.status = 1;
+      o.subscription = Value;
     }
     else
     {
-      Value.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, userId, NULL);
     }
     
-    cJSON_Delete(input_json);
+    o.json = input_json;
     free(req.body);
-    return Value; /*return data structure*/
+    return o; /*return data structure*/
 
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
-    return Value;
+    return o;
   }
 }
