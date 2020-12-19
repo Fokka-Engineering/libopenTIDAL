@@ -22,6 +22,7 @@
 
 #include <time.h>
 
+#define STRUCT_INIT_CAPACITY 4
 #ifndef openTIDAL__h
 #define openTIDAL__h
 
@@ -131,7 +132,7 @@ typedef struct openTIDAL_ItemsModel
   size_t limit;
   size_t offset;
   size_t totalNumberOfItems;
-  size_t subArraySize; /* 2nd ArraySize of Artist Array */
+  int subArraySize; /* 2nd ArraySize of Artist Array */
   size_t id;
   char *title;
   size_t explicitItem;
@@ -161,7 +162,7 @@ typedef struct openTIDAL_AlbumModel
   size_t limit;
   size_t offset;
   size_t totalNumberOfItems;
-  size_t subArraySize; /* 2nd ArraySize of Artist Array */
+  int subArraySize; /* 2nd ArraySize of Artist Array */
   size_t explicitItem;
   size_t duration;
   size_t allowStreaming;
