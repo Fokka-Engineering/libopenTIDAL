@@ -26,16 +26,15 @@
 #include "../include/parse.h"
 #include "../include/openTIDAL.h"
 
-search_model parse_search(cJSON *input_json)
+/*search_model parse_search(cJSON *input_json)
 {
   search_model Value;
-  size_t ar = 0; /* artistCounter  */
-  size_t al = 0; /* albumsCounter  */
-  size_t pl = 0; /* playlistsCounter */
-  size_t tr = 0; /* tracksCounter  */
-  size_t vi = 0; /* videosCounter  */
+  size_t ar = 0; 
+  size_t al = 0;
+  size_t pl = 0;
+  size_t tr = 0;
+  size_t vi = 0;
 
-  /* artist objects */
   cJSON *artists = cJSON_GetObjectItem(input_json, "artists");
   cJSON *artistsLimit = cJSON_GetObjectItem(artists, "limit");
   cJSON *artistsOffset = cJSON_GetObjectItem(artists, "offset");
@@ -43,7 +42,6 @@ search_model parse_search(cJSON *input_json)
   cJSON *artistsItems = cJSON_GetObjectItem(artists, "items");
   cJSON *artistsItem = NULL;
   
-  /* album objects */
   cJSON *albums = cJSON_GetObjectItem(input_json, "albums");
   cJSON *albumsLimit = cJSON_GetObjectItem(albums, "limit");
   cJSON *albumsOffset = cJSON_GetObjectItem(albums, "offset");
@@ -51,7 +49,6 @@ search_model parse_search(cJSON *input_json)
   cJSON *albumsItems = cJSON_GetObjectItem(albums, "items");
   cJSON *albumsItem = NULL;
   
-  /* playlist objects */
   cJSON *playlists = cJSON_GetObjectItem(input_json, "playlists");
   cJSON *playlistsLimit = cJSON_GetObjectItem(playlists, "limit");
   cJSON *playlistsOffset = cJSON_GetObjectItem(playlists, "offset");
@@ -59,7 +56,6 @@ search_model parse_search(cJSON *input_json)
   cJSON *playlistsItems = cJSON_GetObjectItem(playlists, "items");
   cJSON *playlistsItem = NULL;
  
-  /* track objects */
   cJSON *tracks = cJSON_GetObjectItem(input_json, "tracks");
   cJSON *tracksLimit = cJSON_GetObjectItem(tracks, "limit");
   cJSON *tracksOffset = cJSON_GetObjectItem(tracks, "offset");
@@ -67,7 +63,6 @@ search_model parse_search(cJSON *input_json)
   cJSON *tracksItems = cJSON_GetObjectItem(tracks, "items");
   cJSON *tracksItem = NULL;
   
-  /* video objects  */ 
   cJSON *videos = cJSON_GetObjectItem(input_json, "videos");
   cJSON *videosLimit = cJSON_GetObjectItem(videos, "limit");
   cJSON *videosOffset = cJSON_GetObjectItem(videos, "offset");
@@ -75,12 +70,10 @@ search_model parse_search(cJSON *input_json)
   cJSON *videosItems = cJSON_GetObjectItem(videos, "items");
   cJSON *videosItem = NULL;
   
-  /* topHit objects  */
   cJSON *topHit = cJSON_GetObjectItem(input_json, "topHit");
   cJSON *topHitValue = cJSON_GetObjectItem(topHit, "value");
   cJSON *topHitType = cJSON_GetObjectItemCaseSensitive(topHit, "type");
 
-  /* artists */
   if (cJSON_IsArray(artistsItems))
   {
     cJSON_ArrayForEach(artistsItem, artistsItems)
@@ -97,7 +90,6 @@ search_model parse_search(cJSON *input_json)
   Value.artists.arraySize = cJSON_GetArraySize(artistsItems);
   Value.artists.status = 1;
   
-  /* albums */
   if (cJSON_IsArray(albumsItems))
   {
     cJSON_ArrayForEach(albumsItem, albumsItems)
@@ -114,7 +106,6 @@ search_model parse_search(cJSON *input_json)
   Value.albums.arraySize = cJSON_GetArraySize(albumsItems);
   Value.albums.status = 1;
 
-  /* playlists */
   if (cJSON_IsArray(playlistsItems))
   {
     cJSON_ArrayForEach(playlistsItem, playlistsItems)
@@ -131,7 +122,6 @@ search_model parse_search(cJSON *input_json)
   Value.playlists.arraySize = cJSON_GetArraySize(playlistsItems);
   Value.playlists.status = 1;
 
-  /* tracks */
   if (cJSON_IsArray(tracksItems))
   {
     cJSON_ArrayForEach(tracksItem, tracksItems)
@@ -148,7 +138,6 @@ search_model parse_search(cJSON *input_json)
   Value.tracks.arraySize = cJSON_GetArraySize(tracksItems);
   Value.tracks.status = 1;
 
-  /* videos */
   if (cJSON_IsArray(videosItems))
   {
     cJSON_ArrayForEach(videosItem, videosItems)
@@ -165,7 +154,6 @@ search_model parse_search(cJSON *input_json)
   Value.videos.arraySize = cJSON_GetArraySize(videosItems);
   Value.videos.status = 1;
 
-  /* topHit */
   if (cJSON_IsString(topHitType) && (!cJSON_IsNull(topHitType)))
   {
     strncpy(Value.topHitType, topHitType->valuestring, sizeof(Value.topHitType));
@@ -214,4 +202,4 @@ search_model parse_search(cJSON *input_json)
   Value.status = 1;
 
   return Value;
-}
+}*/

@@ -151,7 +151,6 @@ json_playlist_model json_parse_playlist(cJSON *directObject)
 json_items_model json_parse_items(cJSON *directObject)
 {
   json_items_model Value;
-  size_t i = 0;
 
   cJSON *album = cJSON_GetObjectItem(directObject, "album");
   cJSON *artistsItem = NULL;
@@ -181,6 +180,9 @@ json_items_model json_parse_items(cJSON *directObject)
   
   if (cJSON_IsArray(Value.artists))
   {
+    int i;
+    Value.artistId = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));
+    Value.artistName = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));  
     cJSON_ArrayForEach(artistsItem, Value.artists)
     {
       Value.artistId[i] = cJSON_GetObjectItem(artistsItem, "id");
@@ -190,8 +192,8 @@ json_items_model json_parse_items(cJSON *directObject)
   }
   else
   {
-    Value.artistId[i] = NULL;
-    Value.artistName[i] = NULL;
+    Value.artistId = NULL;
+    Value.artistName = NULL;
   }
 
   return Value;
@@ -200,7 +202,6 @@ json_items_model json_parse_items(cJSON *directObject)
 json_album_model json_parse_album(cJSON *directObject)
 {
   json_album_model Value;
-  size_t i = 0;
 
   cJSON* artistsItem = NULL;
 
@@ -222,9 +223,12 @@ json_album_model json_parse_album(cJSON *directObject)
   Value.numberOfVideos = cJSON_GetObjectItem(directObject, "numberOfVideos");
   Value.numberOfVolumes = cJSON_GetObjectItem(directObject, "numberOfVolumes");
   Value.artists = cJSON_GetObjectItem(directObject, "artists");
-
+  
   if (cJSON_IsArray(Value.artists))
   {
+    int i;
+    Value.artistId = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));
+    Value.artistName = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));  
     cJSON_ArrayForEach(artistsItem, Value.artists)
     {
       Value.artistId[i] = cJSON_GetObjectItem(artistsItem, "id");
@@ -234,8 +238,8 @@ json_album_model json_parse_album(cJSON *directObject)
   }
   else
   {
-    Value.artistId[i] = NULL;
-    Value.artistName[i] = NULL;
+    Value.artistId = NULL;
+    Value.artistName = NULL;
   }
 
   return Value;

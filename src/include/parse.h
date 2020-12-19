@@ -55,44 +55,35 @@ json_stream_model json_parse_stream(cJSON *directObject);
 json_manifest_model json_parse_manifest(cJSON *directObject);
 
 /* parse Values */
-openTIDAL_LoginCodeModel
-parse_login_code_values(json_login_code_model json);
+void parse_login_code_values(openTIDAL_LoginCodeModel *code, 
+                             json_login_code_model *json);
 
-openTIDAL_LoginTokenModel
-parse_login_token_values(json_login_token_model json);
+void parse_login_token_values(openTIDAL_LoginTokenModel *token,
+                              json_login_token_model *json);
 
-openTIDAL_UserModel
-parse_user_values(json_user_model json);
+void parse_user_values(openTIDAL_UserModel *user,
+                       json_user_model *json);
 
-openTIDAL_UserSubscriptionModel
-parse_user_subscription_values(json_user_subscription_model json);
+void parse_user_subscription_values(openTIDAL_UserSubscriptionModel *sub,
+                                    json_user_subscription_model *json);
 
-openTIDAL_PlaylistModel
-parse_playlist_values(json_playlist_model json, size_t i);
+void parse_playlist_values(openTIDAL_PlaylistModel *playlist,
+                           json_playlist_model *json);
 
-openTIDAL_ItemsModel
-parse_items_values(json_items_model json, size_t i);
+void parse_items_values(openTIDAL_ItemsModel *items, json_items_model *json);
 
-openTIDAL_AlbumModel
-parse_album_values(json_album_model json, size_t i);
+void parse_album_values(openTIDAL_AlbumModel *album, json_album_model *json);
 
-openTIDAL_ArtistModel
-parse_artist_values(json_artist_model json, size_t i);
+void parse_artist_values(openTIDAL_ArtistModel *artist, json_artist_model *json);
 
-openTIDAL_LinkModel
-parse_link_values(json_links_model json, size_t i);
+void parse_link_values(openTIDAL_LinkModel *link, json_links_model *json);
 
-openTIDAL_ContributorModel
-parse_contributor_values(json_contributor_model json, size_t i);
+void parse_contributor_values(openTIDAL_ContributorModel *contrib,
+                              json_contributor_model *json);
 
-openTIDAL_MixModel
-parse_mix_values(json_mix_model json);
+void parse_mix_values(openTIDAL_MixModel *mix, json_page_mix_model *json);
 
-openTIDAL_MixModel
-parse_page_mix_values(json_page_mix_model json, size_t i);
-
-openTIDAL_StreamModel
-parse_stream_values(json_stream_model json);
+void parse_stream_values(openTIDAL_StreamModel *stream, json_stream_model *json);
 
 //search_model parse_search(cJSON *input_json);
 
