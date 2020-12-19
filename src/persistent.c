@@ -263,7 +263,7 @@ void refresh_persistent()
   /* Start renewal process  */
   else
   {
-    openTIDAL res = login_refresh_token(refresh_token);
+    openTIDAL res = openTIDAL_RefreshLoginToken(refresh_token);
     if (res.status == 1)
     {
       openTIDAL_LoginTokenModel code;

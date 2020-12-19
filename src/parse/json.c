@@ -180,7 +180,7 @@ json_items_model json_parse_items(cJSON *directObject)
   
   if (cJSON_IsArray(Value.artists))
   {
-    int i;
+    int i = 0;
     Value.artistId = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));
     Value.artistName = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));  
     cJSON_ArrayForEach(artistsItem, Value.artists)
@@ -226,7 +226,7 @@ json_album_model json_parse_album(cJSON *directObject)
   
   if (cJSON_IsArray(Value.artists))
   {
-    int i;
+    int i = 0;
     Value.artistId = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));
     Value.artistName = malloc(sizeof(cJSON *) * cJSON_GetArraySize(Value.artists));  
     cJSON_ArrayForEach(artistsItem, Value.artists)
