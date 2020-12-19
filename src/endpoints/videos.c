@@ -48,7 +48,7 @@ openTIDAL openTIDAL_GetVideo(const size_t videoid)
     {
       openTIDAL_ItemsModel video;
       json_items_model processed_json = json_parse_items(input_json);
-      video = parse_items_values(processed_json, 0);
+      parse_items_values(&video, &processed_json);
 
       o.status = 1;
       openTIDAL_StructAddItem(&o, video);
@@ -97,8 +97,6 @@ openTIDAL_GetFavoriteVideos(const size_t limit, const size_t offset, const char 
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-      size_t i = 0;
-
       if (cJSON_IsArray(items))
       {
         cJSON_ArrayForEach(item, items)
@@ -107,14 +105,13 @@ openTIDAL_GetFavoriteVideos(const size_t limit, const size_t offset, const char 
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_items_model processed_json = json_parse_items(innerItem);
-          video = parse_items_values(processed_json, i);
           
+	  parse_items_values(&video, &processed_json);
           parse_number(limit, &video.limit);
           parse_number(offset, &video.offset);
           parse_number(totalNumberOfItems, &video.totalNumberOfItems);
 	  
 	  openTIDAL_StructAddItem(&o, video);
-	  i += 1;
         }
       }
      
@@ -163,7 +160,6 @@ openTIDAL_GetVideoContributors(const size_t videoid, const size_t limit, const s
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -171,14 +167,13 @@ openTIDAL_GetVideoContributors(const size_t videoid, const size_t limit, const s
         {
           openTIDAL_ContributorModel contrib;
           json_contributor_model processed_json = json_parse_contributors(item);
-	  contrib = parse_contributor_values(processed_json, i);
-	
+	  
+	  parse_contributor_values(&contrib, &processed_json);
 	  parse_number(limit, &contrib.limit); 
           parse_number(offset, &contrib.offset);
           parse_number(totalNumberOfItems, &contrib.totalNumberOfItems);
   
 	  openTIDAL_StructAddContributor(&o, contrib);
-	  i += 1;
 	}
       }
       
@@ -221,7 +216,7 @@ openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
     {
       openTIDAL_StreamModel stream;
       json_stream_model processed_json = json_parse_stream(input_json);
-      stream = parse_stream_values(processed_json);     
+      parse_stream_values(&stream, &processed_json);     
       o.status = 0;
       char manifest_decoded[1024];
 

@@ -46,7 +46,7 @@ openTIDAL openTIDAL_GetUser()
     {
       openTIDAL_UserModel user;
       json_user_model processed_json = json_parse_user(input_json);
-      user = parse_user_values(processed_json);
+      parse_user_values(&user, &processed_json);
       o.status = 1;
       o.user = user;
     }
@@ -88,7 +88,7 @@ openTIDAL openTIDAL_GetUserSubscription()
     {
       openTIDAL_UserSubscriptionModel Value;
       json_user_subscription_model processed_json = json_parse_user_subscription(input_json);
-      Value = parse_user_subscription_values(processed_json);
+      parse_user_subscription_values(&Value, &processed_json);
       o.status = 1;
       o.subscription = Value;
     }

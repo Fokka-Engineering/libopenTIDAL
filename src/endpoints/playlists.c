@@ -48,7 +48,7 @@ openTIDAL openTIDAL_GetPlaylist(const char *playlistid)
     {
       openTIDAL_PlaylistModel Value;
       json_playlist_model processed_json = json_parse_playlist(input_json);
-      Value = parse_playlist_values(processed_json, 0); 
+      parse_playlist_values(&Value, &processed_json); 
       o.status = 1;
       openTIDAL_StructAddPlaylist(&o, Value);
     }
@@ -95,7 +95,6 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit,
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
             
       if (cJSON_IsArray(items))
       {
@@ -104,14 +103,13 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit,
           openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_items_model processed_json = json_parse_items(innerItem);
-	  Value = parse_items_values(processed_json, i);
 	  
+	  parse_items_values(&Value, &processed_json);
 	  parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
 	  openTIDAL_StructAddItem(&o, Value);
-	  i += 1;
 	}
       }
  
@@ -161,7 +159,6 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -171,14 +168,13 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
           cJSON *innerItem = cJSON_GetObjectItem(item, "playlist");
 
           json_playlist_model processed_json = json_parse_playlist(innerItem);
-          playlist = parse_playlist_values(processed_json, i);
-  	  
+          
+	  parse_playlist_values(&playlist, &processed_json);
           parse_number(limit, &playlist.limit);
           parse_number(offset, &playlist.offset);
           parse_number(totalNumberOfItems, &playlist.totalNumberOfItems);
 
 	  openTIDAL_StructAddPlaylist(&o, playlist);
-	  i += 1;
         }
       }
       
@@ -563,7 +559,7 @@ openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
       openTIDAL_PlaylistModel playlist;
 
       json_playlist_model processed_json = json_parse_playlist(input_json);
-      playlist = parse_playlist_values(processed_json, 0);
+      parse_playlist_values(&playlist, &processed_json);
       o.status = 1;
       openTIDAL_StructAddPlaylist(&o, playlist);
     }

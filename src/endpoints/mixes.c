@@ -50,7 +50,6 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -59,17 +58,15 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
           openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_items_model processed_json = json_parse_items(innerItem);
-	  Value = parse_items_values(processed_json, i);
-
+	  
+	  parse_items_values(&Value, &processed_json);
           parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 	  
 	  openTIDAL_StructAddItem(&o, Value);
-	  i += 1;
 	}
       }
-      
       
       o.status = 1;
     }

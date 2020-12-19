@@ -48,7 +48,7 @@ openTIDAL openTIDAL_CreateLoginCode()
     {
       openTIDAL_LoginCodeModel Value;
       json_login_code_model processed_json = json_parse_login_code(input_json);
-      Value = parse_login_code_values(processed_json);
+      parse_login_code_values(&Value, &processed_json);
       o.status = 1;
       Value.expires_in = time(NULL) + Value.timeFrame;
     }
@@ -95,7 +95,7 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
       char *video_quality;
 
       json_login_token_model processed_json = json_parse_login_token(input_json);
-      Value = parse_login_token_values(processed_json);
+      parse_login_token_values(&Value, &processed_json);
       o.status = 1;
       Value.expires_in = Value.timeFrame + time(NULL);
       expires_in = Value.expires_in;
@@ -181,7 +181,7 @@ openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
     {
       openTIDAL_LoginTokenModel Value;
       json_login_token_model processed_json = json_parse_login_token(input_json);
-      Value = parse_login_token_values(processed_json);
+      parse_login_token_values(&Value, &processed_json);
 
       o.status = 1;
       access_token = Value.access_token;

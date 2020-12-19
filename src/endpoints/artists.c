@@ -47,7 +47,7 @@ openTIDAL openTIDAL_GetArtist(const size_t artistid)
     {
       openTIDAL_ArtistModel artist;
       json_artist_model processed_json = json_parse_artist(input_json);
-      artist = parse_artist_values(processed_json, 0);
+      parse_artist_values(&artist, &processed_json);
       
       o.status = 1;
       openTIDAL_StructAddArtist(&o, artist);
@@ -73,7 +73,6 @@ openTIDAL openTIDAL_GetArtist(const size_t artistid)
 openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, const size_t offset)
 {
   openTIDAL o;
-  int i = 0;
   char *endpoint;
   char baseparams[50];
  
@@ -104,7 +103,7 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, con
         {
           openTIDAL_LinkModel Value;
           json_links_model processed_json = json_parse_links(item);
-          Value = parse_link_values(processed_json, i);
+          parse_link_values(&Value, &processed_json);
 
           parse_number(limit, &Value.limit);
           parse_number(offset, &Value.offset);
@@ -112,7 +111,6 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, con
           parse_string(source, &Value.source);
 
 	  openTIDAL_StructAddLink(&o, Value);
-  	  i += 1;
         }
       }
       o.status = 1;
@@ -156,7 +154,7 @@ openTIDAL openTIDAL_GetArtistMix(const size_t artistid)
       openTIDAL_MixModel Value;
       
       json_mix_model processed_json = json_parse_mix(input_json);
-      Value = parse_mix_values(processed_json);
+      parse_mix_values(&Value, &processed_json);
       o.status = 1;
       openTIDAL_StructAddMix(&o, Value);
     }
@@ -203,7 +201,6 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -211,14 +208,13 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit
         {
           openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
-	  Value = parse_items_values(processed_json, i);
 	  
+	  parse_items_values(&Value, &processed_json);
 	  parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
 	  openTIDAL_StructAddItem(&o, Value);
-	  i += 1;
 	}
       }
     
@@ -267,7 +263,6 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, c
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -275,14 +270,13 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, c
         {
           openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
-	  Value = parse_items_values(processed_json, i);
+	  parse_items_values(&Value, &processed_json);
           
           parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
 	  openTIDAL_StructAddItem(&o, Value);
-	  i += 1;
 	}
       }
       
@@ -331,7 +325,6 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, c
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
       cJSON *items = cJSON_GetObjectItem(input_json, "items");
       cJSON *item = NULL;
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -339,14 +332,13 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, c
         {
           openTIDAL_AlbumModel Value;
           json_album_model processed_json = json_parse_album(item);
-	  Value = parse_album_values(processed_json, i);
 	  
+	  parse_album_values(&Value, &processed_json);
           parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
           
 	  openTIDAL_StructAddAlbum(&o, Value);
-	  i += 1;
 	}
       }
       
@@ -396,24 +388,20 @@ openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-      size_t i = 0;
-
       if (cJSON_IsArray(items))
       {
         cJSON_ArrayForEach(item, items)
         {
           openTIDAL_ArtistModel artist;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
-
           json_artist_model processed_json = json_parse_artist(innerItem);
-          artist = parse_artist_values(processed_json, i);
-  	  
+          
+	  parse_artist_values(&artist, &processed_json);
 	  parse_number(limit, &artist.limit);
           parse_number(offset, &artist.offset);
           parse_number(totalNumberOfItems, &artist.totalNumberOfItems);
 
 	  openTIDAL_StructAddArtist(&o, artist);
-	  i += 1;
         }
       }
       

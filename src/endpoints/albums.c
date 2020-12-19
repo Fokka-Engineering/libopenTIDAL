@@ -46,7 +46,7 @@ openTIDAL openTIDAL_GetAlbum(const size_t albumid)
     {
       openTIDAL_AlbumModel album;
       json_album_model processed_json = json_parse_album(input_json);
-      album = parse_album_values(processed_json, 0);
+      parse_album_values(&album, &processed_json);
       
       o.status = 1;
       openTIDAL_StructAddAlbum(&o, album);
@@ -95,7 +95,6 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
       cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-      size_t i = 0;
 
       if (cJSON_IsArray(items))
       {
@@ -105,14 +104,13 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_items_model processed_json = json_parse_items(innerItem);
-          Value = parse_items_values(processed_json, i);
+          parse_items_values(&Value, &processed_json);
 	  
 	  parse_number(limit, &Value.limit);
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
           openTIDAL_StructAddItem(&o, Value);
-	  i += 1;
         }
       }
 
@@ -163,8 +161,6 @@ openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char 
       cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
       cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-      size_t i = 0;
-
       if (cJSON_IsArray(items))
       {
         cJSON_ArrayForEach(item, items)
@@ -173,14 +169,13 @@ openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char 
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
           json_album_model processed_json = json_parse_album(innerItem);
-          album = parse_album_values(processed_json, i);
+          parse_album_values(&album, &processed_json);
   	  
 	  parse_number(limit, &album.limit);
           parse_number(offset, &album.offset);
           parse_number(totalNumberOfItems, &album.totalNumberOfItems);
 
 	  openTIDAL_StructAddAlbum(&o, album);
-	  i += 1;
         }
       }
       
