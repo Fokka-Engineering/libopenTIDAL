@@ -52,4 +52,5 @@ Mkfile.old
 dkms.conf
 persistent.json
 .DS_Store
+*.swp
 persistent.json
