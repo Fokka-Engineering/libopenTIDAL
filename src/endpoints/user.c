@@ -30,12 +30,12 @@
 openTIDAL openTIDAL_GetUser()
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", userId, "", 0);
+  char *endpoint = url_cat("users/", config.userId, "", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);
 
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
 
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -52,7 +52,7 @@ openTIDAL openTIDAL_GetUser()
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
     
     o.json = input_json;
@@ -64,7 +64,7 @@ openTIDAL openTIDAL_GetUser()
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     return o;
   }
 }
@@ -72,12 +72,12 @@ openTIDAL openTIDAL_GetUser()
 openTIDAL openTIDAL_GetUserSubscription()
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", userId, "/subscription", 0);
+  char *endpoint = url_cat("users/", config.userId, "/subscription", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);
 
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
 
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -94,7 +94,7 @@ openTIDAL openTIDAL_GetUserSubscription()
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
     
     o.json = input_json;
@@ -106,7 +106,7 @@ openTIDAL openTIDAL_GetUserSubscription()
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     return o;
   }
 }

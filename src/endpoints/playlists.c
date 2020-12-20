@@ -37,7 +37,7 @@ openTIDAL openTIDAL_GetPlaylist(const char *playlistid)
   openTIDAL_StructAlloc(&o, 3);
 
   endpoint = url_cat_str("playlists/", playlistid, "");
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
   
@@ -80,7 +80,7 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit,
   openTIDAL_StructAlloc(&o, 1);
 
   endpoint = url_cat_str("playlists/", playlistid, "/items");
-  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode,
+  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -137,14 +137,14 @@ openTIDAL
 openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", userId, "/playlistsAndFavoritePlaylists", 0);
+  char *endpoint = url_cat("users/", config.userId, "/playlistsAndFavoritePlaylists", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 3);
 
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
-             countryCode, limit, offset, order, orderDirection);
+             config.countryCode, limit, offset, order, orderDirection);
 
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -182,7 +182,7 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
     
     free(req.body);
@@ -193,7 +193,7 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -207,7 +207,7 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
   char baseparams[20];
 
   endpoint = url_cat_str("playlists/", playlistid, "");
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   curl_model req = curl_head(endpoint, baseparams); /* Returns Header with eTag */
   free(endpoint);
   
@@ -270,7 +270,7 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
 int openTIDAL_DeletePlaylist(const char *playlistid)
 {
   char buffer[80];
-  snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, countryCode);
+  snprintf(buffer, 80, "playlists/%s?countryCode=%s", playlistid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   free(req.body); 
@@ -320,7 +320,7 @@ int openTIDAL_DeletePlaylistItem(const char *playlistid, const size_t index)
   openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-  snprintf(buffer, 80, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
+  snprintf(buffer, 80, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, config.countryCode);
   curl_model req = curl_delete(buffer, "", etag_buffer);
   
   /* cleanup */
@@ -375,7 +375,7 @@ int openTIDAL_MovePlaylistItem(const char *playlistid, const size_t index, const
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 20, "toIndex=%zu", toIndex);
-  snprintf(buffer, 100, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, countryCode);
+  snprintf(buffer, 100, "playlists/%s/items/%zu?countryCode=%s", playlistid, index, config.countryCode);
   
   curl_model req = curl_post(buffer, index_buffer, etag_buffer);
   
@@ -430,7 +430,7 @@ int openTIDAL_AddPlaylistItem(const char *playlistid, const size_t trackid, cons
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 100, "trackIds=%zu&onArtifactNotFound=%s&onDupes=%s", trackid, "FAIL", onDupes);
-  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
+  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, config.countryCode);
    
   curl_model req = curl_post(buffer, index_buffer, etag_buffer);
   /* cleanup */
@@ -485,7 +485,7 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
   snprintf(index_buffer, 100, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
-  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, countryCode);
+  snprintf(buffer, 100, "playlists/%s/items?countryCode=%s", playlistid, config.countryCode);
   
   curl_model req = curl_post(buffer, index_buffer, etag_buffer);
   
@@ -536,7 +536,7 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
 openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", userId, "/playlists", 1);
+  char *endpoint = url_cat("users/", config.userId, "/playlists", 1);
   char *data = malloc(strlen(title)+strlen(description)+7+14+1);
   strcpy(data, "title=");
   strcat(data, title);
@@ -565,7 +565,7 @@ openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
 
     free(req.body);
@@ -584,7 +584,7 @@ openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
 
 int openTIDAL_AddFavoritePlaylist(const char *playlistid)
 {
-  char *endpoint = url_cat("users/", userId, "/favorites/playlists", 1);
+  char *endpoint = url_cat("users/", config.userId, "/favorites/playlists", 1);
   int status;
   char *data = malloc(strlen(playlistid)+10+25+1);
   strcpy(data, "uuids=");
@@ -632,7 +632,7 @@ int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/playlists/%s?countryCode=%s", userId, playlistid, countryCode);
+  snprintf(buffer, 80, "users/%zu/favorites/playlists/%s?countryCode=%s", config.userId, playlistid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   /*Cleanup*/

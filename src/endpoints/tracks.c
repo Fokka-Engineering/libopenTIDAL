@@ -37,7 +37,7 @@ openTIDAL openTIDAL_GetTrack(const size_t trackid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
 
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -74,14 +74,14 @@ openTIDAL
 openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", userId, "/favorites/tracks", 0);
+  char *endpoint = url_cat("users/", config.userId, "/favorites/tracks", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
   snprintf(baseparams, 150, "countryCode=%s&limit=%zu&offset=%zu&order=%s&orderDirection=%s",
-             countryCode, limit, offset, order, orderDirection);
+             config.countryCode, limit, offset, order, orderDirection);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
   if (req.status != -1)
@@ -117,7 +117,7 @@ openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char 
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
 
     free(req.body);
@@ -128,7 +128,7 @@ openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char 
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", userId);
+    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -142,11 +142,10 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 5);
 
-  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", countryCode, limit, offset);
-
+  snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode, limit, offset);
+  
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
-  
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
@@ -173,15 +172,16 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
 	  openTIDAL_StructAddContributor(&o, contrib);
 	}
       }
-      
       o.status = 1;
     }
     else
     {
       o.status = parse_status(input_json, req, trackid, NULL);
     }
-
+    
+    printf("Req!\n");
     free(req.body);
+    printf("After!\n");
     o.json = input_json;
     return o;
   }
@@ -203,7 +203,7 @@ openTIDAL openTIDAL_GetTrackMix(const size_t trackid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 4);
   
-  snprintf(baseparams, 20, "countryCode=%s", countryCode);
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -246,7 +246,7 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
   openTIDAL_StructInit(&o);
 
   snprintf(buffer, 200, "countryCode=%s&audioquality=%s&assetpresentation=%s&playbackmode=%s",
-            countryCode, audioQuality, "FULL", "STREAM");
+            config.countryCode, config.audioQuality, "FULL", "STREAM");
   curl_model req = curl_get(endpoint, buffer);
   free(endpoint);
   
@@ -305,7 +305,7 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
 
 int openTIDAL_AddFavoriteTrack(const size_t trackid)
 {
-  char *endpoint = url_cat("users/", userId, "/favorites/tracks", 1);
+  char *endpoint = url_cat("users/", config.userId, "/favorites/tracks", 1);
   int status;
   char buffer[60];
   snprintf(buffer, 60, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
@@ -350,7 +350,7 @@ int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/tracks/%zu?countryCode=%s", userId, trackid, countryCode);
+  snprintf(buffer, 80, "users/%zu/favorites/tracks/%zu?countryCode=%s", config.userId, trackid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   /*Cleanup*/

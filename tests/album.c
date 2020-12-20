@@ -13,16 +13,15 @@ int main()
   for (i = 0; i < resolve.total[0]; ++i)
   {
     int artists;
-    openTIDAL_AlbumModel album = resolve.albums[i];
 
-    printf("Title: %s\n", album.title);
+    printf("Title: %s\n", resolve.albums[i].title);
 
-    for (artists = 0; artists < album.subArraySize; ++artists)
+    for (artists = 0; artists < resolve.albums[i].subArraySize; ++artists)
     {
-      printf("ArtistName #%d: %s\n", artists, album.artistName[artists]);
+      printf("ArtistName #%d: %s\n", artists, resolve.albums[i].artistName[artists]);
     }
   }
-
+  
   openTIDAL_StructDelete(&resolve);
   openTIDAL_Cleanup();
   return 0;

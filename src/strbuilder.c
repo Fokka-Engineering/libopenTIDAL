@@ -39,7 +39,7 @@ char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appen
   if (appendCountryCode != 0)
   {
     strcat(urlcat, "?countryCode=");
-    strcat(urlcat, countryCode);
+    strcat(urlcat, config.countryCode);
   }
 
   return urlcat;

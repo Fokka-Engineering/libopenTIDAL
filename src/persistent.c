@@ -30,66 +30,60 @@
 #include "include/handles.h"
 #include "include/openTIDAL.h"
 
-char *refresh_token;
-char *access_token;
-const char *client_id = "8SEZWa4J1NVC5U5Y";
-const char *client_secret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-char *countryCode;
-char *audioQuality;
-char *videoQuality;
-char *persistentFile;
-size_t userId;
-size_t demoEnabled;
-time_t expires_in;
+openTIDAL_ConfigModel config;
 
-char *json_stream;
-int isStream = 0;
-cJSON *json_scan_stream;
-int isScanStream = 0;
-int updated = 0;
+void openTIDAL_ConfigInit(openTIDAL_ConfigModel *config)
+{
+  config->location = NULL;
+  config->newStream = NULL;
+  config->stream = NULL;
+  config->refreshRequest = NULL;
+  config->tokenRequest = NULL;
+  config->demoEnabled = 1;
+
+  config->clientId = "8SEZWa4J1NVC5U5Y";
+  config->clientSecret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
+  config->baseUrl = "https://api.tidal.com/v1/";
+  config->authUrl = "https://auth.tidal.com/v1/"; 
+  
+  config->username = NULL;
+  config->userId = 0;
+  config->expiresIn = 0;
+  config->countryCode = "US";
+
+  config->audioQuality = "LOW";
+  config->videoQuality = "LOW"; 
+}
 
 int openTIDAL_Init(const char *file_location)
 {
-  int status;
-  persistentFile = malloc(strlen(file_location) + 1);
-  strcpy(persistentFile, file_location);
-  status = scan_persistent();
-  demoEnabled = 0;
+  int status = 0;
+  openTIDAL_ConfigInit(&config);
+  if (file_location != NULL)
+  {
+    config.location = malloc(strlen(file_location) + 1);
+    if (config.location != NULL)
+    {
+      strcpy(config.location, file_location);
+      status = scan_persistent();
+      config.demoEnabled = 0;
+    }
+  }
   return status;
-}
-
-void openTIDAL_InitDemo()
-{
-  demoEnabled = 1;
-  countryCode = "US";
-  audioQuality = "LOW";
-  videoQuality = "LOW";
 }
 
 void openTIDAL_Cleanup()
 {
   curl_exit_auth();
   curl_exit();
-  if (demoEnabled != 1)
-  {
-    free(persistentFile);
-  }
-  if (isStream == 1)
-  {
-    free(json_stream);
-  }
-  if (isScanStream == 1)
-  {
-    cJSON_Delete(json_scan_stream);
-  }
-  if (updated == 1)
-  {
-    free(audioQuality);
-    free(videoQuality);
-  }
+
+  free(config.newStream);
+  cJSON_Delete((cJSON *) config.refreshRequest);
+  cJSON_Delete((cJSON *) config.tokenRequest);
+  cJSON_Delete((cJSON *) config.stream);
 }
 
-char *create_persistent_stream(char *username, char *audio_quality, char *video_quality)
+char *create_persistent_stream()
 {
   char *string = NULL;
   cJSON *authorization_json = NULL;
@@ -113,52 +107,66 @@ char *create_persistent_stream(char *username, char *audio_quality, char *video_
   preferences_json = cJSON_CreateObject();
   cJSON_AddItemToObject(output_json, "preferences", preferences_json);
 
-  refresh_token_json = cJSON_CreateString(refresh_token);
+  refresh_token_json = cJSON_CreateString(config.refreshToken);
   cJSON_AddItemToObject(authorization_json, "refresh_token", refresh_token_json);
-  access_token_json = cJSON_CreateString(access_token);
+  access_token_json = cJSON_CreateString(config.accessToken);
   cJSON_AddItemToObject(authorization_json, "access_token", access_token_json);
-  expires_in_json = cJSON_CreateNumber(expires_in);
+  expires_in_json = cJSON_CreateNumber(config.expiresIn);
   cJSON_AddItemToObject(authorization_json, "expires_in", expires_in_json);
 
-  id_json = cJSON_CreateNumber(userId);
+  id_json = cJSON_CreateNumber(config.userId);
   cJSON_AddItemToObject(user_json, "id", id_json);
-  username_json = cJSON_CreateString(username);
+  username_json = cJSON_CreateString(config.username);
   cJSON_AddItemToObject(user_json, "username", username_json);
-  country_code_json = cJSON_CreateString(countryCode);
+  country_code_json = cJSON_CreateString(config.countryCode);
   cJSON_AddItemToObject(user_json, "country_code", country_code_json);
 
-  audio_quality_json = cJSON_CreateString(audio_quality);
+  audio_quality_json = cJSON_CreateString(config.audioQuality);
   cJSON_AddItemToObject(preferences_json, "audio_quality", audio_quality_json);
-  video_quality_json = cJSON_CreateString(video_quality);
+  video_quality_json = cJSON_CreateString(config.videoQuality);
   cJSON_AddItemToObject(preferences_json, "video_quality", video_quality_json);
 
   string = cJSON_Print(output_json); /* Allocate Memory (needs to be deallocated)  */
-  json_stream = string;
-  isStream = 1;
+  config.newStream = string;
   cJSON_Delete(output_json);
   return string;
 }
 
 void read_persistent_stream(cJSON *input_json)
 {
-  cJSON *authorization_json = cJSON_GetObjectItem(input_json, "authorization");
-  cJSON *user_json = cJSON_GetObjectItem(input_json, "user");
-  cJSON *id_json = cJSON_GetObjectItem(user_json, "id");
-  cJSON *refresh_token_json = cJSON_GetObjectItemCaseSensitive(authorization_json, "refresh_token");
-  cJSON *access_token_json = cJSON_GetObjectItemCaseSensitive(authorization_json, "access_token");
-  cJSON *expires_in_json = cJSON_GetObjectItem(authorization_json, "expires_in");
-  cJSON *country_code_json = cJSON_GetObjectItemCaseSensitive(user_json, "country_code");
-  cJSON *preferences_json = cJSON_GetObjectItem(input_json, "preferences");
-  cJSON *audio_quality_json = cJSON_GetObjectItemCaseSensitive(preferences_json, "audio_quality");
-  cJSON *video_quality_json = cJSON_GetObjectItemCaseSensitive(preferences_json, "video_quality");
+  cJSON *authorization = NULL;
+  cJSON *refreshToken = NULL;
+  cJSON *accessToken = NULL;
+  cJSON *expiresIn = NULL;
+  
+  cJSON *user = NULL;
+  cJSON *id = NULL;
+  cJSON *countryCode = NULL;
 
-  refresh_token = refresh_token_json->valuestring;
-  access_token = access_token_json->valuestring;
-  expires_in = expires_in_json->valueint;
-  userId = id_json->valueint;
-  countryCode = country_code_json->valuestring;
-  audioQuality = audio_quality_json->valuestring;
-  videoQuality = video_quality_json->valuestring;
+  cJSON *preferences = NULL;
+  cJSON *audioQuality = NULL;
+  cJSON *videoQuality = NULL;
+   
+  authorization = cJSON_GetObjectItem(input_json, "authorization");
+  refreshToken = cJSON_GetObjectItemCaseSensitive(authorization, "refresh_token");
+  accessToken = cJSON_GetObjectItemCaseSensitive(authorization, "access_token");
+  expiresIn = cJSON_GetObjectItem(authorization, "expires_in");
+
+  user = cJSON_GetObjectItem(input_json, "user");
+  id = cJSON_GetObjectItem(user, "id");
+  countryCode = cJSON_GetObjectItemCaseSensitive(user, "country_code");
+  
+  preferences = cJSON_GetObjectItem(input_json, "preferences");
+  audioQuality = cJSON_GetObjectItemCaseSensitive(preferences, "audio_quality");
+  videoQuality = cJSON_GetObjectItemCaseSensitive(preferences, "video_quality");
+ 
+  config.refreshToken = refreshToken->valuestring;
+  config.accessToken = accessToken->valuestring;
+  config.expiresIn = expiresIn->valueint;
+  config.userId = id->valueint;
+  config.countryCode = countryCode->valuestring;
+  config.audioQuality = audioQuality->valuestring;
+  config.videoQuality = videoQuality->valuestring;
 }
 
 int scan_persistent()
@@ -169,7 +177,7 @@ int scan_persistent()
   int error = 0;
 
   /* open persistentFile  */
-  persistentJSON = fopen(persistentFile, "rb");
+  persistentJSON = fopen(config.location, "rb");
   if (!persistentJSON)
   {
     fprintf(stderr, "[OAuth] File not found. Authenticate!\n");
@@ -205,9 +213,7 @@ int scan_persistent()
   /* parse JSON stream  */
   cJSON *input_json = json_parse(stream);
   read_persistent_stream(input_json);
-  isScanStream = 1;
-  json_scan_stream = input_json;
-  free(stream);
+  config.stream = input_json;
   
 end:
   if (error == 1)
@@ -218,13 +224,13 @@ end:
   return 1;
 }
 
-void create_persistent(char *username, char *audio_quality, char *video_quality)
+void create_persistent()
 {
   FILE *fp;
-  fp = fopen(persistentFile, "w");
+  fp = fopen(config.location, "w");
   if (fp != NULL)
   {
-    char *json = create_persistent_stream(username, audio_quality, video_quality);
+    char *json = create_persistent_stream();
     fprintf(fp, "%s", json);
   }
   else
@@ -240,42 +246,41 @@ void refresh_persistent()
   time_t currentTime = time(NULL);
   size_t skip = 0;
   double diff_t;
-  if (demoEnabled == 1)
+  if (config.demoEnabled == 1)
   {
     goto end;
   }
   /* Check if ExpiryDate is in the future  */
-  if (currentTime > expires_in)
+  if (currentTime > config.expiresIn)
   {
-    diff_t = difftime(currentTime, expires_in);
+    diff_t = difftime(currentTime, config.expiresIn);
   }
   else
   {
-    diff_t = difftime(expires_in, currentTime);
+    diff_t = difftime(config.expiresIn, currentTime);
   }
   //printf("Difference Size_t: %zu\n", (size_t) diff_t);
 
   /* If ExpiryDate is in the future with a difference of more than 5min  */
-  if (currentTime < expires_in && (size_t) diff_t >= 300)
+  if (currentTime < config.expiresIn && (size_t) diff_t >= 300)
   {
     //printf("[OAuth] Renewal not necessary.\n");
   }
   /* Start renewal process  */
   else
   {
-    openTIDAL res = openTIDAL_RefreshLoginToken(refresh_token);
+    openTIDAL res = openTIDAL_RefreshLoginToken(config.refreshToken);
     if (res.status == 1)
     {
-      openTIDAL_LoginTokenModel code;
       FILE *fp;
-      access_token = code.access_token;
-      userId = code.userId;
-      expires_in = time(NULL) + 604800; /* Calculate new ExpiryDate */
+      config.accessToken = res.token.access_token;
+      config.userId = res.token.userId;
+      config.expiresIn = time(NULL) + 604800; /* Calculate new ExpiryDate */
 
-      fp = fopen(persistentFile, "w");
+      fp = fopen(config.location, "w");
       if (fp != NULL)
       {
-        char *json = create_persistent_stream(code.username, audioQuality, videoQuality);
+        char *json = create_persistent_stream();
         fprintf(fp, "%s", json);
       }
       else
@@ -283,12 +288,13 @@ void refresh_persistent()
         fprintf(stderr, "[OAuth] Failed to create persistentFile!\n");
       }
       fclose(fp);
+      cJSON_Delete((cJSON *) config.refreshRequest);
+      config.refreshRequest = res.json;
     }
     else
     {
       fprintf(stderr, "[OAuth] Auto Refresh failed.\n");
-      demoEnabled = 1;
-      countryCode = "US";
+      config.demoEnabled = 1;
     }
   }
 end:

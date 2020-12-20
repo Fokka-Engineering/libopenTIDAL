@@ -28,9 +28,6 @@
 #include "include/parse.h"
 #include "include/openTIDAL.h"
 
-const char *baseUrl = "https://api.tidal.com/v1/";
-const char *authUrl = "https://auth.tidal.com/v1/";
-
 /* struct used to parse raw libcurl response  */
 struct MemoryStruct {
   char *memory;
@@ -84,9 +81,9 @@ curl_model curl_get(char *endpoint, char *data)
   CURLcode res;
   curl_model model;
   struct MemoryStruct response;
-  char *url;
-  char *header;
-  char *client_header;
+  char *url = NULL;
+  char *header = NULL;
+  char *client_header = NULL;
   
   /* check if access_token has expired  */
   refresh_persistent();
@@ -97,27 +94,27 @@ curl_model curl_get(char *endpoint, char *data)
   
   /* char concatenation of the url, endpoint and data
      allocate size of baseUrl, endpoint and data  */
-  url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
-  strcpy(url, baseUrl);
+  url = malloc(strlen(config.baseUrl)+1+strlen(endpoint)+1+strlen(data));
+  strcpy(url, config.baseUrl);
   strcat(url, endpoint);
   strcat(url, "?");
   strcat(url, data);
   
  /* Specify Authorization Header or Demo Header  */ 
-  if (demoEnabled != 1)
+  if (config.demoEnabled != 1)
   {
     /* allocate size of access_token and header  */
-    header = malloc(strlen(access_token)+23+1);
+    header = malloc(strlen(config.accessToken)+23+1);
     strcpy(header, "authorization: Bearer ");
-    strcat(header, access_token);
+    strcat(header, config.accessToken);
   }
   else
   {
     char client_header_key[] = "X-Tidal-Token: ";
     /* allocate size of client_id and header  */
-    client_header = malloc(strlen(client_id)+strlen(client_header_key)+1);
+    client_header = malloc(strlen(config.clientId)+strlen(client_header_key)+1);
     strcpy(client_header, client_header_key);
-    strcat(client_header, client_id);
+    strcat(client_header, config.clientId);
   }
 
   if(curl_init == 1)
@@ -125,7 +122,7 @@ curl_model curl_get(char *endpoint, char *data)
     /* create curl header list  */
     struct curl_slist *chunk = NULL;
     /* append the right header  */
-    if (demoEnabled != 1)
+    if (config.demoEnabled != 1)
     {
       /* append authentication header with user access_token  */
       chunk = curl_slist_append(chunk, header);
@@ -146,14 +143,8 @@ curl_model curl_get(char *endpoint, char *data)
     /* cleanup */
     curl_slist_free_all(chunk);
     free(url);
-    if (demoEnabled != 1)
-    {
-      free(header);
-    }
-    else
-    {
-      free(client_header);
-    }
+    free(header);
+    free(client_header);
 
     if (res != CURLE_OK)
     {
@@ -186,9 +177,9 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   curl_model model;
 
   struct MemoryStruct response;
-  char *url;
-  char *header;
-  char *client_header;
+  char *url = NULL;
+  char *header = NULL;
+  char *client_header = NULL;
 
   /* check if access_token has expired  */
   refresh_persistent();
@@ -198,32 +189,32 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   response.size = 0; 
 
   /* char concatenation */
-  url = malloc(strlen(baseUrl)+1+strlen(endpoint));
-  strcpy(url, baseUrl);
+  url = malloc(strlen(config.baseUrl)+1+strlen(endpoint));
+  strcpy(url, config.baseUrl);
   strcat(url, endpoint);
   /* specify Authorization Header or Demo Header  */
-  if (demoEnabled != 1)
+  if (config.demoEnabled != 1)
   {
     /* allocate size of access_token and header  */
-    header = malloc(strlen(access_token)+23+1);
+    header = malloc(strlen(config.accessToken)+23+1);
     strcpy(header, "authorization: Bearer ");
-    strcat(header, access_token);
+    strcat(header, config.accessToken);
   }
   else
   {
     /* create client_id authorization header  */
     char client_header_key[] = "x-tidal-token: ";
     /* allocate size of client_id and header  */
-    client_header = malloc(strlen(client_id)+strlen(client_header_key)+1);
+    client_header = malloc(strlen(config.clientId)+strlen(client_header_key)+1);
     strcpy(client_header, client_header_key);
-    strcat(client_header, client_id);
+    strcat(client_header, config.clientId);
   }
   
   if(curl_init == 1)
   {
     struct curl_slist *chunk = NULL;
     /* append the right header  */
-    if (demoEnabled != 1)
+    if (config.demoEnabled != 1)
     {
       /* append authentication header with user access_token  */
       chunk = curl_slist_append(chunk, header);
@@ -247,14 +238,8 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     /* cleanup */
     curl_slist_free_all(chunk);
     free(url);
-    if (demoEnabled != 1)
-    {
-      free(header);
-    }
-    else
-    {
-      free(client_header);
-    }
+    free(header);
+    free(client_header);
 
     if (res != CURLE_OK)
     {
@@ -287,9 +272,9 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
   curl_model model;
 
   struct MemoryStruct response;
-  char *url;
-  char *header;
-  char *client_header;
+  char *url = NULL;
+  char *header = NULL;
+  char *client_header = NULL;
 
   refresh_persistent();
 
@@ -299,31 +284,31 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
   response.size = 0;
 
   /*char concatenation*/
-  url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
-  strcpy(url, baseUrl);
+  url = malloc(strlen(config.baseUrl)+1+strlen(endpoint)+1+strlen(data));
+  strcpy(url, config.baseUrl);
   strcat(url, endpoint);
 
   /* Specify Authorization Header or Demo Header  */
-  if (demoEnabled != 1)
+  if (config.demoEnabled != 1)
   {
     /* allocate size of access_token and header  */
-    header = malloc(strlen(access_token)+23+1);
+    header = malloc(strlen(config.accessToken)+23+1);
     strcpy(header, "authorization: Bearer ");
-    strcat(header, access_token);
+    strcat(header, config.accessToken);
   }
   else
   {
     char client_header_key[] = "x-tidal-token: ";
     /* allocate size of client_id and header  */
-    client_header = malloc(strlen(client_id)+strlen(client_header_key)+1);
+    client_header = malloc(strlen(config.clientId)+strlen(client_header_key)+1);
     strcpy(client_header, client_header_key);
-    strcat(client_header, client_id);
+    strcat(client_header, config.clientId);
   }
 
   if(curl_init == 1) {
     struct curl_slist *chunk = NULL;
     /* append the right header  */
-    if (demoEnabled != 1)
+    if (config.demoEnabled != 1)
     {
       /* append authentication header with user access_token  */
       chunk = curl_slist_append(chunk, header);
@@ -344,14 +329,8 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     /* cleanup */
     curl_slist_free_all(chunk);
     free(url);
-    if (demoEnabled != 1)
-    {
-      free(header);
-    }
-    else
-    {
-      free(client_header);
-    }
+    free(header);
+    free(client_header);
 
     if (res != CURLE_OK)
     {
@@ -396,33 +375,33 @@ curl_model curl_head(char *endpoint, char *data)
   response.size = 0;
 
   /*char concatenation*/
-  url = malloc(strlen(baseUrl)+1+strlen(endpoint)+1+strlen(data));
-  strcpy(url, baseUrl);
+  url = malloc(strlen(config.baseUrl)+1+strlen(endpoint)+1+strlen(data));
+  strcpy(url, config.baseUrl);
   strcat(url, endpoint);
   strcat(url, "?");
   strcat(url, data);
 
   /* Specify Authorization Header or Demo Header  */
-  if (demoEnabled != 1)
+  if (config.demoEnabled != 1)
   {
     /* allocate size of access_token and header  */
-    header = malloc(strlen(access_token)+23+1);
+    header = malloc(strlen(config.accessToken)+23+1);
     strcpy(header, "authorization: Bearer ");
-    strcat(header, access_token);
+    strcat(header, config.accessToken);
   }
   else
   {
     char client_header_key[] = "x-tidal-token: ";
     /* allocate size of client_id and header  */
-    client_header = malloc(strlen(client_id)+strlen(client_header_key)+1);
+    client_header = malloc(strlen(config.clientId)+strlen(client_header_key)+1);
     strcpy(client_header, client_header_key);
-    strcat(client_header, client_id);
+    strcat(client_header, config.clientId);
   }
 
   if(curlHead) {
     struct curl_slist *chunk = NULL;
     /* append the right header  */
-    if (demoEnabled != 1)
+    if (config.demoEnabled != 1)
     {
       /* append authentication header with user access_token  */
       chunk = curl_slist_append(chunk, header);
@@ -439,14 +418,8 @@ curl_model curl_head(char *endpoint, char *data)
     curl_easy_setopt(curlHead, CURLOPT_HEADERDATA, &response); 
     res = curl_easy_perform(curlHead);
     
-    if (demoEnabled != 1)
-    {
-      free(header);
-    }
-    else
-    {
-      free(client_header);
-    }
+    free(header);
+    free(client_header);
 
     if (res != CURLE_OK)
     {
@@ -505,8 +478,8 @@ curl_model curl_post_auth(char *endpoint, char *data)
 
   /*char concatenation*/
   char *url;
-  url = malloc(strlen(authUrl)+1+strlen(endpoint));
-  strcpy(url, authUrl);
+  url = malloc(strlen(config.authUrl)+1+strlen(endpoint));
+  strcpy(url, config.authUrl);
   strcat(url, endpoint);
 
   if(curl_init_auth == 1) {
@@ -516,8 +489,8 @@ curl_model curl_post_auth(char *endpoint, char *data)
     curl_easy_setopt(curl_auth, CURLOPT_POSTFIELDS, data);
     curl_easy_setopt(curl_auth, CURLOPT_WRITEDATA, &response);
     /* enable basic authentication (clientid:client_secret) */
-    curl_easy_setopt(curl_auth, CURLOPT_USERNAME, client_id);
-    curl_easy_setopt(curl_auth, CURLOPT_PASSWORD, client_secret);
+    curl_easy_setopt(curl_auth, CURLOPT_USERNAME, config.clientId);
+    curl_easy_setopt(curl_auth, CURLOPT_PASSWORD, config.clientSecret);
     res = curl_easy_perform(curl_auth);
     
     free(url);

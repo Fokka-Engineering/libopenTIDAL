@@ -91,7 +91,7 @@ char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appen
 char *url_cat_str(const char *strOne, const char *id, const char *strTwo);
 
 /* persistentJSON */
-char *create_persistent_stream(char *username, char *audio_quality, char *video_quality);
+char *create_persistent_stream();
 void read_persistent_stream(cJSON *input_json);
 
 /* encoding */
@@ -99,5 +99,5 @@ char *url_encode(const char *str);
 
 /* persistent json  */
 int scan_persistent();
-void create_persistent(char *username, char *audio_quality, char *video_quality);
+void create_persistent();
 void refresh_persistent();

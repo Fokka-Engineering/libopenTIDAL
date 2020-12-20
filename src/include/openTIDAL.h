@@ -31,18 +31,6 @@ extern "C"
 {
 #endif
 
-extern const char *client_id;
-extern const char *client_secret;
-extern char *access_token;
-extern char *refresh_token;
-extern time_t expires_in;
-extern size_t userId;
-extern size_t demoEnabled;
-extern char *countryCode;
-extern char *audioQuality;
-extern char *videoQuality;
-extern char *persistentFile;
-
 typedef struct openTIDAL_LoginCodeModel
 {
   char *deviceCode; /* deviceCode is always 36 Chars long */
@@ -265,6 +253,32 @@ typedef struct openTIDAL_StreamModel
   char *encryptionType;
 } openTIDAL_StreamModel;
 
+typedef struct openTIDAL_ConfigModel
+{
+  char *location; /* file location of persistent json */
+  char *newStream; /* stream of newly created JSON */
+  void *stream; /* pointer to allocated cJSON persistent JSON */
+  void *refreshRequest; 
+  void *tokenRequest;
+  int demoEnabled; /* boolean to specify authorization mode */
+
+  const char *clientId;
+  const char *clientSecret;
+  const char *baseUrl;
+  const char *authUrl;
+  
+  char *username;
+  size_t userId;
+  time_t expiresIn;
+  char *countryCode;
+  
+  char *accessToken;
+  char *refreshToken;
+
+  char *audioQuality;
+  char *videoQuality;
+} openTIDAL_ConfigModel;
+
 /* main structure with dynamic arrays (See memory management of main struct) */
 typedef struct openTIDAL
 {
@@ -293,6 +307,9 @@ typedef struct openTIDAL
   void *json; /* pointer to allocated cJSON master tree (needed for deallocation) */
   void *jsonManifest; /* pointer to allocated cJSON master tree of stream manifest */
 } openTIDAL;
+
+/* config struct */
+extern openTIDAL_ConfigModel config;
 
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
 int openTIDAL_Init(const char *file_location);

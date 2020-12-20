@@ -38,7 +38,7 @@ openTIDAL openTIDAL_CreateLoginCode()
 
   openTIDAL_StructInit(&o);
 
-  snprintf(data, 50, "client_id=%s&scope=%s", client_id, scopes); 
+  snprintf(data, 50, "client_id=%s&scope=%s", config.clientId, scopes); 
   
   curl_model req = curl_post_auth("oauth2/device_authorization", data);
   if (req.status != -1)
@@ -51,6 +51,8 @@ openTIDAL openTIDAL_CreateLoginCode()
       parse_login_code_values(&Value, &processed_json);
       o.status = 1;
       Value.expires_in = time(NULL) + Value.timeFrame;
+
+      o.code = Value;
     }
     else
     {
@@ -79,7 +81,7 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
   char scopes[] = "r_usr+w_usr"; 
   
   snprintf(data, 256, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
-            client_id, device_code, grant_type, scopes);
+            config.clientId, device_code, grant_type, scopes);
   
   curl_model req = curl_post_auth("oauth2/token", data);
   if (req.status != -1)
@@ -91,45 +93,38 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
     
     if (cJSON_IsNumber(check_status) != 1)
     {
-      char *audio_quality;
-      char *video_quality;
-
       json_login_token_model processed_json = json_parse_login_token(input_json);
       parse_login_token_values(&Value, &processed_json);
       o.status = 1;
+      
       Value.expires_in = Value.timeFrame + time(NULL);
-      expires_in = Value.expires_in;
-      countryCode = Value.countryCode;
-      userId = Value.userId;
-      access_token = Value.access_token;
-      refresh_token = Value.refresh_token;
-
-      /* TODO: MEM MANAGEMENT */
+      config.expiresIn = Value.expires_in;
+      config.countryCode = Value.countryCode;
+      config.userId = Value.userId;
+      config.accessToken = Value.access_token;
+      config.refreshToken = Value.refresh_token;
+      config.tokenRequest = o.json;
+      
+      o.token = Value;
       /* get subscription info */
       openTIDAL sub = openTIDAL_GetUserSubscription();
       if (sub.status == 1)
-      { 
-        if (strcmp(sub.subscription.highestSoundQuality, "\0") == 0)
-        {
-          /* free subscription without streaming privileges */
-          audio_quality = "LOW";
-	  video_quality = "LOW";
-        }
-        else
-        {
-          /* active subscription with streaming privileges */
-          audio_quality = sub.subscription.highestSoundQuality;
-  	  video_quality = "HIGH";
-        }
-      }
-      else
       {
-        /* failed to retrieve acurate settings use minimum */
-        audio_quality = "LOW";
-	video_quality = "LOW";
+        if (strcmp(sub.subscription.highestSoundQuality, "HIGH") == 0)
+        {
+          config.audioQuality = "HIGH";
+	}
+        else if (strcmp(sub.subscription.highestSoundQuality, "LOSSLESS") == 0)
+        {
+          config.audioQuality = "LOSSLESS";
+        }
+        else if (strcmp(sub.subscription.highestSoundQuality, "HI_RES") == 0)
+        {
+          config.audioQuality = "HI_RES";
+        }
       }
-
-      create_persistent(Value.username, audio_quality, video_quality);
+      openTIDAL_StructDelete(&sub);
+      create_persistent();
     }
     else
     {
@@ -170,7 +165,7 @@ openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
   char scopes[] = "r_usr+w_usr";
 
   snprintf(data, 2048, "client_id=%s&refresh_token=%s&grant_type=%s&scope=%s",
-            client_id, refresh_token, grant_type, scopes);
+            config.clientId, refresh_token, grant_type, scopes);
   
   curl_model req = curl_post_auth("oauth2/token", data);
   //printf("%s\n", req.body);
@@ -184,11 +179,8 @@ openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
       parse_login_token_values(&Value, &processed_json);
 
       o.status = 1;
-      access_token = Value.access_token;
-      expires_in = Value.expires_in;
-      countryCode = Value.countryCode;
-      userId = Value.userId;
 
+      o.token = Value;
     }
     else
     {

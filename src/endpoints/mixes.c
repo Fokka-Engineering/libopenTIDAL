@@ -37,7 +37,7 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
   openTIDAL_StructAlloc(&o, 1);
 
   snprintf(buffer, 50, "mixes/%s/items", mixid);
-  snprintf(baseparams, 20, "countryCode=%s", countryCode); 
+  snprintf(baseparams, 20, "countryCode=%s", config.countryCode); 
   curl_model req = curl_get(buffer, baseparams);
 
   if (req.status != -1)
@@ -97,7 +97,7 @@ openTIDAL openTIDAL_GetFavoriteMixes()
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 4);
 
-  snprintf(baseparams, 40, "countryCode=%s&deviceType=BROWSER", countryCode);
+  snprintf(baseparams, 40, "countryCode=%s&deviceType=BROWSER", config.countryCode);
   
   curl_model req = curl_get(endpoint, baseparams);
 
@@ -122,7 +122,7 @@ openTIDAL openTIDAL_GetFavoriteMixes()
     }
     else
     {
-      o.status = parse_status(input_json, req, userId, NULL);
+      o.status = parse_status(input_json, req, config.userId, NULL);
     }
 
     free(req.body);
@@ -131,7 +131,7 @@ openTIDAL openTIDAL_GetFavoriteMixes()
   }
   else
   {
-    printf("[Request Error] User %zu: CURLE_OK Check failed.\n", userId);
+    printf("[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     o.status = -1;
     free(req.body);
     return o;
