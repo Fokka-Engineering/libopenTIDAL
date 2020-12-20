@@ -84,7 +84,7 @@ void parse_mix_values(openTIDAL_MixModel *mix, json_mix_model *json);
 
 void parse_stream_values(openTIDAL_StreamModel *stream, json_stream_model *json);
 
-//search_model parse_search(cJSON *input_json);
+void parse_search(openTIDAL *o, cJSON *input_json);
 
 /* concatenation */
 char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode);

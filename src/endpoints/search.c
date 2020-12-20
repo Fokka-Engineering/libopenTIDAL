@@ -22,20 +22,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/parse.h"
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
 /* Search */
 
-/*openTIDAL openTIDAL_SearchAll(char *term, const size_t limit)
+openTIDAL openTIDAL_SearchAll(char *term, const size_t limit)
 {
-  openTIDAl o;
+  openTIDAL o;
   char *encodedTerm = url_encode(term);
   char *endpoint = "search/";
-  char baseparams[128];
-  
-  snprintf(baseparams, 128, "countryCode=%s&limit=%zu&query=%s", countryCode,
+  //char baseparams[128];
+  size_t mallocSize = 0;
+  char *baseparams = NULL;
+ 
+  openTIDAL_StructInit(&o);
+  openTIDAL_StructAlloc(&o, 0);
+  openTIDAL_StructAlloc(&o, 1);
+  openTIDAL_StructAlloc(&o, 2);
+  openTIDAL_StructAlloc(&o, 3);
+
+  mallocSize = strlen(encodedTerm) + 40;
+  baseparams = malloc(mallocSize); 
+  snprintf(baseparams, mallocSize, "countryCode=%s&limit=%zu&query=%s", config.countryCode,
             limit, encodedTerm);
   curl_model req = curl_get(endpoint, baseparams);
   free(encodedTerm);
@@ -45,24 +56,22 @@
     cJSON *input_json = json_parse(req.body);
     if (req.responseCode == 200)
     {
-      search_model parse = parse_search(input_json);
-      free(req.body);
-      cJSON_Delete(input_json);
-      return parse;
+      parse_search(&o, input_json);
+      o.status = 1;
     }
     else
     {
-      Value.status = parse_status(input_json, req, 0, "Search");
-      cJSON_Delete(input_json);
-      free(req.body);
-      return Value;
+      o.status = parse_status(input_json, req, 0, "Search");
     }
+    o.json = input_json;
+    free(req.body);
+    return o;
   }
   else
   {
-    Value.status = -1;
+    o.status = -1;
     free(req.body);
     fprintf(stderr, "[Request Error] CURLE_OK Check failed.\n");
-    return Value;
+    return o;
   }
-}*/
+}

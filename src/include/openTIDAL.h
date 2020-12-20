@@ -314,9 +314,6 @@ extern openTIDAL_ConfigModel config;
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
 int openTIDAL_Init(const char *file_location);
 
-/* use client_id based login (No streaming privileges & user based endpoints) */
-void openTIDAL_InitDemo();
-
 /* enable verbose mode stdout (enables cURL verbose and openTIDAL verbose) */
 void openTIDAL_Verbose();
 
