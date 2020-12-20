@@ -62,7 +62,7 @@ $ make clean
 ##### Dependencies
 openTIDAL uses libcURL for HTTP Requests. In modern systems curl is preinstalled (macOS, Windows 10 (1803 or later) and most Linux distributions).
 
-You need the development package on some Linux distributions.
+You'll need the development package on some Linux distributions. The libcurl header files are bundled with the xcode command line tools on macOS.
 
 On Debian & other APT-based Distros:
 ```
