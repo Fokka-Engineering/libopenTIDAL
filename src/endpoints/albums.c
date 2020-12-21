@@ -35,7 +35,7 @@ openTIDAL openTIDAL_GetAlbum(const size_t albumid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 0);
 
-  endpoint = url_cat("albums/", albumid, "", 0);
+  endpoint = url_cat("/v1/albums/", albumid, "", 0);
   snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -79,7 +79,7 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  endpoint = url_cat("albums/", albumid, "/items", 0);
+  endpoint = url_cat("/v1/albums/", albumid, "/items", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
 
@@ -138,7 +138,7 @@ openTIDAL
 openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "/favorites/albums", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/albums", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
@@ -204,7 +204,7 @@ openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char 
 
 int openTIDAL_AddFavoriteAlbum(const size_t albumid)
 {
-  char *endpoint = url_cat("users/", config.userId, "/favorites/albums", 1);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/albums", 1);
   int status;
   char buffer[60];
   snprintf(buffer, 60, "albumIds=%zu&onArtifactNotFound=FAIL", albumid);
@@ -247,7 +247,7 @@ int openTIDAL_DeleteFavoriteAlbum(const size_t albumid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/albums/%zu?countryCode=%s", config.userId,
+  snprintf(buffer, 80, "/v1/users/%zu/favorites/albums/%zu?countryCode=%s", config.userId,
             albumid, config.countryCode);
   
   curl_model req = curl_delete(buffer, "", "");

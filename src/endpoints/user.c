@@ -30,7 +30,7 @@
 openTIDAL openTIDAL_GetUser()
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);
@@ -72,7 +72,7 @@ openTIDAL openTIDAL_GetUser()
 openTIDAL openTIDAL_GetUserSubscription()
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "/subscription", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/subscription", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);

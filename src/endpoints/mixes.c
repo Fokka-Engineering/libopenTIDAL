@@ -36,7 +36,7 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  snprintf(buffer, 50, "mixes/%s/items", mixid);
+  snprintf(buffer, 50, "/v1/mixes/%s/items", mixid);
   snprintf(baseparams, 20, "countryCode=%s", config.countryCode); 
   curl_model req = curl_get(buffer, baseparams);
 
@@ -91,7 +91,7 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
 openTIDAL openTIDAL_GetFavoriteMixes()
 {
   openTIDAL o;
-  char *endpoint = "pages/my_collection_my_mixes";
+  char *endpoint = "/v1/pages/my_collection_my_mixes";
   char baseparams[40];
   
   openTIDAL_StructInit(&o);

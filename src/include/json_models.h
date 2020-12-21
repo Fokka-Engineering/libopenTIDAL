@@ -151,9 +151,9 @@ typedef struct json_items_model
   cJSON *artists;
   cJSON **artistId;
   cJSON **artistName;
+  cJSON *album;
   cJSON *albumId;
   cJSON *albumTitle;
-  cJSON *type;
 } json_items_model;
 
 typedef struct json_album_model

@@ -37,7 +37,7 @@ openTIDAL openTIDAL_GetVideo(const size_t videoid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  snprintf(buffer, 20, "videos/%zu", videoid);
+  snprintf(buffer, 20, "/v1/videos/%zu", videoid);
   snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   
   curl_model req = curl_get(buffer, baseparams);
@@ -75,7 +75,7 @@ openTIDAL
 openTIDAL_GetFavoriteVideos(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "/favorites/videos", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/videos", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
@@ -145,7 +145,7 @@ openTIDAL_GetVideoContributors(const size_t videoid, const size_t limit, const s
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 5);
 
-  snprintf(buffer, 50, "videos/%zu/contributors", videoid);
+  snprintf(buffer, 50, "/v1/videos/%zu/contributors", videoid);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode, 
             limit, offset);
   curl_model req = curl_get(buffer, baseparams);
@@ -205,7 +205,7 @@ openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
 
   openTIDAL_StructInit(&o);
   
-  snprintf(endpoint, 80, "videos/%zu/playbackinfopostpaywall", videoid);
+  snprintf(endpoint, 80, "/v1/videos/%zu/playbackinfopostpaywall", videoid);
   snprintf(baseparams, 200, "countryCode=%s&videoquality=%s&assetpresentation=%s&playbackmode=%s",
             config.countryCode, config.videoQuality, "FULL", "STREAM");
   curl_model req = curl_get(endpoint, baseparams);
@@ -260,7 +260,7 @@ openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
 
 int openTIDAL_AddFavoriteVideo(const size_t videoid)
 {
-  char *endpoint = url_cat("users/", config.userId, "/favorites/videos", 1);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/videos", 1);
   int status;
   char buffer[60];
   snprintf(buffer, 60, "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
@@ -307,7 +307,7 @@ int openTIDAL_DeleteFavoriteVideo(const size_t videoid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/videos/%zu?countryCode=%s", config.userId, videoid, config.countryCode);
+  snprintf(buffer, 80, "/v1/users/%zu/favorites/videos/%zu?countryCode=%s", config.userId, videoid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   /*Cleanup*/

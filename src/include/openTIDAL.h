@@ -22,7 +22,7 @@
 
 #include <time.h>
 
-#define STRUCT_INIT_CAPACITY 4
+#define STRUCT_INIT_CAPACITY 10 
 #ifndef openTIDAL__h
 #define openTIDAL__h
 
@@ -142,7 +142,7 @@ typedef struct openTIDAL_ItemsModel
   char *imageId;
   char *audioQuality;
   char *quality;
-  char *type;
+  int isVideo;
 } openTIDAL_ItemsModel;
 
 typedef struct openTIDAL_AlbumModel
@@ -253,6 +253,60 @@ typedef struct openTIDAL_StreamModel
   char *encryptionType;
 } openTIDAL_StreamModel;
 
+/* implementing personalised modules of home page api */
+typedef struct openTIDAL_PageHomeModel
+{
+  /* the recentlyPlayed module is a mixed type module.
+   * A mixed type module can contain albums, playlists, mixes and items. 
+   * 
+   * The recentlyPlayedTypes array contains the information needed to 
+   * reconstruct this module.
+   * You can't store different types in the same structure, 
+   * that's why the reconstruction is necessary.
+   *
+   * Example:
+   * recentlyPlayed_Start = 0;
+   * recentlyPlayed_ArrayTypes = {0, 1, 2, 3, 4};
+   * recentlyPlayed_ArrayPosition = {0, 2, 4, 5, 1};
+   * recentlyPlayed_Total = 5;
+   *
+   * Use the identifiers of the openTIDAL Struct (Documented below) to
+   * access the correct array.
+   * The first item is an Album (0 = Album) and Position 0.
+   * The second item is a Video or a Track (1 = Items) and Position 2. 
+   * The third item is an Artist (2 = Artist) and Position 4.
+   * The fourth item is a Playlist (3 = Playlist) and Position 5.
+   * The fifth item is a Mix (4 = Mix) and Position 1.
+   *
+   * The Array Position specifies the position in the corresponding array.
+   * The Start Parameter Defines the array start position of the allocated 
+   * array(s) inside the openTIDAL struct 
+   */
+  int recentlyPlayed_Start; 
+  int *recentlyPlayed_ArrayTypes;
+  int *recentlyPlayed_ArrayPosition;
+  int recentlyPlayed_Total;
+
+  int mixesForYou_Start;
+  int mixesForYou_Total;
+  
+  int *radioStationsForYou_Start; /* a radioStation is a Mix */
+  int *radioStationsForYou_Total;
+  int radioStationsForYou_ArraySize;
+
+  int yourHistory_Start; /* Mix List */
+  int yourHistory_Total;
+
+  int featuredPlaylists_Start;
+  int featuredPlaylists_Total;
+
+  int *becauseYouListenedTo_Start;
+  char **becauseYouListenedTo_Title;
+  int *becauseYouListenedTo_Total;
+  int becauseYouListenedTo_ArraySize;
+
+} openTIDAL_PageHomeModel;
+
 typedef struct openTIDAL_ConfigModel
 {
   char *location; /* file location of persistent json */
@@ -300,6 +354,7 @@ typedef struct openTIDAL
   openTIDAL_LinkModel *links; /* Index (Capacity & Total): 7 */
 
   openTIDAL_StreamModel stream;
+  openTIDAL_PageHomeModel home;
 
   int status; /* custom status of request */
   int capacity[8]; /* used to store capacity of each array */
@@ -371,7 +426,7 @@ openTIDAL openTIDAL_GetUserSubscription();
 
 openTIDAL openTIDAL_GetPlaylist(const char *playlistid);
 openTIDAL openTIDAL_GetFavoritePlaylists(const size_t limit,
-                              const size_t offset, const char *order, const char *orderDirection);
+  const size_t offset, const char *order, const char *orderDirection);
 openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description);
 
 openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit, const size_t offset);
@@ -392,7 +447,7 @@ int openTIDAL_AddFavoritePlaylist(const char *playlistid);
 openTIDAL openTIDAL_GetAlbum(const size_t albumid);
 openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, const size_t offset);
 openTIDAL openTIDAL_GetFavoriteAlbums(const size_t limit,
-                              const size_t offset, const char *order, const char *orderDirection);
+  const size_t offset, const char *order, const char *orderDirection);
 
 int openTIDAL_AddFavoriteAlbum(const size_t albumid);
 int openTIDAL_DeleteFavoriteAlbum(const size_t albumid);
@@ -403,7 +458,7 @@ int openTIDAL_DeleteFavoriteAlbum(const size_t albumid);
 
 openTIDAL openTIDAL_GetArtist(const size_t artistid);
 openTIDAL openTIDAL_GetFavoriteArtists(const size_t limit,
-                              size_t const offset, const char *order, const char *orderDirection);
+  size_t const offset, const char *order, const char *orderDirection);
 openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, const size_t offset);
 openTIDAL openTIDAL_GetArtistMix(const size_t artistid);
 openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit, const size_t offset);
@@ -422,7 +477,7 @@ openTIDAL openTIDAL_GetTrackMix(const size_t trackid);
 openTIDAL openTIDAL_GetTrackStream(const size_t trackid);
 openTIDAL openTIDAL_GetTrack(const size_t trackid);
 openTIDAL openTIDAL_GetFavoriteTracks(const size_t limit,
-                              const size_t offset, const char *order, const char *orderDirection);
+  const size_t offset, const char *order, const char *orderDirection);
 
 int openTIDAL_DeleteFavoriteTrack(const size_t trackid);
 int openTIDAL_AddFavoriteTrack(const size_t trackid);
@@ -433,7 +488,7 @@ int openTIDAL_AddFavoriteTrack(const size_t trackid);
 
 openTIDAL openTIDAL_GetVideo(const size_t videoid);
 openTIDAL openTIDAL_GetFavoriteVideos(const size_t limit,
-                              const size_t offset, const char *order, const char *orderDirection);
+  const size_t offset, const char *order, const char *orderDirection);
 openTIDAL openTIDAL_GetVideoContributors(const size_t videoid, const size_t limit, const size_t offset);
 openTIDAL openTIDAL_GetVideoStream(const size_t videoid);
 
@@ -453,6 +508,11 @@ openTIDAL openTIDAL_GetFavoriteMixes();
 
 openTIDAL openTIDAL_SearchAll(char *term, const size_t limit);
 
+
+/* Page Endpoints */
+
+
+openTIDAL openTIDAL_GetHome(const size_t limit, const size_t offset);
 #ifdef __cplusplus
 }
 #endif

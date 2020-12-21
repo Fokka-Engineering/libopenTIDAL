@@ -35,7 +35,7 @@ openTIDAL openTIDAL_GetArtist(const size_t artistid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 2);
 
-  endpoint = url_cat("artists/", artistid, "", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "", 0);
   snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -79,7 +79,7 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, con
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 7); 
 
-  endpoint = url_cat("artists/", artistid, "/links", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "/links", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
@@ -142,7 +142,7 @@ openTIDAL openTIDAL_GetArtistMix(const size_t artistid)
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 4);
 
-  endpoint = url_cat("artists/", artistid, "/mix", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "/mix", 0);
   snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
   curl_model req = curl_get(endpoint, baseparams);
   free(endpoint);
@@ -185,7 +185,7 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  endpoint = url_cat("artists/", artistid, "/toptracks", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "/toptracks", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
@@ -247,7 +247,7 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, c
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 1);
 
-  endpoint = url_cat("artists/", artistid, "/videos", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "/videos", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
@@ -309,7 +309,7 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, c
   openTIDAL_StructInit(&o);
   openTIDAL_StructAlloc(&o, 0);
 
-  endpoint = url_cat("artists/", artistid, "/albums", 0);
+  endpoint = url_cat("/v1/artists/", artistid, "/albums", 0);
   snprintf(baseparams, 50, "countryCode=%s&limit=%zu&offset=%zu", config.countryCode,
             limit, offset);
   curl_model req = curl_get(endpoint, baseparams);
@@ -366,7 +366,7 @@ openTIDAL
 openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "/favorites/artists", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/artists", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
@@ -429,7 +429,7 @@ openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char
 
 int openTIDAL_AddFavoriteArtist(const size_t artistid)
 {
-  char *endpoint = url_cat("users/", config.userId, "/favorites/artists", 1);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/artists", 1);
   int status;
   char buffer[60];
   snprintf(buffer, 60, "artistIds=%zu&onArtifactNotFound=FAIL", artistid);
@@ -474,7 +474,7 @@ int openTIDAL_DeleteFavoriteArtist(const size_t artistid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/artists/%zu?countryCode=%s", config.userId, artistid, config.countryCode);
+  snprintf(buffer, 80, "/v1/users/%zu/favorites/artists/%zu?countryCode=%s", config.userId, artistid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   /*Cleanup*/

@@ -31,7 +31,7 @@
 openTIDAL openTIDAL_GetTrack(const size_t trackid)
 {
   openTIDAL o;
-  char *endpoint = url_cat("tracks/", trackid, "", 0);
+  char *endpoint = url_cat("/v1/tracks/", trackid, "", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);
@@ -74,7 +74,7 @@ openTIDAL
 openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char *order, const char *orderDirection)
 {
   openTIDAL o;
-  char *endpoint = url_cat("users/", config.userId, "/favorites/tracks", 0);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/tracks", 0);
   char baseparams[150];
   
   openTIDAL_StructInit(&o);
@@ -136,7 +136,7 @@ openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char 
 openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limit, const size_t offset)
 {
   openTIDAL o;
-  char *endpoint = url_cat("tracks/", trackid, "/contributors", 0);
+  char *endpoint = url_cat("/v1/tracks/", trackid, "/contributors", 0);
   char baseparams[50];
   
   openTIDAL_StructInit(&o);
@@ -197,7 +197,7 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
 openTIDAL openTIDAL_GetTrackMix(const size_t trackid)
 {
   openTIDAL o;
-  char *endpoint = url_cat("tracks/", trackid, "/mix", 0);
+  char *endpoint = url_cat("/v1/tracks/", trackid, "/mix", 0);
   char baseparams[20];
   
   openTIDAL_StructInit(&o);
@@ -240,7 +240,7 @@ openTIDAL openTIDAL_GetTrackMix(const size_t trackid)
 openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
 {
   openTIDAL o;
-  char *endpoint = url_cat("tracks/", trackid, "/playbackinfopostpaywall", 0);
+  char *endpoint = url_cat("/v1/tracks/", trackid, "/playbackinfopostpaywall", 0);
   char buffer[200];
   
   openTIDAL_StructInit(&o);
@@ -305,7 +305,7 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
 
 int openTIDAL_AddFavoriteTrack(const size_t trackid)
 {
-  char *endpoint = url_cat("users/", config.userId, "/favorites/tracks", 1);
+  char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/tracks", 1);
   int status;
   char buffer[60];
   snprintf(buffer, 60, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
@@ -350,7 +350,7 @@ int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
 {
   int status;
   char buffer[80];
-  snprintf(buffer, 80, "users/%zu/favorites/tracks/%zu?countryCode=%s", config.userId, trackid, config.countryCode);
+  snprintf(buffer, 80, "/v1/users/%zu/favorites/tracks/%zu?countryCode=%s", config.userId, trackid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   /*Cleanup*/

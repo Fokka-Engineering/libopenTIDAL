@@ -132,8 +132,15 @@ parse_items_values(openTIDAL_ItemsModel *Value, json_items_model *json)
   parse_double(json->peak, &Value->peak);
   parse_number(json->albumId, &Value->albumId);
   parse_string(json->albumTitle, &Value->albumTitle);
-  parse_string(json->type, &Value->type);
-
+  
+  if (cJSON_IsNull(json->album))
+  {
+    Value->isVideo = 1;
+  }
+  else
+  {
+    Value->isVideo = 0;
+  }
   if (cJSON_IsArray(json->artists))
   {
     int i;

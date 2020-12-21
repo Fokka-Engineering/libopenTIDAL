@@ -37,6 +37,14 @@ void openTIDAL_StructInit(openTIDAL *o)
   o->credits = NULL;
   o->links = NULL;
 
+  o->home.recentlyPlayed_ArrayTypes = NULL;
+  o->home.recentlyPlayed_ArrayPosition = NULL;
+  o->home.radioStationsForYou_Start = NULL;
+  o->home.radioStationsForYou_Total = NULL;
+  o->home.becauseYouListenedTo_Start = NULL;
+  o->home.becauseYouListenedTo_Title = NULL;
+  o->home.becauseYouListenedTo_Total = NULL;
+
   o->status = 0;
   o->json = NULL;
   o->jsonManifest = NULL;
@@ -122,6 +130,14 @@ void openTIDAL_StructDelete(openTIDAL *o)
     }
 
   }
+
+  free(o->home.recentlyPlayed_ArrayTypes);
+  free(o->home.recentlyPlayed_ArrayPosition);
+  free(o->home.radioStationsForYou_Start);
+  free(o->home.radioStationsForYou_Total);
+  free(o->home.becauseYouListenedTo_Start);
+  free(o->home.becauseYouListenedTo_Title);
+  free(o->home.becauseYouListenedTo_Total);
 
   free(o->albums);
   free(o->items);

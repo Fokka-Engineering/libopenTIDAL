@@ -40,7 +40,7 @@ openTIDAL openTIDAL_CreateLoginCode()
 
   snprintf(data, 50, "client_id=%s&scope=%s", config.clientId, scopes); 
   
-  curl_model req = curl_post_auth("oauth2/device_authorization", data);
+  curl_model req = curl_post_auth("/v1/oauth2/device_authorization", data);
   if (req.status != -1)
   {
     cJSON *input_json = json_parse(req.body);
@@ -83,7 +83,7 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
   snprintf(data, 256, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
             config.clientId, device_code, grant_type, scopes);
   
-  curl_model req = curl_post_auth("oauth2/token", data);
+  curl_model req = curl_post_auth("/v1/oauth2/token", data);
   if (req.status != -1)
   {
     openTIDAL_LoginTokenModel Value;
@@ -167,7 +167,7 @@ openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
   snprintf(data, 2048, "client_id=%s&refresh_token=%s&grant_type=%s&scope=%s",
             config.clientId, refresh_token, grant_type, scopes);
   
-  curl_model req = curl_post_auth("oauth2/token", data);
+  curl_model req = curl_post_auth("/v1/oauth2/token", data);
   //printf("%s\n", req.body);
   if (req.status != -1)
   {

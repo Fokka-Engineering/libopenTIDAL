@@ -152,7 +152,7 @@ json_items_model json_parse_items(cJSON *directObject)
 {
   json_items_model Value;
 
-  cJSON *album = cJSON_GetObjectItem(directObject, "album");
+  Value.album = cJSON_GetObjectItem(directObject, "album");
   cJSON *artistsItem = NULL;
 
   Value.directObject = directObject;
@@ -163,8 +163,8 @@ json_items_model json_parse_items(cJSON *directObject)
   Value.trackNumber = cJSON_GetObjectItem(directObject, "trackNumber");
   Value.volumeNumber = cJSON_GetObjectItem(directObject, "volumeNumber");
   Value.version = cJSON_GetObjectItemCaseSensitive(directObject, "version");
-  Value.cover = cJSON_GetObjectItemCaseSensitive(album, "cover");
-  Value.videoCover = cJSON_GetObjectItemCaseSensitive(album, "videoCover");
+  Value.cover = cJSON_GetObjectItemCaseSensitive(Value.album, "cover");
+  Value.videoCover = cJSON_GetObjectItemCaseSensitive(Value.album, "videoCover");
   Value.imageId = cJSON_GetObjectItemCaseSensitive(directObject, "imageId");
   Value.audioQuality = cJSON_GetObjectItemCaseSensitive(directObject, "audioQuality");
   Value.quality = cJSON_GetObjectItemCaseSensitive(directObject, "quality");
@@ -174,9 +174,8 @@ json_items_model json_parse_items(cJSON *directObject)
   Value.replayGain = cJSON_GetObjectItem(directObject, "replayGain");
   Value.peak = cJSON_GetObjectItem(directObject, "peak");
   Value.artists = cJSON_GetObjectItem(directObject, "artists");
-  Value.albumId = cJSON_GetObjectItem(album, "id");
-  Value.albumTitle = cJSON_GetObjectItemCaseSensitive(album, "title");
-  Value.type = cJSON_GetObjectItemCaseSensitive(directObject, "type");
+  Value.albumId = cJSON_GetObjectItem(Value.album, "id");
+  Value.albumTitle = cJSON_GetObjectItemCaseSensitive(Value.album, "title");
   
   if (cJSON_IsArray(Value.artists))
   {

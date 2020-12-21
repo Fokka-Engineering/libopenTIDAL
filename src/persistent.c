@@ -43,8 +43,8 @@ void openTIDAL_ConfigInit(openTIDAL_ConfigModel *config)
 
   config->clientId = "8SEZWa4J1NVC5U5Y";
   config->clientSecret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-  config->baseUrl = "https://api.tidal.com/v1/";
-  config->authUrl = "https://auth.tidal.com/v1/"; 
+  config->baseUrl = "https://api.tidal.com";
+  config->authUrl = "https://auth.tidal.com"; 
   
   config->username = NULL;
   config->userId = 0;
