@@ -42,7 +42,7 @@ A python module using openTIDAL is also available and easy to install.
 * Playlist Creation, Deletion and Manipulation
 * Mixes (also known as Radio)
 * Favourites Management
-* Recently Played, Your History, Because You Listened To and other user-based content recommendations
+* Recently Played, Your History, Because You Listened To {album} and other user-based content recommendations
 * Pagination
 * Order & Sort Filters
 * DRM-Free Content HTTP Streams (Audio & Video)
