@@ -38,10 +38,11 @@ A python module using openTIDAL is also available and easy to install.
 
 ##### What is implemented?
 * OAuth Log-In/Logout and Automatic Session Renewal
-* Demo Session (still buggy)
+* Demo Session
 * Playlist Creation, Deletion and Manipulation
-* Mixes
+* Mixes (also known as Radio)
 * Favourites Management
+* Recently Played, Your History, Because You Listened To and other user-based content recommendations
 * Pagination
 * Order & Sort Filters
 * DRM-Free Content HTTP Streams (Audio & Video)
