@@ -18,7 +18,7 @@ void becauseYouListenedTo(openTIDAL *o);
 int main()
 {
   openTIDAL_Init("/Users/hugo/Documents/oT-config");
-
+  
   openTIDAL home = openTIDAL_GetHome(10, 0);
   if (home.status == 1)
   {
