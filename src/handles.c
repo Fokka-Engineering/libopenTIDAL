@@ -61,8 +61,8 @@ CURL *curl;
 
 CURL *curl_session()
 {
+  curl_global_init(CURL_GLOBAL_ALL);
   curl = curl_easy_init();
-  
   openTIDAL_ParseVerbose("cURL Handle", "Initialise baseUrl handle", 2);
   return curl;
 }
@@ -71,6 +71,7 @@ void curl_exit()
 {
   openTIDAL_ParseVerbose("cURL Handle", "Cleanup baseUrl handle", 2);
   curl_easy_cleanup(curl);
+  curl_global_cleanup();
 }
 
 /* persistent cURL handle for API GET requests */

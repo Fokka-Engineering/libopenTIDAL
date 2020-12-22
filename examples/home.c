@@ -17,11 +17,18 @@ void becauseYouListenedTo(openTIDAL *o);
 
 int main()
 {
+  /* Initialise openTIDAL*/
   openTIDAL_Init("/Users/hugo/Documents/oT-config");
 
-  /* print errors */
+  /* Print errors 
+   * Loglevel:
+   *  0 = Disabled
+   *  1 = Error
+   *  2 = Debug
+   *  3 = Trace*/
   openTIDAL_Verbose(1);
 
+  /* Request personalized homepage */
   openTIDAL home = openTIDAL_GetHome();
   if (home.status == 1)
   {
@@ -33,7 +40,10 @@ int main()
     //becauseYouListenedTo(&home);
   }
 
+  /* Deallocate structure from heap after use */
   openTIDAL_StructDelete(&home);
+
+  /* */
   openTIDAL_Cleanup();
 }
 
