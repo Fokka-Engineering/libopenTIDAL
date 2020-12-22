@@ -64,7 +64,6 @@ openTIDAL openTIDAL_GetAlbum(const size_t albumid)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.\n", albumid);
     return o;
   }
 }
@@ -106,7 +105,7 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
           json_items_model processed_json = json_parse_items(innerItem);
           parse_items_values(&Value, &processed_json);
 	  
-	  parse_number(limit, &Value.limit);
+	        parse_number(limit, &Value.limit);
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
@@ -129,7 +128,6 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Album %zu: CURLE_OK Check failed.\n", albumid);
     return o;
   }
 }
@@ -171,11 +169,11 @@ openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char 
           json_album_model processed_json = json_parse_album(innerItem);
           parse_album_values(&album, &processed_json);
   	  
-	  parse_number(limit, &album.limit);
+	        parse_number(limit, &album.limit);
           parse_number(offset, &album.offset);
           parse_number(totalNumberOfItems, &album.totalNumberOfItems);
 
-	  openTIDAL_StructAddAlbum(&o, album);
+	        openTIDAL_StructAddAlbum(&o, album);
         }
       }
       
@@ -195,7 +193,6 @@ openTIDAL_GetFavoriteAlbums(const size_t limit, const size_t offset, const char 
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -214,27 +211,7 @@ int openTIDAL_AddFavoriteAlbum(const size_t albumid)
   free(req.body);
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      status = 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-    }
-    else
-    {
-      status = 0;
-    }
-
+    status = parse_raw_status(&req.responseCode);
     return status;
   }
   else
@@ -254,27 +231,7 @@ int openTIDAL_DeleteFavoriteAlbum(const size_t albumid)
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      status = 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-    }
-    else
-    {
-      status = 0;
-    }
-    
+    status = parse_raw_status(&req.responseCode); 
     return status;
   }
   else

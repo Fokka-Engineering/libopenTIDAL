@@ -18,8 +18,11 @@ void becauseYouListenedTo(openTIDAL *o);
 int main()
 {
   openTIDAL_Init("/Users/hugo/Documents/oT-config");
-  
-  openTIDAL home = openTIDAL_GetHome(10, 0);
+
+  /* print errors */
+  openTIDAL_Verbose(1);
+
+  openTIDAL home = openTIDAL_GetHome();
   if (home.status == 1)
   {
     recentlyPlayed(&home);

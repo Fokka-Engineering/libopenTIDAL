@@ -32,6 +32,7 @@
 
 openTIDAL_ConfigModel config;
 
+/* Initialise config structure */
 void openTIDAL_ConfigInit(openTIDAL_ConfigModel *config)
 {
   config->location = NULL;
@@ -52,7 +53,9 @@ void openTIDAL_ConfigInit(openTIDAL_ConfigModel *config)
   config->countryCode = "US";
 
   config->audioQuality = "LOW";
-  config->videoQuality = "LOW"; 
+  config->videoQuality = "LOW";
+
+  openTIDAL_ParseVerbose("Config", "Initialise config structure", 2); 
 }
 
 int openTIDAL_Init(const char *file_location)
@@ -69,6 +72,7 @@ int openTIDAL_Init(const char *file_location)
       config.demoEnabled = 0;
     }
   }
+  openTIDAL_ParseVerbose("Config", "Initialised openTIDAL", 2);
   return status;
 }
 
@@ -81,6 +85,8 @@ void openTIDAL_Cleanup()
   cJSON_Delete((cJSON *) config.refreshRequest);
   cJSON_Delete((cJSON *) config.tokenRequest);
   cJSON_Delete((cJSON *) config.stream);
+
+  openTIDAL_ParseVerbose("Config", "Deallocated config", 2);
 }
 
 char *create_persistent_stream()
@@ -129,6 +135,8 @@ char *create_persistent_stream()
   string = cJSON_Print(output_json); /* Allocate Memory (needs to be deallocated)  */
   config.newStream = string;
   cJSON_Delete(output_json);
+
+  openTIDAL_ParseVerbose("Config", "Created new json stream", 2);
   return string;
 }
 
@@ -167,6 +175,7 @@ void read_persistent_stream(cJSON *input_json)
   config.countryCode = countryCode->valuestring;
   config.audioQuality = audioQuality->valuestring;
   config.videoQuality = videoQuality->valuestring;
+  openTIDAL_ParseVerbose("Config", "Read & allocate persistent stream from file", 2);
 }
 
 int scan_persistent()
@@ -180,7 +189,7 @@ int scan_persistent()
   persistentJSON = fopen(config.location, "rb");
   if (!persistentJSON)
   {
-    fprintf(stderr, "[OAuth] File not found. Authenticate!\n");
+    openTIDAL_ParseVerbose("Config", "File not found. Please authenticate", 1);
     error = 1;
     goto end;
   }
@@ -194,7 +203,7 @@ int scan_persistent()
   if( !stream )
   {
     fclose(persistentJSON);
-    fprintf(stderr, "memory alloc fails");
+    openTIDAL_ParseVerbose("Config", "Memory allocation of persistent config file failed", 1);
     error = 1;
     goto end;
   }
@@ -205,6 +214,7 @@ int scan_persistent()
     fclose(persistentJSON);
     free(stream);
     fprintf(stderr, "entire read fails");
+    openTIDAL_ParseVerbose("Config", "Copying persistent config into buffer failed. Entire read fails", 1);
     error = 1;
     goto end;
   }
@@ -218,7 +228,7 @@ int scan_persistent()
 end:
   if (error == 1)
   {
-    fprintf(stderr, "[OAuth] Scan persistentFile failed!\n");
+    openTIDAL_ParseVerbose("Config", "Scanning persistent config failed", 1);
     return 0;
   }
   return 1;
@@ -235,7 +245,7 @@ void create_persistent()
   }
   else
   {
-    fprintf(stderr, "[OAuth] Failed to create persistentFile!\n");
+    openTIDAL_ParseVerbose("Config", "Failed to create persistent config: Could not write to file location", 1);
   }
   fclose(fp);
 }
@@ -259,16 +269,20 @@ void refresh_persistent()
   {
     diff_t = difftime(config.expiresIn, currentTime);
   }
-  //printf("Difference Size_t: %zu\n", (size_t) diff_t);
 
+  char buffer[25];
+  snprintf(buffer, sizeof(buffer), "Difference timestamp and currentTime: %zu", (size_t) diff_t);
+  openTIDAL_ParseVerbose("Config", buffer, 2); 
+  
   /* If ExpiryDate is in the future with a difference of more than 5min  */
   if (currentTime < config.expiresIn && (size_t) diff_t >= 300)
   {
-    //printf("[OAuth] Renewal not necessary.\n");
+    openTIDAL_ParseVerbose("Config",  "AccessToken renewal not necessary", 2);
   }
   /* Start renewal process  */
   else
   {
+    openTIDAL_ParseVerbose("Config", "Start AccessToken renewal process", 2);
     openTIDAL res = openTIDAL_RefreshLoginToken(config.refreshToken);
     if (res.status == 1)
     {
@@ -282,10 +296,12 @@ void refresh_persistent()
       {
         char *json = create_persistent_stream();
         fprintf(fp, "%s", json);
+
+        openTIDAL_ParseVerbose("Config", "AccessToken renewal successful", 2);
       }
       else
       {
-        fprintf(stderr, "[OAuth] Failed to create persistentFile!\n");
+        openTIDAL_ParseVerbose("Config", "AccessToken renewal partially failed. Failed to update persistent config", 1);
       }
       fclose(fp);
       cJSON_Delete((cJSON *) config.refreshRequest);
@@ -293,13 +309,12 @@ void refresh_persistent()
     }
     else
     {
-      fprintf(stderr, "[OAuth] Auto Refresh failed.\n");
+      openTIDAL_ParseVerbose("Config", "AccessToken refresh failed. Switching to demo-mode", 1);
       config.demoEnabled = 1;
     }
   }
 end:
-  skip = 1;
-  if (skip == 1)
+  if (skip)
   {
     //fprintf(stderr, "[OAuth] Auto Refresh skipped.\n");
   }

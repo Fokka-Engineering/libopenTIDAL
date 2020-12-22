@@ -65,7 +65,6 @@ openTIDAL openTIDAL_GetPlaylist(const char *playlistid)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return o;
   }
 }
@@ -98,19 +97,19 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit,
             
       if (cJSON_IsArray(items))
       {
-	cJSON_ArrayForEach(item, items)
+	      cJSON_ArrayForEach(item, items)
         {
           openTIDAL_ItemsModel Value;
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_items_model processed_json = json_parse_items(innerItem);
 	  
-	  parse_items_values(&Value, &processed_json);
-	  parse_number(limit, &Value.limit); 
+	        parse_items_values(&Value, &processed_json);
+	        parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
-	  openTIDAL_StructAddItem(&o, Value);
-	}
+	        openTIDAL_StructAddItem(&o, Value);
+	      }
       }
  
       o.status = 1;
@@ -128,7 +127,6 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit,
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return o;
   }
 }
@@ -169,12 +167,12 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
 
           json_playlist_model processed_json = json_parse_playlist(innerItem);
           
-	  parse_playlist_values(&playlist, &processed_json);
+	        parse_playlist_values(&playlist, &processed_json);
           parse_number(limit, &playlist.limit);
           parse_number(offset, &playlist.offset);
           parse_number(totalNumberOfItems, &playlist.totalNumberOfItems);
 
-	  openTIDAL_StructAddPlaylist(&o, playlist);
+	        openTIDAL_StructAddPlaylist(&o, playlist);
         }
       }
       
@@ -193,7 +191,6 @@ openTIDAL_GetFavoritePlaylists(const size_t limit, const size_t offset, const ch
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -224,7 +221,7 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
       while (p != NULL)
       {
         array[i++] = p;
-	/* Split if char is \n  */
+	      /* Split if char is \n  */
         p = strtok (NULL, "\n");
       }
       for (e = 0; e < i; ++e)
@@ -234,13 +231,13 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
         {
           size_t charCounter;
           size_t eTagCounter = 0;
-	  /* Extract ETag Values */
+	        /* Extract ETag Values */
           for (charCounter = 7; charCounter < strlen(array[e]); ++charCounter)
           {
             if (array[e][charCounter] != '"')
             {
-	      strcpy(&eTag[eTagCounter], &array[e][charCounter]);
-	      eTagCounter = eTagCounter + 1;
+	            strcpy(&eTag[eTagCounter], &array[e][charCounter]);
+	            eTagCounter = eTagCounter + 1;
             }
           }
           strcat(&eTag[eTagCounter + 1], "\0");
@@ -252,7 +249,7 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
     }
     else
     {
-      fprintf(stderr, "[Request Error] Could not parse eTag-Header. Not a 200 Response.\n");
+      openTIDAL_ParseVerbose("Request Error", "Could not parse eTag-Header. Not a 200 Response", 1); 
       Value.status = 0;
     }
     free(req.header);
@@ -261,7 +258,6 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
   else
   {
     free(req.header);
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     Value.status = -1;
     return Value;
   }
@@ -269,45 +265,18 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
 
 int openTIDAL_DeletePlaylist(const char *playlistid)
 {
-  char buffer[80];
-  snprintf(buffer, 80, "/v1/playlists/%s?countryCode=%s", playlistid, config.countryCode);
+  char buffer[100];
+  snprintf(buffer, 100, "/v1/playlists/%s?countryCode=%s", playlistid, config.countryCode);
 
   curl_model req = curl_delete(buffer, "", "");
   free(req.body); 
   if (req.status != -1)
   {
-    if (req.responseCode == 200 || req.responseCode == 204)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
+    int status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }  
 }
@@ -320,7 +289,7 @@ int openTIDAL_DeletePlaylistItem(const char *playlistid, const size_t index)
   openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-  snprintf(buffer, 80, "/v1/playlists/%s/items/%zu?countryCode=%s", playlistid, index, config.countryCode);
+  snprintf(buffer, 100, "/v1/playlists/%s/items/%zu?countryCode=%s", playlistid, index, config.countryCode);
   curl_model req = curl_delete(buffer, "", etag_buffer);
   
   /* cleanup */
@@ -328,38 +297,11 @@ int openTIDAL_DeletePlaylistItem(const char *playlistid, const size_t index)
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
+    int status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }
 }
@@ -384,38 +326,11 @@ int openTIDAL_MovePlaylistItem(const char *playlistid, const size_t index, const
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
+    int status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }
 }
@@ -438,38 +353,11 @@ int openTIDAL_AddPlaylistItem(const char *playlistid, const size_t trackid, cons
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
+    int status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }
 
@@ -479,12 +367,12 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
 {
   char buffer[100];
   char etag_buffer[50];
-  char index_buffer[100];
+  char index_buffer[1000];
 
   openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
   
   snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-  snprintf(index_buffer, 100, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
+  snprintf(index_buffer, 1000, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids, "FAIL", onDupes);
   snprintf(buffer, 100, "/v1/playlists/%s/items?countryCode=%s", playlistid, config.countryCode);
   
   curl_model req = curl_post(buffer, index_buffer, etag_buffer);
@@ -494,38 +382,11 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      fprintf(stderr, "[400] Bad Request (Invalid Indices)\n");
-      return -9;
-    }
-    else if (req.responseCode == 401)
-    {
-      fprintf(stderr, "[401] Unauthorized\n");
-      return -8;
-    }
-    else if (req.responseCode == 404)
-    {
-      fprintf(stderr, "[404] Resource %s not found\n", playlistid);
-      return -2;
-    }
-    else if (req.responseCode == 412)
-    {
-      fprintf(stderr, "[412] Resource %s eTag invalid\n", playlistid);
-      return -4;
-    }
-    else
-    {
-      return 0;
-    }
+    int status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
-    fprintf(stderr, "[Request Error] Playlist %s: CURLE_OK Check failed.\n", playlistid);
     return -1;
   }
 
@@ -574,7 +435,6 @@ openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
   }
   else
   {
-    printf("[Request Error] CURLE_OK Check failed.\n");
     o.status = -1;
     free(req.body);
     return o;
@@ -597,30 +457,8 @@ int openTIDAL_AddFavoritePlaylist(const char *playlistid)
   free(req.body);
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
@@ -640,30 +478,8 @@ int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {

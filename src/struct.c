@@ -26,6 +26,7 @@
 #include "include/cJSON.h"
 #include "include/openTIDAL.h"
 
+/* Initialise pointer in openTIDAL structure */
 void openTIDAL_StructInit(openTIDAL *o)
 {
   o->albums = NULL;
@@ -48,8 +49,15 @@ void openTIDAL_StructInit(openTIDAL *o)
   o->status = 0;
   o->json = NULL;
   o->jsonManifest = NULL;
+
+  openTIDAL_ParseVerbose("Struct", "Initialise openTIDAL struct", 2);
 }
 
+/* Allocate the dynamic array in heap with the initial capacity. 
+ * Use the openTIDAL array identifiers to allocate the corrent array.
+ * To keep track of the allocated size and the items added to the array,
+ * there are two static arrays (capacity and total).
+ * The indentifiers are used to access the correct values. */
 void openTIDAL_StructAlloc(openTIDAL *o, int index)
 {
   switch(index)
@@ -101,10 +109,16 @@ void openTIDAL_StructAlloc(openTIDAL *o, int index)
       o->total[7] = 0;
       o->links = malloc(sizeof(openTIDAL_LinkModel) * o->capacity[7]);
      break;
-
   }
+
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "Allocate array (identifier: %d) in heap", index);
+  openTIDAL_ParseVerbose("Struct", buffer, 2);
 }
 
+/* Deallocates all dynamic arrays inside the openTIDAL structure.
+ * The allocated cJSON-Tree and all it's values will be deallocated
+ * too. */
 void openTIDAL_StructDelete(openTIDAL *o)
 {
   cJSON_Delete((cJSON *) o->json);
@@ -147,8 +161,13 @@ void openTIDAL_StructDelete(openTIDAL *o)
   free(o->contributors);
   free(o->credits);
   free(o->links);
+
+  openTIDAL_ParseVerbose("Struct", "Deallocate all arrays in structure", 2);
 }
 
+/* Resizes a specific dynamic array. Use the openTIDAL array identifiers
+ * to resize the correct array. The allocated array will grow by doubling
+ * it's capacity (See openTIDAL_StructAdd). This safes system resources */
 static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
 {
   openTIDAL_AlbumModel *albums;
@@ -167,7 +186,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(albums)
       {
         o->albums = albums;
-	o->capacity[0] = capacity;
+	      o->capacity[0] = capacity;
       }
       break;
 
@@ -176,7 +195,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(items)
       {
         o->items = items;
-	o->capacity[1] = capacity;
+	      o->capacity[1] = capacity;
       }
      break; 
 
@@ -185,7 +204,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(artists)
       {
         o->artists = artists;
-	o->capacity[2] = capacity;
+	      o->capacity[2] = capacity;
       }
       break;
 
@@ -194,7 +213,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(playlists)
       {
         o->playlists = playlists;
-	o->capacity[3] = capacity;
+	      o->capacity[3] = capacity;
       }
       break;
 
@@ -203,7 +222,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(mixes)
       {
         o->mixes = mixes;
-	o->capacity[4] = capacity;
+	      o->capacity[4] = capacity;
       }
       break;
 
@@ -212,7 +231,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(contributors)
       {
         o->contributors = contributors;
-	o->capacity[5] = capacity;
+	      o->capacity[5] = capacity;
       }
       break;
 
@@ -221,7 +240,7 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(credits)
       {
         o->credits = credits;
-	o->capacity[6] = capacity;
+	      o->capacity[6] = capacity;
       }
       break;
 
@@ -230,11 +249,14 @@ static void openTIDAL_StructResize(openTIDAL *o, int capacity, int index)
       if(links)
       {
         o->links = links;
-	o->capacity[7] = capacity;
+	      o->capacity[7] = capacity;
       }
       break;
-
   }
+
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "Realloc array (identifier %d) from %d to %d", index, capacity / 2, capacity);
+  openTIDAL_ParseVerbose("Struct", buffer, 2);
 }
 
 void openTIDAL_StructAddAlbum(openTIDAL *o, openTIDAL_AlbumModel album)
@@ -243,6 +265,8 @@ void openTIDAL_StructAddAlbum(openTIDAL *o, openTIDAL_AlbumModel album)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->albums[o->total[index]++] = album;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 0)", 2);
 }
 
 void openTIDAL_StructAddItem(openTIDAL *o, openTIDAL_ItemsModel item)
@@ -251,6 +275,8 @@ void openTIDAL_StructAddItem(openTIDAL *o, openTIDAL_ItemsModel item)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->items[o->total[index]++] = item;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 1)", 2);
 }
 
 void openTIDAL_StructAddArtist(openTIDAL *o, openTIDAL_ArtistModel artist)
@@ -259,6 +285,8 @@ void openTIDAL_StructAddArtist(openTIDAL *o, openTIDAL_ArtistModel artist)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->artists[o->total[index]++] = artist;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 2)", 2);
 }
 
 void openTIDAL_StructAddPlaylist(openTIDAL *o, openTIDAL_PlaylistModel playlist)
@@ -267,6 +295,8 @@ void openTIDAL_StructAddPlaylist(openTIDAL *o, openTIDAL_PlaylistModel playlist)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->playlists[o->total[index]++] = playlist;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 3)", 2);
 }
 
 void openTIDAL_StructAddMix(openTIDAL *o, openTIDAL_MixModel mix)
@@ -275,6 +305,8 @@ void openTIDAL_StructAddMix(openTIDAL *o, openTIDAL_MixModel mix)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->mixes[o->total[index]++] = mix;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 4)", 2);
 }
 
 void openTIDAL_StructAddContributor(openTIDAL *o, openTIDAL_ContributorModel contributor)
@@ -283,6 +315,8 @@ void openTIDAL_StructAddContributor(openTIDAL *o, openTIDAL_ContributorModel con
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->contributors[o->total[index]++] = contributor;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 5)", 2);
 }
 
 void openTIDAL_StructAddCredit(openTIDAL *o, openTIDAL_CreditsModel credit)
@@ -291,6 +325,8 @@ void openTIDAL_StructAddCredit(openTIDAL *o, openTIDAL_CreditsModel credit)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->credits[o->total[index]++] = credit;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 6)", 2);
 }
 
 void openTIDAL_StructAddLink(openTIDAL *o, openTIDAL_LinkModel link)
@@ -299,4 +335,6 @@ void openTIDAL_StructAddLink(openTIDAL *o, openTIDAL_LinkModel link)
   if (o->capacity[index] == o->total[index])
     openTIDAL_StructResize(o, o->capacity[index] * 2, index);
   o->links[o->total[index]++] = link;
+
+  openTIDAL_ParseVerbose("Struct", "Add item to array (identifier 7)", 2);
 }

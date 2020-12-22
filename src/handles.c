@@ -44,7 +44,7 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
   if(ptr == NULL) {
     /* out of memory! */
-    printf("not enough memory (realloc returned NULL)\n");
+    openTIDAL_ParseVerbose("cURL Handle", "Not enough memory (realloc returned NULL)", 1);
     return 0;
   }
 
@@ -62,11 +62,14 @@ CURL *curl;
 CURL *curl_session()
 {
   curl = curl_easy_init();
+  
+  openTIDAL_ParseVerbose("cURL Handle", "Initialise baseUrl handle", 2);
   return curl;
 }
 
 void curl_exit()
 {
+  openTIDAL_ParseVerbose("cURL Handle", "Cleanup baseUrl handle", 2);
   curl_easy_cleanup(curl);
 }
 
@@ -138,6 +141,11 @@ curl_model curl_get(char *endpoint, char *data)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    
+    openTIDAL_ParseVerbose("cURL Handle", "Get Handle Trace", 3);
+    if (openTIDAL_GetLogLevel() == 3)
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
     res = curl_easy_perform(curl);
     
     /* cleanup */
@@ -233,6 +241,11 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    
+    openTIDAL_ParseVerbose("cURL Handle", "Post Request Trace", 3);
+    if (openTIDAL_GetLogLevel() == 3)
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    
     res = curl_easy_perform(curl);
 
     /* cleanup */
@@ -324,6 +337,11 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+    
+    openTIDAL_ParseVerbose("cURL Handle", "Delete Request Trace", 3);
+    if (openTIDAL_GetLogLevel() == 3)
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    
     res = curl_easy_perform(curl);
     
     /* cleanup */
@@ -416,6 +434,11 @@ curl_model curl_head(char *endpoint, char *data)
     curl_easy_setopt(curlHead, CURLOPT_NOBODY, 1L);
     curl_easy_setopt(curlHead, CURLOPT_HEADERFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(curlHead, CURLOPT_HEADERDATA, &response); 
+    
+    openTIDAL_ParseVerbose("cURL Handle", "Head Request Trace", 3);
+    if (openTIDAL_GetLogLevel() == 3)
+      curl_easy_setopt(curlHead, CURLOPT_VERBOSE, 1L);
+    
     res = curl_easy_perform(curlHead);
     
     free(header);
@@ -457,6 +480,7 @@ CURL *curl_session_auth()
 
 void curl_exit_auth()
 {
+  openTIDAL_ParseVerbose("cURL Handle", "Cleanup auth handle", 2); 
   curl_easy_cleanup(curl_auth);
 }
 
@@ -491,6 +515,11 @@ curl_model curl_post_auth(char *endpoint, char *data)
     /* enable basic authentication (clientid:client_secret) */
     curl_easy_setopt(curl_auth, CURLOPT_USERNAME, config.clientId);
     curl_easy_setopt(curl_auth, CURLOPT_PASSWORD, config.clientSecret);
+    
+    openTIDAL_ParseVerbose("cURL Handle", "Post Auth Request Trace", 3);
+    if (openTIDAL_GetLogLevel() == 3)
+      curl_easy_setopt(curl_auth, CURLOPT_VERBOSE, 1L);
+
     res = curl_easy_perform(curl_auth);
     
     free(url);

@@ -27,7 +27,7 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetHome(const size_t limit, const size_t offset)
+openTIDAL openTIDAL_GetHome()
 {
   openTIDAL o;
   char buffer[80];
@@ -39,8 +39,8 @@ openTIDAL openTIDAL_GetHome(const size_t limit, const size_t offset)
   openTIDAL_StructAlloc(&o, 3);
   openTIDAL_StructAlloc(&o, 4);
 
-  snprintf(buffer, sizeof(buffer), "countryCode=%s&limit=%zu&offset=%zu&deviceType=%s",
-    config.countryCode, limit, offset, "BROWSER");
+  snprintf(buffer, sizeof(buffer), "countryCode=%s&deviceType=%s",
+    config.countryCode, "BROWSER");
   
   curl_model req = curl_get("/v1/pages/home/", buffer);
 
@@ -65,7 +65,6 @@ openTIDAL openTIDAL_GetHome(const size_t limit, const size_t offset)
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] CURLE_OK Check failed.\n");
     return o;
   }
 

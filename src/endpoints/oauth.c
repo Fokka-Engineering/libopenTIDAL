@@ -56,7 +56,7 @@ openTIDAL openTIDAL_CreateLoginCode()
     }
     else
     {
-      fprintf(stderr, "[Request Error] Not a 200 Response.\n");
+      openTIDAL_ParseVerbose("oAuth2", "Not a 200 Response", 1);
       o.status = 0;
     }
     /* Cleanup */
@@ -67,7 +67,6 @@ openTIDAL openTIDAL_CreateLoginCode()
   else
   {
     o.status = -1;
-    fprintf(stderr, "[Request Error] Device Authorization: CURLE_OK Check failed.\n");
     free(req.body);
     return o; 
   }
@@ -113,7 +112,7 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
         if (strcmp(sub.subscription.highestSoundQuality, "HIGH") == 0)
         {
           config.audioQuality = "HIGH";
-	}
+      	}
         else if (strcmp(sub.subscription.highestSoundQuality, "LOSSLESS") == 0)
         {
           config.audioQuality = "LOSSLESS";
@@ -152,7 +151,6 @@ openTIDAL openTIDAL_CreateLoginToken(char *device_code)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Token Request: CURLE_OK Check failed.\n");
     return o;
   }
 }
@@ -196,7 +194,6 @@ openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Refresh Token: CURLE_OK Check failed.\n");
     return o;
   }
 }
@@ -223,7 +220,6 @@ int openTIDAL_Logout()
   {
     free(req.body);
     status = -1;
-    fprintf(stderr, "[Request Error] Logout: CURLE_OK Check failed.\n");
     return status;
   }
 }

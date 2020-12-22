@@ -65,7 +65,6 @@ openTIDAL openTIDAL_GetTrack(const size_t trackid)
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return o;
   }
 }
@@ -104,12 +103,12 @@ openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char 
 
           json_items_model processed_json = json_parse_items(innerItem);
           
-	  parse_items_values(&track, &processed_json);
+	        parse_items_values(&track, &processed_json);
           parse_number(limit, &track.limit);
           parse_number(offset, &track.offset);
           parse_number(totalNumberOfItems, &track.totalNumberOfItems);
 
-	  openTIDAL_StructAddItem(&o, track);
+	        openTIDAL_StructAddItem(&o, track);
         }
       }
       
@@ -128,7 +127,6 @@ openTIDAL_GetFavoriteTracks(const size_t limit, const size_t offset, const char 
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -159,18 +157,18 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
 
       if (cJSON_IsArray(items))
       {
-	cJSON_ArrayForEach(item, items)
+	      cJSON_ArrayForEach(item, items)
         {
           openTIDAL_ContributorModel contrib;
           json_contributor_model processed_json = json_parse_contributors(item);
 	  
-	  parse_contributor_values(&contrib, &processed_json);
+	        parse_contributor_values(&contrib, &processed_json);
           parse_number(limit, &contrib.limit); 
           parse_number(offset, &contrib.offset);
           parse_number(totalNumberOfItems, &contrib.totalNumberOfItems);
 	  
-	  openTIDAL_StructAddContributor(&o, contrib);
-	}
+	        openTIDAL_StructAddContributor(&o, contrib);
+	      }
       }
       o.status = 1;
     }
@@ -179,9 +177,7 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
       o.status = parse_status(input_json, req, trackid, NULL);
     }
     
-    printf("Req!\n");
     free(req.body);
-    printf("After!\n");
     o.json = input_json;
     return o;
   }
@@ -189,7 +185,6 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limi
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return o;
   }
 }
@@ -232,7 +227,6 @@ openTIDAL openTIDAL_GetTrackMix(const size_t trackid)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return o;
   }
 }
@@ -264,9 +258,9 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
       if (strcmp(stream.manifestMimeType, "application/vnd.tidal.bts") == 0)
       {
         o.status = 1;
-	Base64decode(manifest_decoded, stream.manifest);
-	cJSON *manifest_json = json_parse(manifest_decoded);
-	json_manifest_model processed_manifest = json_parse_manifest(manifest_json);
+	      Base64decode(manifest_decoded, stream.manifest);
+	      cJSON *manifest_json = json_parse(manifest_decoded);
+	      json_manifest_model processed_manifest = json_parse_manifest(manifest_json);
         
         parse_string(processed_manifest.mimeType, &stream.mimeType);
         parse_string(processed_manifest.codec, &stream.codec);
@@ -278,7 +272,7 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
       else
       {
         o.status = -10;
-	fprintf(stderr, "[Request Error] Not a valid manifest. MimeType is not application/vnd.tidal.bts\n");
+        openTIDAL_ParseVerbose("Request Error", "Not a valid manifest. MimeType is not application/vnd.tidal.bts", 1);
       }
 
       o.stream = stream;
@@ -296,7 +290,6 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Track %zu: CURLE_OK Check failed.\n", trackid);
     return o;
   }
 }
@@ -307,38 +300,16 @@ int openTIDAL_AddFavoriteTrack(const size_t trackid)
 {
   char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/tracks", 1);
   int status;
-  char buffer[60];
-  snprintf(buffer, 60, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
+  char buffer[100];
+  snprintf(buffer, 100, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
 
   curl_model req = curl_post(endpoint, buffer, "");
   free(endpoint);
   free(req.body);
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
@@ -358,30 +329,8 @@ int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {

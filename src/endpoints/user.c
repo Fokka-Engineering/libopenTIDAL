@@ -64,7 +64,6 @@ openTIDAL openTIDAL_GetUser()
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     return o;
   }
 }
@@ -106,7 +105,6 @@ openTIDAL openTIDAL_GetUserSubscription()
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     return o;
   }
 }

@@ -370,8 +370,9 @@ extern openTIDAL_ConfigModel config;
 int openTIDAL_Init(const char *file_location);
 
 /* enable verbose mode stdout (enables cURL verbose and openTIDAL verbose) */
-void openTIDAL_Verbose();
-
+void openTIDAL_Verbose(int loglevel);
+void openTIDAL_ParseVerbose(const char *prefix, const char *string, int loglevel);
+int openTIDAL_GetLogLevel();
 /* call this function before exiting to free allocated memory */
 void openTIDAL_Cleanup();
 
@@ -512,7 +513,7 @@ openTIDAL openTIDAL_SearchAll(char *term, const size_t limit);
 /* Page Endpoints */
 
 
-openTIDAL openTIDAL_GetHome(const size_t limit, const size_t offset);
+openTIDAL openTIDAL_GetHome();
 #ifdef __cplusplus
 }
 #endif

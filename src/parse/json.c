@@ -35,7 +35,7 @@ cJSON *json_parse(char * input)
       if (error_ptr != NULL)
       {
           /*JSON Input empty*/
-          fprintf(stderr, "[Request] JSON Input empty\n");
+          openTIDAL_ParseVerbose("Request Error", "cJSON_GetErrorPtr != NULL. JSON input empty", 1);
       }
       //status = 0;
   }

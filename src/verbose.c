@@ -22,55 +22,41 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "../include/parse.h"
-#include "../include/handles.h"
-#include "../include/openTIDAL.h"
 
-/* Search */
+#include "include/openTIDAL.h"
 
-openTIDAL openTIDAL_SearchAll(char *term, const size_t limit)
+/* Loglevel:
+ *   0 = Disabled
+ *   1 = Error
+ *   2 = Debug
+ *   3 = Trace*/
+
+int globalLoglevel = 0;
+
+void openTIDAL_Verbose(int loglevel)
 {
-  openTIDAL o;
-  char *encodedTerm = url_encode(term);
-  char *endpoint = "/v1/search/";
-  size_t mallocSize = 0;
-  char *baseparams = NULL;
- 
-  openTIDAL_StructInit(&o);
-  openTIDAL_StructAlloc(&o, 0);
-  openTIDAL_StructAlloc(&o, 1);
-  openTIDAL_StructAlloc(&o, 2);
-  openTIDAL_StructAlloc(&o, 3);
+  globalLoglevel = loglevel;
+}
 
-  mallocSize = strlen(encodedTerm) + 40;
-  baseparams = malloc(mallocSize); 
-  snprintf(baseparams, mallocSize, "countryCode=%s&limit=%zu&query=%s", config.countryCode,
-            limit, encodedTerm);
-  curl_model req = curl_get(endpoint, baseparams);
-  free(encodedTerm);
-  free(baseparams);
+void openTIDAL_ParseVerbose(const char *prefix, const char *string, int loglevel)
+{
+  if (loglevel <= globalLoglevel)
+  {
+    switch (loglevel)
+    {
+      case 1:
+        fprintf(stderr, "[%s] %s.\n", prefix, string);
+        break;
 
-  if (req.status != -1)
-  {
-    cJSON *input_json = json_parse(req.body);
-    if (req.responseCode == 200)
-    {
-      parse_search(&o, input_json);
-      o.status = 1;
+      default:
+        fprintf(stdout, "[%s] %s.\n", prefix, string);
+        break;
     }
-    else
-    {
-      o.status = parse_status(input_json, req, 0, "Search");
-    }
-    o.json = input_json;
-    free(req.body);
-    return o;
   }
-  else
-  {
-    o.status = -1;
-    free(req.body);
-    return o;
-  }
+
+}
+
+int openTIDAL_GetLogLevel()
+{
+  return globalLoglevel;
 }

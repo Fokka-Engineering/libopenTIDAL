@@ -83,7 +83,6 @@ openTIDAL openTIDAL_GetMixItems(const char *mixid)
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Mix %s: CURLE_OK Check failed.\n", mixid);
     return o;
   }
 }
@@ -131,7 +130,6 @@ openTIDAL openTIDAL_GetFavoriteMixes()
   }
   else
   {
-    printf("[Request Error] User %zu: CURLE_OK Check failed.\n", config.userId);
     o.status = -1;
     free(req.body);
     return o;

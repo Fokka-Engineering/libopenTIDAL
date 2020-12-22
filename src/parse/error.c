@@ -49,9 +49,44 @@ int parse_status(cJSON *input_json, curl_model Value, const size_t id, const cha
   return status;
 }
 
+int parse_raw_status(size_t *code)
+{
+  int status;
+  if (*code == 200 || *code == 204 || *code == 201)
+  {
+    status = 1;
+  }
+  else if (*code == 400)
+  {
+    status = -11;
+    openTIDAL_ParseVerbose("Request Error", "400: Bad Request (Invalid Indices)", 1);
+  }
+  else if (*code == 401)
+  {
+    status = -8;
+    openTIDAL_ParseVerbose("Request Error", "401: Unauthorized", 1);
+  }
+  else if (*code == 404)
+  {
+    status = -2;
+    openTIDAL_ParseVerbose("Request Error", "404: Resource not found", 1);
+  }
+  else if (*code == 412)
+  {
+    status = -4;
+    openTIDAL_ParseVerbose("Request Error", "412: Resource eTag invalid", 1);
+  }
+  else
+  {
+    status = 0;
+  }
+  return status;
+}
+
 int parse_unauthorized(cJSON *input_json, const size_t id)
 {
   int status = 0;
+  char buffer[50];
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus) == 1)
@@ -59,40 +94,42 @@ int parse_unauthorized(cJSON *input_json, const size_t id)
     if (subStatus->valueint == 4005)
     {
       status = -3;
-      fprintf(stderr, "[401] Asset %zu is not ready for playback\n", id);
+      snprintf(buffer, sizeof(buffer), "401: Asset %zu is not ready for playback", id);
     }
     else if (subStatus->valueint == 6001)
     {
       status = -13;
-      fprintf(stderr, "[401] User does not have a valid session\n");
+      snprintf(buffer, sizeof(buffer), "401: User does not have a valid session");
     }
     else if (subStatus->valueint == 6005)
     {
       status = -7;
-      fprintf(stderr, "[401] Missing authorization header\n");
+      snprintf(buffer, sizeof(buffer), "401: Missing authorization header");
     }
     else if (subStatus->valueint == 11002)
     {
       status = -6;
-      fprintf(stderr, "[401] Authorization header is invalid\n");
+      snprintf(buffer, sizeof(buffer), "401: Authorization header is invalid");
     }
     else if (subStatus->valueint == 11003)
     {
       status = -5;
-      fprintf(stderr, "[401] The token has expired. (Expired on time)\n");
+      snprintf(buffer, sizeof(buffer), "401: The token has expired. (Expired on time)");
     }
     else
     {
       status = 0;
-      fprintf(stderr, "[401] Unauthorized\n");
+      snprintf(buffer, sizeof(buffer), "401: Unauthorized");
     }
   }
+  openTIDAL_ParseVerbose("Request Error", buffer, 1);
   return status;
 }
 
 int parse_notfound(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
+  char buffer[50];
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus) == 1)
@@ -102,25 +139,27 @@ int parse_notfound(cJSON *input_json, const size_t id, const char *uuid)
       status = -2;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[404] Resource %zu not found\n", id);
+        snprintf(buffer, sizeof(buffer), "404: Resource %zu not found", id);
       }
       else
       {
-        fprintf(stderr, "[404] Resource %s not found\n", uuid);
+        snprintf(buffer, sizeof(buffer), "404: Resource %s not found", uuid);
       }
     }
     else
     {
       status = 0;
-      fprintf(stderr, "[404] Not Found\n");
+      snprintf(buffer, sizeof(buffer), "404: Not Found");
     }
   }
+  openTIDAL_ParseVerbose("Request Error", buffer, 1);
   return status;
 }
 
 int parse_preconditionfailed(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
+  char buffer[50];
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus) == 1)
@@ -130,25 +169,27 @@ int parse_preconditionfailed(cJSON *input_json, const size_t id, const char *uui
       status = -4;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[412] If-None-Match (eTag) failed for Resource %zu\n", id);
+        snprintf(buffer, sizeof(buffer), "412: If-None-Match (eTag) failed for Resource %zu", id);
       }
       else
       {
-        fprintf(stderr, "[412] If-None-Match (eTag) failed for Resource %s\n", uuid);
+        snprintf(buffer, sizeof(buffer), "412: If-None-Match (eTag) failed for Resource %s", uuid);
       }
     }
     else
     {
       status = 0;
-      fprintf(stderr, "[412] Precondition Failed\n");
+      snprintf(buffer, sizeof(buffer), "412: Precondition Failed");
     }
   }
+  openTIDAL_ParseVerbose("Request Error", buffer, 1);
   return status;
 }
 
 int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid)
 {
   int status = 0;
+  char buffer[50];
   const cJSON *subStatus = NULL;
   subStatus = cJSON_GetObjectItem(input_json, "subStatus");
   if (cJSON_IsNumber(subStatus) == 1)
@@ -158,11 +199,11 @@ int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid)
       status = -4;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[400] Parameter missing for Resource %zu\n", id);
+        snprintf(buffer, sizeof(buffer), "400: Parameter missing for Resource %zu", id);
       }
       else
       {
-        fprintf(stderr, "[400] Parameter missing for Resource %s\n", uuid);
+        snprintf(buffer, sizeof(buffer), "400: Parameter missing for Resource %s", uuid);
       }
     }
     else if (subStatus->valueint == 1005)
@@ -170,11 +211,11 @@ int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid)
       status = -12;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[400] User not found for Resource %zu\n", id);
+        snprintf(buffer, sizeof(buffer), "400: User not found for Resource %zu", id);
       }
       else
       {
-        fprintf(stderr, "[400] User not found for Resource %s\n", uuid);
+        snprintf(buffer, sizeof(buffer), "400: User not found for Resource %s", uuid);
       }
     }
     else if (subStatus->valueint == 6003)
@@ -182,18 +223,19 @@ int parse_badrequest(cJSON *input_json, const size_t id, const char *uuid)
       status = -7;
       if (uuid == NULL)
       {
-        fprintf(stderr, "[400] Token missing for Resource %zu\n", id);
+        snprintf(buffer, sizeof(buffer), "400: Token missing for Resource %zu", id);
       }
       else
       {
-        fprintf(stderr, "[400] Token missing for Resource %s\n", uuid);
+        snprintf(buffer, sizeof(buffer), "400: Token missing for Resource %s", uuid);
       }
     }
     else
     {
       status = 0;
-      fprintf(stderr, "[400] Bad Request\n");
+      snprintf(buffer, sizeof(buffer), "400: Bad Request");
     }
   }
+  openTIDAL_ParseVerbose("Request Error", buffer, 1);
   return status;
 }

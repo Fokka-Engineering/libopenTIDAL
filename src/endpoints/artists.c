@@ -65,7 +65,6 @@ openTIDAL openTIDAL_GetArtist(const size_t artistid)
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -110,7 +109,7 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, con
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
           parse_string(source, &Value.source);
 
-	  openTIDAL_StructAddLink(&o, Value);
+	        openTIDAL_StructAddLink(&o, Value);
         }
       }
       o.status = 1;
@@ -128,7 +127,6 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, con
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -171,7 +169,6 @@ openTIDAL openTIDAL_GetArtistMix(const size_t artistid)
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -204,18 +201,18 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit
 
       if (cJSON_IsArray(items))
       {
-	cJSON_ArrayForEach(item, items)
+	      cJSON_ArrayForEach(item, items)
         {
           openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
 	  
-	  parse_items_values(&Value, &processed_json);
-	  parse_number(limit, &Value.limit); 
+	        parse_items_values(&Value, &processed_json);
+	        parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
-	  openTIDAL_StructAddItem(&o, Value);
-	}
+	        openTIDAL_StructAddItem(&o, Value);
+	      }
       }
     
       o.status = 1;
@@ -233,7 +230,6 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -266,18 +262,18 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, c
 
       if (cJSON_IsArray(items))
       {
-	cJSON_ArrayForEach(item, items)
+	      cJSON_ArrayForEach(item, items)
         {
           openTIDAL_ItemsModel Value;
           json_items_model processed_json = json_parse_items(item);
-	  parse_items_values(&Value, &processed_json);
+	        parse_items_values(&Value, &processed_json);
           
           parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
 
-	  openTIDAL_StructAddItem(&o, Value);
-	}
+	        openTIDAL_StructAddItem(&o, Value);
+	      }
       }
       
       o.status = 1;
@@ -295,7 +291,6 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, c
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -328,18 +323,18 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, c
 
       if (cJSON_IsArray(items))
       {
-	cJSON_ArrayForEach(item, items)
+	      cJSON_ArrayForEach(item, items)
         {
           openTIDAL_AlbumModel Value;
           json_album_model processed_json = json_parse_album(item);
 	  
-	  parse_album_values(&Value, &processed_json);
+	        parse_album_values(&Value, &processed_json);
           parse_number(limit, &Value.limit); 
           parse_number(offset, &Value.offset);
           parse_number(totalNumberOfItems, &Value.totalNumberOfItems);
           
-	  openTIDAL_StructAddAlbum(&o, Value);
-	}
+	        openTIDAL_StructAddAlbum(&o, Value);
+	      }
       }
       
       o.status = 1;
@@ -357,7 +352,6 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, c
   {
     free(req.body);
     o.status = -1;
-    fprintf(stderr, "[Request Error] Artist %zu: CURLE_OK Check failed.\n", artistid);
     return o;
   }
 }
@@ -396,12 +390,12 @@ openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char
           cJSON *innerItem = cJSON_GetObjectItem(item, "item");
           json_artist_model processed_json = json_parse_artist(innerItem);
           
-	  parse_artist_values(&artist, &processed_json);
-	  parse_number(limit, &artist.limit);
+	        parse_artist_values(&artist, &processed_json);
+	        parse_number(limit, &artist.limit);
           parse_number(offset, &artist.offset);
           parse_number(totalNumberOfItems, &artist.totalNumberOfItems);
 
-	  openTIDAL_StructAddArtist(&o, artist);
+	        openTIDAL_StructAddArtist(&o, artist);
         }
       }
       
@@ -420,7 +414,6 @@ openTIDAL_GetFavoriteArtists(const size_t limit, const size_t offset, const char
   {
     o.status = -1;
     free(req.body);
-    fprintf(stderr, "[Request Error] User %zu: CURLE_OK Check failed.", config.userId);
     return o;
   }
 }
@@ -439,30 +432,8 @@ int openTIDAL_AddFavoriteArtist(const size_t artistid)
   free(req.body);
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
@@ -482,30 +453,8 @@ int openTIDAL_DeleteFavoriteArtist(const size_t artistid)
 
   if (req.status != -1)
   {
-    if (req.responseCode == 200)
-    {
-      return 1;
-    }
-    else if (req.responseCode == 400)
-    {
-      status = -11;
-      return status;
-    }
-    else if (req.responseCode == 401)
-    {
-      status = -8;
-      return status;
-    }
-    else if (req.responseCode == 404)
-    {
-      status = -2;
-      return status;
-    }
-    else
-    {
-      status = 0;
-      return status;
-    }
+    status = parse_raw_status(&req.responseCode);
+    return status;
   }
   else
   {
