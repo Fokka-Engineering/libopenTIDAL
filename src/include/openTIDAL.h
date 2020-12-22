@@ -282,7 +282,6 @@ typedef struct openTIDAL_PageHomeModel
    * The Start Parameter Defines the array start position of the allocated 
    * array(s) inside the openTIDAL struct 
    */
-  int recentlyPlayed_Start; 
   int *recentlyPlayed_ArrayTypes;
   int *recentlyPlayed_ArrayPosition;
   int recentlyPlayed_Total;

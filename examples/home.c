@@ -30,7 +30,7 @@ int main()
 
   /* Request personalized homepage */
   openTIDAL home = openTIDAL_GetHome();
-  if (home.status == 1)
+  if (1) /* Check if request succeded. (Docs: StatusCodes) */
   {
     recentlyPlayed(&home);
     //mixesForYou(&home);
@@ -49,20 +49,25 @@ int main()
 
 void recentlyPlayed(openTIDAL *o)
 {
-  int start = o->home.recentlyPlayed_Start;
+  /* Total number of items in module */
   int total = o->home.recentlyPlayed_Total;
   int i = 0;
 
   printf("\nModule: Recently Played (%d Items)\n", total);
   for (i = 0; i < total; i++)
   {
+    /* openTIDAL array identifier to determine type of item */
     int type = o->home.recentlyPlayed_ArrayTypes[i];
+    /* after checking for the type specify the correct position
+     * in the array. */
     int position = o->home.recentlyPlayed_ArrayPosition[i];
 
+    /* */
     switch(type)
     {
       case 0:
         printf("#%d is an album @ position %d\n", i, position);
+        /* Pointer to the correct item at the specified position */
         print_album(&o->albums[position]);
 	      printf("\n");
         break;
@@ -96,7 +101,9 @@ void recentlyPlayed(openTIDAL *o)
 
 void mixesForYou(openTIDAL *o)
 {
+  /* offset in the mixes array */
   int start = o->home.mixesForYou_Start;
+  /* total number of items in the module */
   int total = o->home.mixesForYou_Total;
   int i = 0;
 
@@ -104,6 +111,7 @@ void mixesForYou(openTIDAL *o)
   for (i = 0; i < total; ++i)
   {
     printf("\nMix #%d\n", i);
+    /* get mix */
     print_mix(&o->mixes[i + start]);
   }
   printf("\n");

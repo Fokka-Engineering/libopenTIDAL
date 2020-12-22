@@ -27,7 +27,8 @@
 
 cJSON *json_parse(char * input)
 {
-  cJSON *input_json = cJSON_Parse(input);
+  cJSON *input_json = NULL;
+  input_json = cJSON_Parse(input);
   //int status = 0;
   if (input_json == NULL)
   {
@@ -46,6 +47,14 @@ json_login_code_model json_parse_login_code(cJSON *directObject)
 {
   json_login_code_model Value;
 
+  Value.directObject = NULL;
+  Value.deviceCode = NULL;
+  Value.userCode = NULL;
+  Value.verificationUri = NULL;
+  Value.verificationUriComplete = NULL;
+  Value.expiresIn = NULL;
+  Value.interval = NULL;
+
   Value.directObject = directObject;
   Value.deviceCode = cJSON_GetObjectItemCaseSensitive(directObject, "deviceCode");
   Value.userCode = cJSON_GetObjectItemCaseSensitive(directObject, "userCode");
@@ -61,8 +70,27 @@ json_login_token_model json_parse_login_token(cJSON *directObject)
 {
   json_login_token_model Value;
 
-  cJSON *user = cJSON_GetObjectItem(directObject, "user");
+  cJSON *user = NULL;
+  Value.access_token = NULL;
+  Value.refresh_token = NULL;
+  Value.token_type = NULL;
+  Value.expires_in = NULL;
+  Value.userId = NULL;
+  Value.email = NULL;
+  Value.countryCode = NULL;
+  Value.fullName = NULL;
+  Value.firstName = NULL;
+  Value.lastName = NULL;
+  Value.nickname = NULL;
+  Value.username = NULL;
+  Value.imageId = NULL;
+  Value.created = NULL;
+  Value.updated = NULL;
+  Value.facebookUid = NULL;
+  Value.appleUid = NULL;
 
+
+  cJSON_GetObjectItem(directObject, "user");
   Value.access_token = cJSON_GetObjectItemCaseSensitive(directObject, "access_token");
   Value.refresh_token = cJSON_GetObjectItemCaseSensitive(directObject, "refresh_token");
   Value.token_type = cJSON_GetObjectItemCaseSensitive(directObject, "token_type");
@@ -87,6 +115,22 @@ json_login_token_model json_parse_login_token(cJSON *directObject)
 json_user_model json_parse_user(cJSON *directObject)
 {
   json_user_model Value;
+  
+  Value.directObject = NULL;
+  Value.id = NULL;
+  Value.username = NULL;
+  Value.firstName = NULL;
+  Value.lastName = NULL;
+  Value.email = NULL;
+  Value.countryCode = NULL;
+  Value.created = NULL;
+  Value.picture = NULL;
+  Value.newsletter = NULL;
+  Value.acceptedEULA = NULL;
+  Value.gender = NULL;
+  Value.dateOfBirth = NULL;
+  Value.facebookUid = NULL;
+  Value.appleUid = NULL;
 
   Value.directObject = directObject;
   Value.id = cJSON_GetObjectItem(directObject, "id");
@@ -111,8 +155,18 @@ json_user_subscription_model json_parse_user_subscription(cJSON *directObject)
 {
   json_user_subscription_model Value;
 
-  cJSON *subscription = cJSON_GetObjectItem(directObject, "subscription");
+  cJSON *subscription = NULL;
+  Value.directObject = NULL;
+  Value.validUntil = NULL;
+  Value.status = NULL;
+  Value.type = NULL;
+  Value.offlineGracePeriod = NULL;
+  Value.highestSoundQuality = NULL;
+  Value.premiumAccess = NULL;
+  Value.canGetTrial = NULL;
+  Value.paymentType = NULL;
 
+  subscription = cJSON_GetObjectItem(directObject, "subscription");
   Value.directObject = directObject;
   Value.validUntil = cJSON_GetObjectItemCaseSensitive(directObject, "validUntil");
   Value.status = cJSON_GetObjectItemCaseSensitive(directObject, "status");
@@ -129,6 +183,21 @@ json_user_subscription_model json_parse_user_subscription(cJSON *directObject)
 json_playlist_model json_parse_playlist(cJSON *directObject)
 {
   json_playlist_model Value;
+  
+  Value.directObject = NULL;
+  Value.uuid = NULL;
+  Value.title = NULL;
+  Value.description = NULL;
+  Value.popularity = NULL;
+  Value.duration = NULL;
+  Value.created = NULL;
+  Value.lastUpdated = NULL;
+  Value.numberOfTracks = NULL;
+  Value.numberOfVideos = NULL;
+  Value.publicPlaylist = NULL;
+  Value.image = NULL;
+  Value.squareImage = NULL;
+  Value.type = NULL;
 
   Value.directObject = directObject;
   Value.uuid = cJSON_GetObjectItemCaseSensitive(directObject, "uuid");
@@ -152,9 +221,34 @@ json_items_model json_parse_items(cJSON *directObject)
 {
   json_items_model Value;
 
-  Value.album = cJSON_GetObjectItem(directObject, "album");
-  cJSON *artistsItem = NULL;
 
+  cJSON *artistsItem = NULL;
+  Value.album = NULL;
+  Value.directObject = NULL;
+  Value.id = NULL;
+  Value.title = NULL;
+  Value.duration = NULL;
+  Value.popularity = NULL;
+  Value.trackNumber = NULL;
+  Value.volumeNumber = NULL;
+  Value.version = NULL;
+  Value.cover = NULL;
+  Value.videoCover = NULL;
+  Value.imageId = NULL;
+  Value.audioQuality = NULL;
+  Value.quality = NULL;
+  Value.explicitItem = NULL;
+  Value.allowStreaming = NULL;
+  Value.streamReady = NULL;
+  Value.replayGain = NULL;
+  Value.peak = NULL;
+  Value.artists = NULL;
+  Value.albumId = NULL;
+  Value.albumTitle = NULL;
+  Value.artistId = NULL;
+  Value.artistName = NULL;
+
+  Value.album = cJSON_GetObjectItem(directObject, "album");
   Value.directObject = directObject;
   Value.id = cJSON_GetObjectItem(directObject, "id");
   Value.title = cJSON_GetObjectItemCaseSensitive(directObject, "title");
@@ -189,11 +283,6 @@ json_items_model json_parse_items(cJSON *directObject)
       i += 1;
     }
   }
-  else
-  {
-    Value.artistId = NULL;
-    Value.artistName = NULL;
-  }
 
   return Value;
 }
@@ -203,6 +292,26 @@ json_album_model json_parse_album(cJSON *directObject)
   json_album_model Value;
 
   cJSON* artistsItem = NULL;
+  Value.directObject = NULL;
+  Value.id = NULL;
+  Value.title = NULL;
+  Value.duration = NULL;
+  Value.popularity = NULL;
+  Value.copyright = NULL;
+  Value.quality = NULL;
+  Value.cover = NULL;
+  Value.videoCover = NULL;
+  Value.releaseDate = NULL;
+  Value.version = NULL;
+  Value.explicitItem = NULL;
+  Value.allowStreaming = NULL;
+  Value.streamReady = NULL;
+  Value.numberOfTracks = NULL;
+  Value.numberOfVideos = NULL;
+  Value.numberOfVolumes = NULL;
+  Value.artists = NULL;
+  Value.artistId = NULL;
+  Value.artistName = NULL;
 
   Value.directObject = directObject; 
   Value.id = cJSON_GetObjectItem(directObject, "id");
@@ -235,11 +344,6 @@ json_album_model json_parse_album(cJSON *directObject)
       i += 1;
     }
   }
-  else
-  {
-    Value.artistId = NULL;
-    Value.artistName = NULL;
-  }
 
   return Value;
 }
@@ -247,7 +351,13 @@ json_album_model json_parse_album(cJSON *directObject)
 json_artist_model json_parse_artist(cJSON *directObject)
 {
   json_artist_model Value;
-  
+ 
+  Value.directObject = NULL;
+  Value.id = NULL;
+  Value.name = NULL;
+  Value.picture = NULL;
+  Value.popularity = NULL;
+ 
   Value.directObject = directObject;
   Value.id = cJSON_GetObjectItem(directObject, "id");
   Value.name = cJSON_GetObjectItemCaseSensitive(directObject, "name");
@@ -261,6 +371,10 @@ json_links_model json_parse_links(cJSON *directObject)
 {
   json_links_model Value;
   
+  Value.directObject = NULL;
+  Value.url = NULL;
+  Value.siteName = NULL;
+ 
   Value.directObject = directObject;
   Value.url = cJSON_GetObjectItemCaseSensitive(directObject, "url");
   Value.siteName = cJSON_GetObjectItemCaseSensitive(directObject, "siteName");
@@ -271,7 +385,12 @@ json_links_model json_parse_links(cJSON *directObject)
 json_credit_model json_parse_credits(cJSON *directObject)
 {
   json_credit_model Value;
-  
+ 
+  Value.directObject = NULL;
+  Value.type = NULL;
+  Value.name = NULL;
+  Value.id = NULL;
+ 
   Value.directObject = directObject;
   Value.type = cJSON_GetObjectItemCaseSensitive(directObject, "type");
   Value.name = cJSON_GetObjectItemCaseSensitive(directObject, "name");
@@ -283,7 +402,11 @@ json_credit_model json_parse_credits(cJSON *directObject)
 json_contributor_model json_parse_contributors(cJSON *directObject)
 {
   json_contributor_model Value;
-  
+ 
+  Value.directObject = NULL;
+  Value.name = NULL;
+  Value.role = NULL;
+
   Value.directObject = directObject;
   Value.name = cJSON_GetObjectItemCaseSensitive(directObject, "name");
   Value.role = cJSON_GetObjectItemCaseSensitive(directObject, "role"); 
@@ -295,10 +418,30 @@ json_mix_model json_parse_mix(cJSON *directObject)
 {
   json_mix_model Value;
 
-  cJSON *images = cJSON_GetObjectItem(directObject, "images");
-  cJSON *SMALL = cJSON_GetObjectItem(images, "SMALL");
-  cJSON *MEDIUM = cJSON_GetObjectItem(images, "MEDIUM");
-  cJSON *LARGE = cJSON_GetObjectItem(images, "LARGE");
+  cJSON *images = NULL;
+  cJSON *SMALL = NULL;
+  cJSON *MEDIUM = NULL;
+  cJSON *LARGE = NULL;
+
+  Value.directObject = NULL;
+  Value.id = NULL;
+  Value.title = NULL;
+  Value.subTitle = NULL;
+  Value.smallImageWidth = NULL;
+  Value.smallImageHeight = NULL;
+  Value.smallImageUrl = NULL;
+  Value.mediumImageWidth = NULL;
+  Value.mediumImageHeight = NULL;
+  Value.mediumImageUrl = NULL;
+  Value.largeImageWidth = NULL;
+  Value.largeImageHeight = NULL;
+  Value.largeImageUrl = NULL;
+  Value.mixType = NULL;
+
+  images = cJSON_GetObjectItem(directObject, "images");
+  SMALL = cJSON_GetObjectItem(images, "SMALL");
+  MEDIUM = cJSON_GetObjectItem(images, "MEDIUM");
+  LARGE = cJSON_GetObjectItem(images, "LARGE");
 
   Value.directObject = directObject;
   Value.id = cJSON_GetObjectItemCaseSensitive(directObject, "id");
@@ -322,6 +465,16 @@ json_stream_model json_parse_stream(cJSON *directObject)
 {
   json_stream_model Value;
   
+  Value.directObject = NULL;
+  Value.trackId = NULL;
+  Value.videoId = NULL;
+  Value.assetPresentation = NULL;
+  Value.audioQuality = NULL;
+  Value.audioMode = NULL;
+  Value.videoQuality = NULL;
+  Value.manifestMimeType = NULL;
+  Value.manifest = NULL;
+
   Value.directObject = directObject;
   Value.trackId = cJSON_GetObjectItem(directObject, "trackId");
   Value.videoId = cJSON_GetObjectItem(directObject, "videoId");
@@ -338,7 +491,14 @@ json_stream_model json_parse_stream(cJSON *directObject)
 json_manifest_model json_parse_manifest(cJSON *directObject)
 {
   json_manifest_model Value;
-  
+   
+  Value.directObject = NULL;
+  Value.mimeType = NULL;
+  Value.codec = NULL;
+  Value.encryptionType = NULL;
+  Value.urls = NULL;
+  Value.url = NULL;
+
   Value.directObject = directObject;
   Value.mimeType = cJSON_GetObjectItemCaseSensitive(directObject, "mimeType");
   Value.codec = cJSON_GetObjectItemCaseSensitive(directObject, "codecs");
@@ -348,10 +508,6 @@ json_manifest_model json_parse_manifest(cJSON *directObject)
   if (cJSON_IsArray(Value.urls))
   {
     Value.url = cJSON_GetArrayItem(Value.urls, 0);
-  }
-  else
-  {
-    Value.url = NULL;
   }
 
   return Value;

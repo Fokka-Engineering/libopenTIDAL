@@ -27,41 +27,37 @@
 
 void parse_string(cJSON *object, char **string)
 {
+  *string = NULL;
+
   if (cJSON_IsString(object) && (!cJSON_IsNull(object)))
   {
     *string = object->valuestring; 
-  }
-  else
-  {
-    *string = NULL; 
   }
 }
 
 void parse_number(cJSON *object, size_t *number)
 {
+  *number = 0;
+
   if (cJSON_IsNumber(object) && (!cJSON_IsNull(object)))
   {
     *number = object->valueint;
-  }
-  else
-  {
-    *number = 0;
   }
 }
 
 void parse_double(cJSON *object, double *number)
 {
+  *number = 0;
+
   if (cJSON_IsNumber(object) && (!cJSON_IsNull(object)))
   {
     *number = object->valuedouble;
-  }
-  else
-  {
-    *number = 0;
   }
 }
 
 void parse_bool(cJSON *object, size_t *number)
 {
+  *number = 0;
+
   *number = cJSON_IsTrue(object);
 }

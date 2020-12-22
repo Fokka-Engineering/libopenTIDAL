@@ -9,7 +9,10 @@ int main()
 {
   openTIDAL_Init(NULL);
 
+  openTIDAL_Verbose(1);
+
   openTIDAL resolve = openTIDAL_GetAlbum(4753719);
+  printf("%d\n", resolve.status);
   if (resolve.status == 1)
   {
     for (i = 0; i < resolve.total[0]; ++i)

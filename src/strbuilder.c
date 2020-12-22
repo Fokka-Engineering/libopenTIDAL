@@ -29,7 +29,7 @@
 /* concatenate endpoint with an id  */
 char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode)
 {
-  char *urlcat;
+  char *urlcat = NULL;
   char buffer[20];
   snprintf(buffer, 20, "%zu", id);
   urlcat = malloc(strlen(strOne)+1+sizeof(buffer)+strlen(strTwo));
@@ -49,7 +49,7 @@ char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appen
 /* concatenate endpoint with an uuid */
 char *url_cat_str(const char *strOne, const char *id, const char *strTwo)
 {
-  char *urlcat;
+  char *urlcat = NULL;
   urlcat = malloc(strlen(strOne)+1+strlen(id)+strlen(strTwo));
   strcpy(urlcat, strOne);
   strcat(urlcat, id);

@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+
 #include "include/handles.h"
 #include "include/parse.h"
 #include "include/openTIDAL.h"
@@ -57,7 +58,7 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 }
 
 int curl_init = 0;
-CURL *curl;
+CURL *curl = NULL;
 
 CURL *curl_session()
 {
@@ -65,6 +66,14 @@ CURL *curl_session()
   curl = curl_easy_init();
   openTIDAL_ParseVerbose("cURL Handle", "Initialise baseUrl handle", 2);
   return curl;
+}
+
+void curl_init_struct(curl_model *model)
+{
+  model->body = NULL;
+  model->header = NULL;
+  model->responseCode = 0;
+  model->status = -1;
 }
 
 void curl_exit()
@@ -88,6 +97,8 @@ curl_model curl_get(char *endpoint, char *data)
   char *url = NULL;
   char *header = NULL;
   char *client_header = NULL;
+  
+  curl_init_struct(&model);
   
   /* check if access_token has expired  */
   refresh_persistent();
@@ -163,6 +174,7 @@ curl_model curl_get(char *endpoint, char *data)
     else
     {
       model.body = response.memory;
+      model.status = 0;
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }
@@ -189,6 +201,8 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
   char *url = NULL;
   char *header = NULL;
   char *client_header = NULL;
+
+  curl_init_struct(&model);
 
   /* check if access_token has expired  */
   refresh_persistent();
@@ -263,6 +277,7 @@ curl_model curl_post(char *endpoint, char *data, char *optHeader)
     else
     {
       model.body = response.memory;
+      model.status = 0;
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }
@@ -289,6 +304,8 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
   char *url = NULL;
   char *header = NULL;
   char *client_header = NULL;
+
+  curl_init_struct(&model);
 
   refresh_persistent();
 
@@ -359,6 +376,7 @@ curl_model curl_delete(char *endpoint, char *data, char *optHeader)
     else
     {
       model.body = response.memory;
+      model.status = 0;
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }
@@ -385,7 +403,9 @@ curl_model curl_head(char *endpoint, char *data)
   char *url;
   char *header;
   char *client_header;
-   
+  
+  curl_init_struct(&model);
+
   /* check if access_token has expired  */
   refresh_persistent();
   /* will be grown as needed by the realloc above */ 
@@ -452,6 +472,7 @@ curl_model curl_head(char *endpoint, char *data)
     else
     {
       model.header = response.memory;
+      model.status = 0;
       curl_easy_getinfo(curlHead, CURLINFO_RESPONSE_CODE, &model.responseCode);
     }
 
@@ -496,6 +517,8 @@ curl_model curl_post_auth(char *endpoint, char *data)
   curl_model model;
   struct MemoryStruct response;
 
+  curl_init_struct(&model);
+
   /* will be grown as needed by the realloc above */
   response.memory = malloc(1);
   /* no data at this point */
@@ -533,6 +556,7 @@ curl_model curl_post_auth(char *endpoint, char *data)
     else
     {
       model.body = response.memory;
+      model.status = 0;
       curl_easy_getinfo(curl_auth, CURLINFO_RESPONSE_CODE, &model.responseCode);
       return model;
     }

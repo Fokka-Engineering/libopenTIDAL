@@ -29,7 +29,7 @@
 openTIDAL openTIDAL_GetAlbum(const size_t albumid)
 {
   openTIDAL o;
-  char *endpoint;
+  char *endpoint = NULL;
   char baseparams[20];
  
   openTIDAL_StructInit(&o);
@@ -72,7 +72,7 @@ openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, cons
 {
   openTIDAL o;
 
-  char *endpoint;
+  char *endpoint = NULL;
   char baseparams[50];
   
   openTIDAL_StructInit(&o);

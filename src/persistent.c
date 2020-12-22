@@ -85,7 +85,7 @@ void openTIDAL_Cleanup()
   cJSON_Delete((cJSON *) config.refreshRequest);
   cJSON_Delete((cJSON *) config.tokenRequest);
   cJSON_Delete((cJSON *) config.stream);
-
+  
   openTIDAL_ParseVerbose("Config", "Deallocated config", 2);
 }
 
@@ -103,8 +103,9 @@ char *create_persistent_stream()
   cJSON *country_code_json = NULL;
   cJSON *audio_quality_json = NULL;
   cJSON *video_quality_json = NULL;
+  cJSON *output_json = NULL;
 
-  cJSON *output_json = cJSON_CreateObject();
+  output_json = cJSON_CreateObject();
 
   authorization_json = cJSON_CreateObject();
   cJSON_AddItemToObject(output_json, "authorization", authorization_json);
@@ -167,22 +168,22 @@ void read_persistent_stream(cJSON *input_json)
   preferences = cJSON_GetObjectItem(input_json, "preferences");
   audioQuality = cJSON_GetObjectItemCaseSensitive(preferences, "audio_quality");
   videoQuality = cJSON_GetObjectItemCaseSensitive(preferences, "video_quality");
- 
-  config.refreshToken = refreshToken->valuestring;
-  config.accessToken = accessToken->valuestring;
-  config.expiresIn = expiresIn->valueint;
-  config.userId = id->valueint;
-  config.countryCode = countryCode->valuestring;
-  config.audioQuality = audioQuality->valuestring;
-  config.videoQuality = videoQuality->valuestring;
+
+  parse_string(refreshToken, &config.refreshToken);
+  parse_string(accessToken, &config.accessToken); 
+  parse_number(expiresIn, (size_t *) &config.expiresIn);
+  parse_number(id, &config.userId);
+  parse_string(countryCode, &config.countryCode);
+  parse_string(audioQuality, &config.audioQuality);
+  parse_string(videoQuality, &config.videoQuality);
   openTIDAL_ParseVerbose("Config", "Read & allocate persistent stream from file", 2);
 }
 
 int scan_persistent()
 {
-  FILE *persistentJSON;
-  long streamSize;
-  char *stream;
+  FILE *persistentJSON = NULL;
+  long streamSize = 0;
+  char *stream = NULL;
   int error = 0;
 
   /* open persistentFile  */
@@ -236,7 +237,7 @@ end:
 
 void create_persistent()
 {
-  FILE *fp;
+  FILE *fp = NULL;
   fp = fopen(config.location, "w");
   if (fp != NULL)
   {
@@ -255,7 +256,7 @@ void refresh_persistent()
   /* start OAuth refresh routine  */
   time_t currentTime = time(NULL);
   size_t skip = 0;
-  double diff_t;
+  double diff_t = 0;
   if (config.demoEnabled == 1)
   {
     goto end;
@@ -286,7 +287,7 @@ void refresh_persistent()
     openTIDAL res = openTIDAL_RefreshLoginToken(config.refreshToken);
     if (res.status == 1)
     {
-      FILE *fp;
+      FILE *fp = NULL;
       config.accessToken = res.token.access_token;
       config.userId = res.token.userId;
       config.expiresIn = time(NULL) + 604800; /* Calculate new ExpiryDate */
@@ -294,7 +295,8 @@ void refresh_persistent()
       fp = fopen(config.location, "w");
       if (fp != NULL)
       {
-        char *json = create_persistent_stream();
+        char *json = NULL;
+        json = create_persistent_stream();
         fprintf(fp, "%s", json);
 
         openTIDAL_ParseVerbose("Config", "AccessToken renewal successful", 2);
