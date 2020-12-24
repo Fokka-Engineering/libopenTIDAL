@@ -1,23 +1,23 @@
 /*
-  Copyright (c) 2020 Hugo Melder and openTIDAL contributors
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-  
-  The above copyright notice and this permission notice shall be included in
-  all copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-  THE SOFTWARE.
+    Copyright (c) 2020 Hugo Melder and openTIDAL contributors
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 */
 
 #include <time.h>
@@ -31,339 +31,339 @@ extern "C"
 {
 #endif
 
-typedef struct openTIDAL_LoginCodeModel
+typedef struct openTIDAL_LoginCodeContainer
 {
-  char *deviceCode; /* deviceCode is always 36 Chars long */
-  char *userCode; /* userCode is always 5 Chars long */
-  char *verificationUri;
-  char *verificationUriComplete;
-  size_t timeFrame;
-  time_t expires_in;
-  size_t interval;
-} openTIDAL_LoginCodeModel;
+    char *deviceCode; /* deviceCode is always 36 Chars long */
+    char *userCode; /* userCode is always 5 Chars long */
+    char *verificationUri;
+    char *verificationUriComplete;
+    size_t timeFrame;
+    time_t expires_in;
+    int interval;
+} openTIDAL_LoginCodeContainer;
 
-typedef struct openTIDAL_LoginTokenModel 
+typedef struct openTIDAL_LoginTokenContainer 
 {
-  time_t expires_in;
-  char *access_token;
-  char *refresh_token;
-  char *token_type;
-  size_t timeFrame;
-  char *email;
-  char *countryCode;
-  char *fullName;
-  char *firstName;
-  char *lastName;
-  char *nickname;
-  char *username;
-  char *imageId;
-  size_t created;
-  size_t updated;
-  size_t userId;
-  size_t facebookUid;
-  char *appleUid;
-  char *error;
-} openTIDAL_LoginTokenModel;
+    time_t expires_in;
+    char *access_token;
+    char *refresh_token;
+    char *token_type;
+    size_t timeFrame;
+    char *email;
+    char *countryCode;
+    char *fullName;
+    char *firstName;
+    char *lastName;
+    char *nickname;
+    char *username;
+    char *imageId;
+    size_t created;
+    size_t updated;
+    size_t userId;
+    size_t facebookUid;
+    char *appleUid;
+    char *error;
+} openTIDAL_LoginTokenContainer;
 
-typedef struct openTIDAL_UserModel
+typedef struct openTIDAL_UserContainer
 {
-  size_t id;
-  char *username;
-  char *firstName;
-  char *lastName;
-  char *email;
-  char *countryCode;
-  char *created;
-  char *picture; /* Always 36 Chars Long */
-  size_t newsletter;
-  size_t acceptedEULA;
-  char *gender;
-  char *dateOfBirth;
-  size_t facebookUid;
-  char *appleUid;
-} openTIDAL_UserModel;
+    size_t id;
+    char *username;
+    char *firstName;
+    char *lastName;
+    char *email;
+    char *countryCode;
+    char *created;
+    char *picture; /* Always 36 Chars Long */
+    int newsletter;
+    int acceptedEULA;
+    char *gender;
+    char *dateOfBirth;
+    size_t facebookUid;
+    char *appleUid;
+} openTIDAL_UserContainer;
 
-typedef struct openTIDAL_UserSubscriptionModel
+typedef struct openTIDAL_UserSubscriptionContainer
 {
-  char *validUntil;
-  char *accountStatus;
-  char *type;
-  size_t offlineGracePeriod;
-  char *highestSoundQuality;
-  size_t premiumAccess;
-  size_t canGetTrial;
-  char *paymentType;
-} openTIDAL_UserSubscriptionModel;
+    char *validUntil;
+    char *accountStatus;
+    char *type;
+    size_t offlineGracePeriod;
+    char *highestSoundQuality;
+    int premiumAccess;
+    int canGetTrial;
+    char *paymentType;
+} openTIDAL_UserSubscriptionContainer;
 
-typedef struct openTIDAL_PlaylistModel
+typedef struct openTIDAL_PlaylistContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  size_t numberOfTracks;
-  size_t numberOfVideos;
-  char *uuid; /* Always 36 Chars Long */
-  char *title;
-  char *description;
-  size_t duration;
-  char *lastUpdated;
-  char *created;
-  size_t publicPlaylist;
-  char *image;
-  char *squareImage;
-  char *type;
-  size_t popularity;
-} openTIDAL_PlaylistModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int numberOfTracks;
+    int numberOfVideos;
+    char *uuid; /* Always 36 Chars Long */
+    char *title;
+    char *description;
+    size_t duration;
+    char *lastUpdated;
+    char *created;
+    int publicPlaylist;
+    char *image;
+    char *squareImage;
+    char *type;
+    int popularity;
+} openTIDAL_PlaylistContainer;
 
-typedef struct openTIDAL_ItemsModel 
+typedef struct openTIDAL_ItemsContainer 
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  int subArraySize; /* 2nd ArraySize of Artist Array */
-  size_t id;
-  char *title;
-  size_t explicitItem;
-  size_t duration;
-  size_t allowStreaming;
-  size_t streamReady;
-  double replayGain;
-  double peak;
-  size_t popularity;
-  size_t trackNumber;
-  size_t volumeNumber;
-  char *version;
-  size_t *artistId;
-  char **artistName;
-  size_t albumId;
-  char *albumTitle;
-  char *cover;
-  char *videoCover;
-  char *imageId;
-  char *audioQuality;
-  char *quality;
-  int isVideo;
-} openTIDAL_ItemsModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int subArraySize; /* 2nd ArraySize of Artist Array */
+    size_t id;
+    char *title;
+    int explicitItem;
+    size_t duration;
+    int allowStreaming;
+    int streamReady;
+    double replayGain;
+    double peak;
+    int popularity;
+    int trackNumber;
+    int volumeNumber;
+    char *version;
+    size_t *artistId;
+    char **artistName;
+    size_t albumId;
+    char *albumTitle;
+    char *cover;
+    char *videoCover;
+    char *imageId;
+    char *audioQuality;
+    char *quality;
+    int isVideo;
+} openTIDAL_ItemsContainer;
 
-typedef struct openTIDAL_AlbumModel
+typedef struct openTIDAL_AlbumContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  int subArraySize; /* 2nd ArraySize of Artist Array */
-  size_t explicitItem;
-  size_t duration;
-  size_t allowStreaming;
-  size_t streamReady;
-  char *copyright;
-  size_t numberOfTracks;
-  size_t numberOfVideos;
-  size_t numberOfVolumes;
-  size_t popularity;
-  size_t *artistId; /* 2D-Array for (featured) Artists  */
-  char **artistName;
-  char *quality;
-  char *version;
-  size_t id;
-  char *title;
-  char *cover;
-  char *videoCover;
-  char *releaseDate;
-} openTIDAL_AlbumModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int subArraySize; /* 2nd ArraySize of Artist Array */
+    int explicitItem;
+    size_t duration;
+    int allowStreaming;
+    int streamReady;
+    char *copyright;
+    int numberOfTracks;
+    int numberOfVideos;
+    int numberOfVolumes;
+    int popularity;
+    size_t *artistId; /* 2D-Array for (featured) Artists    */
+    char **artistName;
+    char *quality;
+    char *version;
+    size_t id;
+    char *title;
+    char *cover;
+    char *videoCover;
+    char *releaseDate;
+} openTIDAL_AlbumContainer;
 
-typedef struct openTIDAL_CreditsModel
+typedef struct openTIDAL_CreditsContainer
 {
-  size_t limit;
-  size_t offset;
-  char *type;
-  char *name;
-  size_t id;
+    int limit;
+    int offset;
+    char *type;
+    char *name;
+    size_t id;
 
-} openTIDAL_CreditsModel;
+} openTIDAL_CreditsContainer;
 
-typedef struct openTIDAL_ArtistModel
+typedef struct openTIDAL_ArtistContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  size_t id;
-  char *name;
-  char *picture;
-  size_t popularity;
-} openTIDAL_ArtistModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    size_t id;
+    char *name;
+    char *picture;
+    int popularity;
+} openTIDAL_ArtistContainer;
 
-typedef struct openTIDAL_LinkModel
+typedef struct openTIDAL_LinkContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  char *url;
-  char *siteName;
-  char *source;
-} openTIDAL_LinkModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *url;
+    char *siteName;
+    char *source;
+} openTIDAL_LinkContainer;
 
-typedef struct openTIDAL_ETagModel
+typedef struct openTIDAL_ETagContainer
 {
-  int status;
-  char *id;
-} openTIDAL_ETagModel;
+    int status;
+    char *id;
+} openTIDAL_ETagContainer;
 
-typedef struct openTIDAL_MixModel
+typedef struct openTIDAL_MixContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  char *id;
-  char *title;
-  char *subTitle;
-  size_t smallImageWidth;
-  size_t smallImageHeight;
-  char *smallImageUrl;
-  size_t mediumImageWidth;
-  size_t mediumImageHeight;
-  char *mediumImageUrl;
-  size_t largeImageWidth;
-  size_t largeImageHeight;
-  char *largeImageUrl;
-  char *mixType;
-} openTIDAL_MixModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *id;
+    char *title;
+    char *subTitle;
+    int smallImageWidth;
+    int smallImageHeight;
+    char *smallImageUrl;
+    int mediumImageWidth;
+    int mediumImageHeight;
+    char *mediumImageUrl;
+    int largeImageWidth;
+    int largeImageHeight;
+    char *largeImageUrl;
+    char *mixType;
+} openTIDAL_MixContainer;
 
-typedef struct openTIDAL_ContributorModel
+typedef struct openTIDAL_ContributorContainer
 {
-  size_t limit;
-  size_t offset;
-  size_t totalNumberOfItems;
-  char *name;
-  char *role;
-} openTIDAL_ContributorModel;
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *name;
+    char *role;
+} openTIDAL_ContributorContainer;
 
-typedef struct openTIDAL_StreamModel
+typedef struct openTIDAL_StreamContainer
 {
-  char *url;
-  size_t trackId;
-  size_t videoId;
-  char *assetPresentation;
-  char *audioQuality;
-  char *audioMode;
-  char *videoQuality;
-  char *manifestMimeType;
-  char *manifest; //Pointer to temporary allocated Manifest
-  char *mimeType;
-  char *codec;
-  char *encryptionType;
-} openTIDAL_StreamModel;
+    char *url;
+    size_t trackId;
+    size_t videoId;
+    char *assetPresentation;
+    char *audioQuality;
+    char *audioMode;
+    char *videoQuality;
+    char *manifestMimeType;
+    char *manifest; //Pointer to temporary allocated Manifest
+    char *mimeType;
+    char *codec;
+    char *encryptionType;
+} openTIDAL_StreamContainer;
 
 /* implementing personalised modules of home page api */
-typedef struct openTIDAL_PageHomeModel
+typedef struct openTIDAL_PageHomeContainer
 {
-  /* the recentlyPlayed module is a mixed type module.
-   * A mixed type module can contain albums, playlists, mixes and items. 
-   * 
-   * The recentlyPlayedTypes array contains the information needed to 
-   * reconstruct this module.
-   * You can't store different types in the same structure, 
-   * that's why the reconstruction is necessary.
-   *
-   * Example:
-   * recentlyPlayed_Start = 0;
-   * recentlyPlayed_ArrayTypes = {0, 1, 2, 3, 4};
-   * recentlyPlayed_ArrayPosition = {0, 2, 4, 5, 1};
-   * recentlyPlayed_Total = 5;
-   *
-   * Use the identifiers of the openTIDAL Struct (Documented below) to
-   * access the correct array.
-   * The first item is an Album (0 = Album) and Position 0.
-   * The second item is a Video or a Track (1 = Items) and Position 2. 
-   * The third item is an Artist (2 = Artist) and Position 4.
-   * The fourth item is a Playlist (3 = Playlist) and Position 5.
-   * The fifth item is a Mix (4 = Mix) and Position 1.
-   *
-   * The Array Position specifies the position in the corresponding array.
-   * The Start Parameter Defines the array start position of the allocated 
-   * array(s) inside the openTIDAL struct 
-   */
-  int *recentlyPlayed_ArrayTypes;
-  int *recentlyPlayed_ArrayPosition;
-  int recentlyPlayed_Total;
+    /* the recentlyPlayed module is a mixed type module.
+     * A mixed type module can contain albums, playlists, mixes and items. 
+     * 
+     * The recentlyPlayedTypes array contains the information needed to 
+     * reconstruct this module.
+     * You can't store different types in the same structure, 
+     * that's why the reconstruction is necessary.
+     *
+     * Example:
+     * recentlyPlayed_Start = 0;
+     * recentlyPlayed_ArrayTypes = {0, 1, 2, 3, 4};
+     * recentlyPlayed_ArrayPosition = {0, 2, 4, 5, 1};
+     * recentlyPlayed_Total = 5;
+     *
+     * Use the identifiers of the openTIDAL Struct (Documented below) to
+     * access the correct array.
+     * The first item is an Album (0 = Album) and Position 0.
+     * The second item is a Video or a Track (1 = Items) and Position 2. 
+     * The third item is an Artist (2 = Artist) and Position 4.
+     * The fourth item is a Playlist (3 = Playlist) and Position 5.
+     * The fifth item is a Mix (4 = Mix) and Position 1.
+     *
+     * The Array Position specifies the position in the corresponding array.
+     * The Start Parameter Defines the array start position of the allocated 
+     * array(s) inside the openTIDAL struct 
+     */
+    int *recentlyPlayed_ArrayTypes;
+    int *recentlyPlayed_ArrayPosition;
+    int recentlyPlayed_Total;
 
-  int mixesForYou_Start;
-  int mixesForYou_Total;
-  
-  int *radioStationsForYou_Start; /* a radioStation is a Mix */
-  int *radioStationsForYou_Total;
-  int radioStationsForYou_ArraySize;
+    int mixesForYou_Start;
+    int mixesForYou_Total;
+    
+    int *radioStationsForYou_Start; /* a radioStation is a Mix */
+    int *radioStationsForYou_Total;
+    int radioStationsForYou_ArraySize;
 
-  int yourHistory_Start; /* Mix List */
-  int yourHistory_Total;
+    int yourHistory_Start; /* Mix List */
+    int yourHistory_Total;
 
-  int featuredPlaylists_Start;
-  int featuredPlaylists_Total;
+    int featuredPlaylists_Start;
+    int featuredPlaylists_Total;
 
-  int *becauseYouListenedTo_Start;
-  char **becauseYouListenedTo_Title;
-  int *becauseYouListenedTo_Total;
-  int becauseYouListenedTo_ArraySize;
+    int *becauseYouListenedTo_Start;
+    char **becauseYouListenedTo_Title;
+    int *becauseYouListenedTo_Total;
+    int becauseYouListenedTo_ArraySize;
 
-} openTIDAL_PageHomeModel;
+} openTIDAL_PageHomeContainer;
 
-typedef struct openTIDAL_ConfigModel
+typedef struct openTIDAL_SessionContainer
 {
-  char *location; /* file location of persistent json */
-  char *newStream; /* stream of newly created JSON */
-  void *stream; /* pointer to allocated cJSON persistent JSON */
-  void *refreshRequest; 
-  void *tokenRequest;
-  int demoEnabled; /* boolean to specify authorization mode */
+    char *location; /* file location of persistent json */
+    char *newStream; /* stream of newly created JSON */
+    void *stream; /* pointer to allocated cJSON persistent JSON */
+    void *refreshRequest; 
+    void *tokenRequest;
+    int demoEnabled; /* boolean to specify authorization mode */
 
-  const char *clientId;
-  const char *clientSecret;
-  const char *baseUrl;
-  const char *authUrl;
-  
-  char *username;
-  size_t userId;
-  time_t expiresIn;
-  char *countryCode;
-  
-  char *accessToken;
-  char *refreshToken;
+    const char *clientId;
+    const char *clientSecret;
+    const char *baseUrl;
+    const char *authUrl;
+    
+    char *username;
+    size_t userId;
+    time_t expiresIn;
+    char *countryCode;
+    
+    char *accessToken;
+    char *refreshToken;
 
-  char *audioQuality;
-  char *videoQuality;
-} openTIDAL_ConfigModel;
+    char *audioQuality;
+    char *videoQuality;
+} openTIDAL_SessionContainer;
 
 /* main structure with dynamic arrays (See memory management of main struct) */
-typedef struct openTIDAL
+typedef struct openTIDAL_ContentContainer
 {
-  openTIDAL_LoginCodeModel code;
-  openTIDAL_LoginTokenModel token;
-  
-  openTIDAL_UserModel user;
-  openTIDAL_UserSubscriptionModel subscription;
+    openTIDAL_LoginCodeContainer code;
+    openTIDAL_LoginTokenContainer token;
+    
+    openTIDAL_UserContainer user;
+    openTIDAL_UserSubscriptionContainer subscription;
 
-  /* pointer to dynamic arrays */
-  openTIDAL_AlbumModel *albums; /* Index (Capacity & Total): 0 */
-  openTIDAL_ItemsModel *items; /* Index (Capacity & Total): 1 */
-  openTIDAL_ArtistModel *artists; /* Index (Capacity & Total): 2 */
-  openTIDAL_PlaylistModel *playlists; /* Index (Capacity & Total): 3 */
-  openTIDAL_MixModel *mixes; /* Index (Capacity & Total): 4 */
+    /* pointer to dynamic arrays */
+    openTIDAL_AlbumContainer *albums; /* Index (Capacity & Total): 0 */
+    openTIDAL_ItemsContainer *items; /* Index (Capacity & Total): 1 */
+    openTIDAL_ArtistContainer *artists; /* Index (Capacity & Total): 2 */
+    openTIDAL_PlaylistContainer *playlists; /* Index (Capacity & Total): 3 */
+    openTIDAL_MixContainer *mixes; /* Index (Capacity & Total): 4 */
 
-  openTIDAL_ContributorModel *contributors; /* Index (Capacity & Total): 5 */
-  openTIDAL_CreditsModel *credits; /* Index (Capacity & Total): 6 */
-  openTIDAL_LinkModel *links; /* Index (Capacity & Total): 7 */
+    openTIDAL_ContributorContainer *contributors; /* Index (Capacity & Total): 5 */
+    openTIDAL_CreditsContainer *credits; /* Index (Capacity & Total): 6 */
+    openTIDAL_LinkContainer *links; /* Index (Capacity & Total): 7 */
 
-  openTIDAL_StreamModel stream;
-  openTIDAL_PageHomeModel home;
+    openTIDAL_StreamContainer stream;
+    openTIDAL_PageHomeContainer home;
 
-  int status; /* custom status of request */
-  int capacity[8]; /* used to store capacity of each array */
-  int total[8]; /* used to store amount of items in each array */
-  void *json; /* pointer to allocated cJSON master tree (needed for deallocation) */
-  void *jsonManifest; /* pointer to allocated cJSON master tree of stream manifest */
-} openTIDAL;
+    int status; /* custom status of request */
+    int capacity[8]; /* used to store capacity of each array */
+    int total[8]; /* used to store amount of items in each array */
+    void *json; /* pointer to allocated cJSON master tree (needed for deallocation) */
+    void *jsonManifest; /* pointer to allocated cJSON master tree of stream manifest */
+} openTIDAL_ContentContainer;
 
 /* config struct */
-extern openTIDAL_ConfigModel config;
+extern openTIDAL_SessionContainer config;
 
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
 int openTIDAL_Init(const char *file_location);
@@ -381,34 +381,34 @@ void openTIDAL_Cleanup();
 
 
 /* initialize struct and it's content */
-void openTIDAL_StructInit(openTIDAL *o);
+void openTIDAL_StructInit(openTIDAL_ContentContainer *o);
 /* allocate specified array in heap */
-void openTIDAL_StructAlloc(openTIDAL *o, int index);
+void openTIDAL_StructAlloc(openTIDAL_ContentContainer *o, int index);
 /* deallocate content in struct */
-void openTIDAL_StructDelete(openTIDAL *o);
+void openTIDAL_StructDelete(openTIDAL_ContentContainer *o);
 
 /* add model to array (Allocate the correct array before adding!) */
-void openTIDAL_StructAddAlbum(openTIDAL *o, openTIDAL_AlbumModel album);
-void openTIDAL_StructAddItem(openTIDAL *o, openTIDAL_ItemsModel item);
-void openTIDAL_StructAddArtist(openTIDAL *o, openTIDAL_ArtistModel artist);
-void openTIDAL_StructAddPlaylist(openTIDAL *o, openTIDAL_PlaylistModel playlist);
-void openTIDAL_StructAddMix(openTIDAL *o, openTIDAL_MixModel mix);
-void openTIDAL_StructAddContributor(openTIDAL *o, openTIDAL_ContributorModel contributor);
-void openTIDAL_StructAddCredit(openTIDAL *o, openTIDAL_CreditsModel credit);
-void openTIDAL_StructAddLink(openTIDAL *o, openTIDAL_LinkModel link);
+void openTIDAL_StructAddAlbum(openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
+void openTIDAL_StructAddItem(openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
+void openTIDAL_StructAddArtist(openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);
+void openTIDAL_StructAddPlaylist(openTIDAL_ContentContainer *o, openTIDAL_PlaylistContainer playlist);
+void openTIDAL_StructAddMix(openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix);
+void openTIDAL_StructAddContributor(openTIDAL_ContentContainer *o, openTIDAL_ContributorContainer contributor);
+void openTIDAL_StructAddCredit(openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
+void openTIDAL_StructAddLink(openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
 
 /* oAuth2 authorization endpoints 
  * (deviceFlow based login) */
 
 /* create an deviceCode and userCode pair */
-openTIDAL openTIDAL_CreateLoginCode();
+openTIDAL_ContentContainer openTIDAL_CreateLoginCode();
 
 /* request access_token and refresh_token from deviceCode 
  * or poll until the user authorizes (userCode -> link.tidal.com) */
-openTIDAL openTIDAL_CreateLoginToken(char *device_code);
+openTIDAL_ContentContainer openTIDAL_CreateLoginToken(char *device_code);
 
 /* request new access_token */
-openTIDAL openTIDAL_RefreshLoginToken(char *refresh_token);
+openTIDAL_ContentContainer openTIDAL_RefreshLoginToken(char *refresh_token);
 
 /* logout session (access_token) */
 int openTIDAL_Logout();
@@ -417,24 +417,24 @@ int openTIDAL_Logout();
 /* User Endpoints */
 
 
-openTIDAL openTIDAL_GetUser();
-openTIDAL openTIDAL_GetUserSubscription();
+openTIDAL_ContentContainer openTIDAL_GetUser();
+openTIDAL_ContentContainer openTIDAL_GetUserSubscription();
 
 
 /* Playlist Endpoints */
 
 
-openTIDAL openTIDAL_GetPlaylist(const char *playlistid);
-openTIDAL openTIDAL_GetFavoritePlaylists(const size_t limit,
-  const size_t offset, const char *order, const char *orderDirection);
-openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description);
+openTIDAL_ContentContainer openTIDAL_GetPlaylist(const char *playlistid);
+openTIDAL_ContentContainer openTIDAL_GetFavoritePlaylists(const int limit,
+    const int offset, const char *order, const char *orderDirection);
+openTIDAL_ContentContainer openTIDAL_CreatePlaylist(const char *title, const char *description);
 
-openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const size_t limit, const size_t offset);
+openTIDAL_ContentContainer openTIDAL_GetPlaylistItems(const char *playlistid, const int limit, const int offset);
 
 int openTIDAL_DeletePlaylist(const char *playlistid);
-int openTIDAL_DeletePlaylistItem(const char *playlistid, const size_t index);
-int openTIDAL_MovePlaylistItem(const char *playlistid, const size_t index, const size_t toIndex);
-int openTIDAL_AddPlaylistItem(const char *playlistid, const size_t trackid, const char *onDupes);
+int openTIDAL_DeletePlaylistItem(const char *playlistid, const int index);
+int openTIDAL_MovePlaylistItem(const char *playlistid, const int index, const int toIndex);
+int openTIDAL_AddPlaylistItem(const char *playlistid, const int trackid, const char *onDupes);
 int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, const char *onDupes);
 int openTIDAL_DeleteFavoritePlaylist(const char *playlistid);
 int openTIDAL_AddFavoritePlaylist(const char *playlistid);
@@ -444,10 +444,10 @@ int openTIDAL_AddFavoritePlaylist(const char *playlistid);
 /* Album Endpoints */
 
 
-openTIDAL openTIDAL_GetAlbum(const size_t albumid);
-openTIDAL openTIDAL_GetAlbumItems(const size_t albumid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetFavoriteAlbums(const size_t limit,
-  const size_t offset, const char *order, const char *orderDirection);
+openTIDAL_ContentContainer openTIDAL_GetAlbum(const size_t albumid);
+openTIDAL_ContentContainer openTIDAL_GetAlbumItems(const size_t albumid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteAlbums(const int limit,
+    const int offset, const char *order, const char *orderDirection);
 
 int openTIDAL_AddFavoriteAlbum(const size_t albumid);
 int openTIDAL_DeleteFavoriteAlbum(const size_t albumid);
@@ -456,14 +456,14 @@ int openTIDAL_DeleteFavoriteAlbum(const size_t albumid);
 /* Artist Endpoints */
 
 
-openTIDAL openTIDAL_GetArtist(const size_t artistid);
-openTIDAL openTIDAL_GetFavoriteArtists(const size_t limit,
-  size_t const offset, const char *order, const char *orderDirection);
-openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetArtistMix(const size_t artistid);
-openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const size_t limit, const size_t offset);
+openTIDAL_ContentContainer openTIDAL_GetArtist(const size_t artistid);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteArtists(const int limit,
+    const int offset, const char *order, const char *orderDirection);
+openTIDAL_ContentContainer openTIDAL_GetArtistLink(const size_t artistid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetArtistMix(const size_t artistid);
+openTIDAL_ContentContainer openTIDAL_GetArtistTopTracks(const size_t artistid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetArtistVideos(const size_t artistid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetArtistAlbums(const size_t artistid, const int limit, const int offset);
 
 int openTIDAL_AddFavoriteArtist(const size_t artistid);
 int openTIDAL_DeleteFavoriteArtist(const size_t artistid);
@@ -472,12 +472,12 @@ int openTIDAL_DeleteFavoriteArtist(const size_t artistid);
 /* Track Endpoints  */
 
 
-openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetTrackMix(const size_t trackid);
-openTIDAL openTIDAL_GetTrackStream(const size_t trackid);
-openTIDAL openTIDAL_GetTrack(const size_t trackid);
-openTIDAL openTIDAL_GetFavoriteTracks(const size_t limit,
-  const size_t offset, const char *order, const char *orderDirection);
+openTIDAL_ContentContainer openTIDAL_GetTrackContributors(const size_t trackid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetTrackMix(const size_t trackid);
+openTIDAL_ContentContainer openTIDAL_GetTrackStream(const size_t trackid);
+openTIDAL_ContentContainer openTIDAL_GetTrack(const size_t trackid);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteTracks(const int limit,
+    const int offset, const char *order, const char *orderDirection);
 
 int openTIDAL_DeleteFavoriteTrack(const size_t trackid);
 int openTIDAL_AddFavoriteTrack(const size_t trackid);
@@ -486,33 +486,33 @@ int openTIDAL_AddFavoriteTrack(const size_t trackid);
 /* Video Endpoints  */
 
 
-openTIDAL openTIDAL_GetVideo(const size_t videoid);
-openTIDAL openTIDAL_GetFavoriteVideos(const size_t limit,
-  const size_t offset, const char *order, const char *orderDirection);
-openTIDAL openTIDAL_GetVideoContributors(const size_t videoid, const size_t limit, const size_t offset);
-openTIDAL openTIDAL_GetVideoStream(const size_t videoid);
+openTIDAL_ContentContainer openTIDAL_GetVideo(const size_t videoid);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteVideos(const int limit,
+    const int offset, const char *order, const char *orderDirection);
+openTIDAL_ContentContainer openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int offset);
+openTIDAL_ContentContainer openTIDAL_GetVideoStream(const size_t videoid);
 
 int openTIDAL_AddFavoriteVideo(const size_t videoid);
 int openTIDAL_DeleteFavoriteVideo(const size_t videoid);
 
 
-/* Mix Endpoints  */
+/* Mix Endpoints    */
 
 
-openTIDAL openTIDAL_GetMixItems(const char *mixid);
-openTIDAL openTIDAL_GetFavoriteMixes();
+openTIDAL_ContentContainer openTIDAL_GetMixItems(const char *mixid);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteMixes();
 
 
 /* Search Endpoints */
 
 
-openTIDAL openTIDAL_SearchAll(char *term, const size_t limit);
+openTIDAL_ContentContainer openTIDAL_SearchAll(char *term, const int limit);
 
 
 /* Page Endpoints */
 
 
-openTIDAL openTIDAL_GetHome();
+openTIDAL_ContentContainer openTIDAL_GetHome();
 #ifdef __cplusplus
 }
 #endif
