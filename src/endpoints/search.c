@@ -29,9 +29,11 @@
 
 /* Search */
 
-openTIDAL openTIDAL_SearchAll(char *term, const int limit)
+openTIDAL_ContentContainer
+openTIDAL_SearchAll(openTIDAL_SessionContainer *session, char *term, const int limit)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char *encodedTerm = url_encode(term);
     char *endpoint = "/v1/search/";
     size_t mallocSize = 0;
@@ -45,32 +47,31 @@ openTIDAL openTIDAL_SearchAll(char *term, const int limit)
 
     mallocSize = strlen(encodedTerm) + 40;
     baseparams = malloc(mallocSize); 
-    snprintf(baseparams, mallocSize, "countryCode=%s&limit=%d&query=%s", config.countryCode,
+    snprintf(baseparams, mallocSize, "countryCode=%s&limit=%d&query=%s", session->countryCode,
                         limit, encodedTerm);
-    curl_model req = curl_get(endpoint, baseparams);
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(encodedTerm);
     free(baseparams);
-
-    if (req.status != -1)
+    if (curl.status != -1)
     {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
+        cJSON *input_json = json_parse(curl.body);
+        if (curl.responseCode == 200)
         {
             parse_search(&o, input_json);
             o.status = 1;
         }
         else
         {
-            o.status = parse_status(input_json, req, 0, "Search");
+            o.status = parse_status(input_json, &curl, 0, "Search");
         }
         o.json = input_json;
-        free(req.body);
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
