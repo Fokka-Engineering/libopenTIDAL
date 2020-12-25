@@ -26,52 +26,54 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetArtist(const size_t artistid)
+openTIDAL_ContentContainer
+openTIDAL_GetArtist(openTIDAL_SessionContainer *session, const size_t artistid)
 {
-    openTIDAL o; 
-    char *endpoint;
+    openTIDAL_ContentContainer o; 
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
  
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 2);
 
     endpoint = url_cat("/v1/artists/", artistid, "", 0);
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_ArtistModel artist;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    free(endpoint);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_ArtistContainer artist;
             json_artist_model processed_json = json_parse_artist(input_json);
             parse_artist_values(&artist, &processed_json);
             
             o.status = 1;
             openTIDAL_StructAddArtist(&o, artist);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetArtistLink(openTIDAL_SessionContainer *session, 
+        const size_t artistid, const int limit, const int offset)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char *endpoint;
     char baseparams[50];
  
@@ -79,31 +81,35 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const int limit, const 
     openTIDAL_StructAlloc(&o, 7); 
 
     endpoint = url_cat("/v1/artists/", artistid, "/links", 0);
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
-                        limit, offset);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
+        limit, offset);
     
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-            cJSON *source = cJSON_GetObjectItemCaseSensitive(input_json, "source");
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    free(endpoint);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            cJSON *source = NULL;
+            cJSON *items = NULL;
             cJSON *item = NULL;
             
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_LinkModel Value;
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            source = cJSON_GetObjectItemCaseSensitive(input_json, "source");
+            items = cJSON_GetObjectItem(input_json, "items");
+            
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_LinkContainer Value;
+                    
                     json_links_model processed_json = json_parse_links(item);
                     parse_link_values(&Value, &processed_json);
-
                     parse_signed_number(limit, &Value.limit);
                     parse_signed_number(offset, &Value.offset);
                     parse_signed_number(totalNumberOfItems, &Value.totalNumberOfItems);
@@ -114,68 +120,68 @@ openTIDAL openTIDAL_GetArtistLink(const size_t artistid, const int limit, const 
             }
             o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetArtistMix(const size_t artistid)
+openTIDAL_ContentContainer
+openTIDAL_GetArtistMix(openTIDAL_SessionContainer *session, const size_t artistid)
 {
-    openTIDAL o;
-    char *endpoint;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
 
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 4);
 
     endpoint = url_cat("/v1/artists/", artistid, "/mix", 0);
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
-    curl_model req = curl_get(endpoint, baseparams);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_MixModel Value;
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_MixContainer Value;
             
             json_mix_model processed_json = json_parse_mix(input_json);
             parse_mix_values(&Value, &processed_json);
             o.status = 1;
             openTIDAL_StructAddMix(&o, Value);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetArtistTopTracks(openTIDAL_SessionContainer *session,const size_t artistid,
+        const int limit, const int offset)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char *endpoint;
     char baseparams[50];
  
@@ -183,27 +189,32 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const int limit, c
     openTIDAL_StructAlloc(&o, 1);
 
     endpoint = url_cat("/v1/artists/", artistid, "/toptracks", 0);
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
-    curl_model req = curl_get(endpoint, baseparams);
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
 
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+        if ( curl.responseCode == 200 ) {
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            cJSON *items = NULL;
             cJSON *item = NULL;
+            
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            items = cJSON_GetObjectItem(input_json, "items");
 
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ItemsModel Value;
+            o.status = 0;
+
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ItemsContainer Value;
                     json_items_model processed_json = json_parse_items(item);
         
                     parse_items_values(&Value, &processed_json);
@@ -213,61 +224,63 @@ openTIDAL openTIDAL_GetArtistTopTracks(const size_t artistid, const int limit, c
 
                     openTIDAL_StructAddItem(&o, Value);
                 }
+                o.status = 1;
             }
-        
-            o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetArtistVideos(openTIDAL_SessionContainer *session, const size_t artistid,
+        const int limit, const int offset)
 {
-    openTIDAL o;
-    char *endpoint;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[50];
  
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
     endpoint = url_cat("/v1/artists/", artistid, "/videos", 0);
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
     
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    free(endpoint);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            cJSON *items = NULL;
             cJSON *item = NULL;
+            
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            items = cJSON_GetObjectItem(input_json, "items");
 
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ItemsModel Value;
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ItemsContainer Value;
+                    
                     json_items_model processed_json = json_parse_items(item);
                     parse_items_values(&Value, &processed_json);
-                    
                     parse_signed_number(limit, &Value.limit); 
                     parse_signed_number(offset, &Value.offset);
                     parse_signed_number(totalNumberOfItems, &Value.totalNumberOfItems);
@@ -278,26 +291,26 @@ openTIDAL openTIDAL_GetArtistVideos(const size_t artistid, const int limit, cons
             
             o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetArtistAlbums(openTIDAL_SessionContainer *session, const size_t artistid,
+        const int limit, const int offset)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char *endpoint;
     char baseparams[50];
  
@@ -305,29 +318,32 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const int limit, cons
     openTIDAL_StructAlloc(&o, 0);
 
     endpoint = url_cat("/v1/artists/", artistid, "/albums", 0);
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
-    curl_model req = curl_get(endpoint, baseparams);
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
-
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
-            cJSON *item = NULL;
-
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_AlbumModel Value;
-                    json_album_model processed_json = json_parse_album(item);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
         
+        if ( curl.responseCode == 200 ) {
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            cJSON *items = NULL;
+            cJSON *item = NULL;
+            
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            items = cJSON_GetObjectItem(input_json, "items");
+
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_AlbumContainer Value;
+                    
+                    json_album_model processed_json = json_parse_album(item);
                     parse_album_values(&Value, &processed_json);
                     parse_signed_number(limit, &Value.limit); 
                     parse_signed_number(offset, &Value.offset);
@@ -339,57 +355,62 @@ openTIDAL openTIDAL_GetArtistAlbums(const size_t artistid, const int limit, cons
             
             o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, artistid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, artistid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL
-openTIDAL_GetFavoriteArtists(const int limit, const int offset, const char *order, const char *orderDirection)
+openTIDAL_ContentContainer
+openTIDAL_GetFavoriteArtists(openTIDAL_SessionContainer *session, const int limit,
+        const int offset, const char *order, const char *orderDirection)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/artists", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[150];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 2);
 
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/artists", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-                         config.countryCode, limit, offset, order, orderDirection);
+                         session->countryCode, limit, offset, order, orderDirection);
 
-    curl_model req = curl_get(endpoint, baseparams);
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            cJSON *items = NULL;
             cJSON *item = NULL;
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            
+            items = cJSON_GetObjectItem(input_json, "items");
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ArtistModel artist;
-                    cJSON *innerItem = cJSON_GetObjectItem(item, "item");
-                    json_artist_model processed_json = json_parse_artist(innerItem);
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ArtistContainer artist;
+                    cJSON *innerItem = NULL;
                     
+                    innerItem = cJSON_GetObjectItem(item, "item");
+                    
+                    json_artist_model processed_json = json_parse_artist(innerItem);
                     parse_artist_values(&artist, &processed_json);
                     parse_signed_number(limit, &artist.limit);
                     parse_signed_number(offset, &artist.offset);
@@ -401,64 +422,63 @@ openTIDAL_GetFavoriteArtists(const int limit, const int offset, const char *orde
             
             o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
 /* create & delete favourites */
 
-int openTIDAL_AddFavoriteArtist(const size_t artistid)
+int openTIDAL_AddFavoriteArtist(openTIDAL_SessionContainer *session, const size_t artistid)
 {
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/artists", 1);
+    openTIDAL_CurlContainer curl;
     int status;
     char buffer[60];
+    char *endpoint = NULL;
+
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/artists", 1);
     snprintf(buffer, 60, "artistIds=%zu&onArtifactNotFound=FAIL", artistid);
 
-    curl_model req = curl_post(endpoint, buffer, "");
+    openTIDAL_CurlRequest(session, &curl, "POST", endpoint, NULL, buffer, 0, 1);
     free(endpoint);
-    free(req.body);
-    if (req.status != -1)
-    {
-        status = parse_raw_status(&req.responseCode);
-        return status;
+    if ( curl.status != -1 ) {
+        status = parse_raw_status(&curl.responseCode);
     }
-    else
-    {
-        return -1;
+    else {
+        status = -1;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return status;
 }
 
-int openTIDAL_DeleteFavoriteArtist(const size_t artistid)
+int openTIDAL_DeleteFavoriteArtist(openTIDAL_SessionContainer *session, const size_t artistid)
 {
+    openTIDAL_CurlContainer curl;
     int status;
     char buffer[80];
-    snprintf(buffer, 80, "/v1/users/%zu/favorites/artists/%zu?countryCode=%s", config.userId, artistid, config.countryCode);
 
-    curl_model req = curl_delete(buffer, "", "");
-    /*Cleanup*/
-    free(req.body);
+    snprintf(buffer, 80, "/v1/users/%zu/favorites/artists/%zu?countryCode=%s",
+            session->userId, artistid, session->countryCode);
 
-    if (req.status != -1)
-    {
-        status = parse_raw_status(&req.responseCode);
-        return status;
+    openTIDAL_CurlRequest(session, &curl, "DELETE", buffer, NULL, NULL, 0, 1);
+    if ( curl.status != -1 ) {
+        status = parse_raw_status(&curl.responseCode);
     }
-    else
-    {
-        return -1;
+    else {
+        status = -1;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return status;
 }
 

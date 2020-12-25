@@ -30,64 +30,82 @@
 #include "include/handles.h"
 #include "include/openTIDAL.h"
 
-openTIDAL_SessionContainer config;
+static void openTIDAL_SessionInitContainer(openTIDAL_SessionContainer *session);
+static const char *openTIDAL_SessionCreateFileStream(openTIDAL_SessionContainer *session);
+static const int openTIDAL_SessionScanFile(openTIDAL_SessionContainer *session);
+static void openTIDAL_SessionReadFileStream(openTIDAL_SessionContainer *session, cJSON *input_json);
 
-/* Initialise config structure */
-void openTIDAL_ConfigInit(openTIDAL_SessionContainer *config)
-{
-    config->location = NULL;
-    config->newStream = NULL;
-    config->stream = NULL;
-    config->refreshRequest = NULL;
-    config->tokenRequest = NULL;
-    config->demoEnabled = 1;
-
-    config->clientId = "8SEZWa4J1NVC5U5Y";
-    config->clientSecret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
-    config->baseUrl = "https://api.tidal.com";
-    config->authUrl = "https://auth.tidal.com"; 
-    
-    config->username = NULL;
-    config->userId = 0;
-    config->expiresIn = 0;
-    config->countryCode = "US";
-
-    config->audioQuality = "LOW";
-    config->videoQuality = "LOW";
-
-    openTIDAL_ParseVerbose("Config", "Initialise config structure", 2); 
-}
-
-int openTIDAL_Init(const char *file_location)
+const int openTIDAL_SessionInit(openTIDAL_SessionContainer *session, const char *file_location)
 {
     int status = 0;
-    openTIDAL_ConfigInit(&config);
-    if ( file_location )
-    {
-        config.location = malloc(strlen(file_location) + 1);
-        if ( config.location )
-        {
-            strcpy(config.location, file_location);
-            status = scan_persistent();
-            config.demoEnabled = 0;
-        }
+    openTIDAL_SessionInitContainer(session);
+   
+    /* Scan persistent config file and exit demo-mode */ 
+    if ( file_location ) {
+        session->location = (char *) file_location;
+        status = openTIDAL_SessionScanFile(session);
+        session->demoEnabled = 0;
     }
-    openTIDAL_ParseVerbose("Config", "Initialised openTIDAL", 2);
+    openTIDAL_ParseVerbose("Session", "Initialised openTIDAL", 2);
     return status;
 }
 
-void openTIDAL_Cleanup()
+void openTIDAL_SessionCleanup(openTIDAL_SessionContainer *session)
 {
 
-    free(config.newStream);
-    cJSON_Delete((cJSON *) config.refreshRequest);
-    cJSON_Delete((cJSON *) config.tokenRequest);
-    cJSON_Delete((cJSON *) config.stream);
+    free(session->newStream);
+    cJSON_Delete((cJSON *) session->refreshRequest);
+    cJSON_Delete((cJSON *) session->tokenRequest);
+    cJSON_Delete((cJSON *) session->stream);
     
-    openTIDAL_ParseVerbose("Config", "Deallocated config", 2);
+    openTIDAL_ParseVerbose("Session", "Deallocated session", 2);
 }
 
-char *create_persistent_stream()
+void openTIDAL_SessionCreateFile(openTIDAL_SessionContainer *session)
+{
+    FILE *fp = NULL;
+    fp = fopen(session->location, "w");
+    if (fp != NULL)
+    {
+        const char *json = NULL;
+        json = openTIDAL_SessionCreateFileStream(session);
+        fprintf(fp, "%s", json);
+    }
+    else
+    {
+        openTIDAL_ParseVerbose("Session", "Failed to create persistent config: Could not write to file location", 1);
+    }
+    fclose(fp);
+}
+
+/* Initialise session structure */
+static void openTIDAL_SessionInitContainer(openTIDAL_SessionContainer *session)
+{
+    session->location = NULL;
+    session->newStream = NULL;
+    session->stream = NULL;
+    session->refreshRequest = NULL;
+    session->tokenRequest = NULL;
+    session->demoEnabled = 1;
+
+    session->clientId = "8SEZWa4J1NVC5U5Y";
+    session->clientSecret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";
+    session->baseUrl = "https://api.tidal.com";
+    session->authUrl = "https://auth.tidal.com"; 
+    
+    session->username = NULL;
+    session->userId = 0;
+    session->expiresIn = 0;
+    session->countryCode = "US";
+
+    session->audioQuality = "LOW";
+    session->videoQuality = "LOW";
+
+    openTIDAL_ParseVerbose("Session", "Initialise session structure", 2); 
+}
+
+
+static const char *openTIDAL_SessionCreateFileStream(openTIDAL_SessionContainer *session)
 {
     char *string = NULL;
     cJSON *authorization_json = NULL;
@@ -112,34 +130,34 @@ char *create_persistent_stream()
     preferences_json = cJSON_CreateObject();
     cJSON_AddItemToObject(output_json, "preferences", preferences_json);
 
-    refresh_token_json = cJSON_CreateString(config.refreshToken);
+    refresh_token_json = cJSON_CreateString(session->refreshToken);
     cJSON_AddItemToObject(authorization_json, "refresh_token", refresh_token_json);
-    access_token_json = cJSON_CreateString(config.accessToken);
+    access_token_json = cJSON_CreateString(session->accessToken);
     cJSON_AddItemToObject(authorization_json, "access_token", access_token_json);
-    expires_in_json = cJSON_CreateNumber(config.expiresIn);
+    expires_in_json = cJSON_CreateNumber(session->expiresIn);
     cJSON_AddItemToObject(authorization_json, "expires_in", expires_in_json);
 
-    id_json = cJSON_CreateNumber(config.userId);
+    id_json = cJSON_CreateNumber(session->userId);
     cJSON_AddItemToObject(user_json, "id", id_json);
-    username_json = cJSON_CreateString(config.username);
+    username_json = cJSON_CreateString(session->username);
     cJSON_AddItemToObject(user_json, "username", username_json);
-    country_code_json = cJSON_CreateString(config.countryCode);
+    country_code_json = cJSON_CreateString(session->countryCode);
     cJSON_AddItemToObject(user_json, "country_code", country_code_json);
 
-    audio_quality_json = cJSON_CreateString(config.audioQuality);
+    audio_quality_json = cJSON_CreateString(session->audioQuality);
     cJSON_AddItemToObject(preferences_json, "audio_quality", audio_quality_json);
-    video_quality_json = cJSON_CreateString(config.videoQuality);
+    video_quality_json = cJSON_CreateString(session->videoQuality);
     cJSON_AddItemToObject(preferences_json, "video_quality", video_quality_json);
 
     string = cJSON_Print(output_json); /* Allocate Memory (needs to be deallocated)  */
-    config.newStream = string;
+    session->newStream = string;
     cJSON_Delete(output_json);
 
-    openTIDAL_ParseVerbose("Config", "Created new json stream", 2);
+    openTIDAL_ParseVerbose("Session", "Created new json stream", 2);
     return string;
 }
 
-void read_persistent_stream(cJSON *input_json)
+static void openTIDAL_SessionReadFileStream(openTIDAL_SessionContainer *session, cJSON *input_json)
 {
     cJSON *authorization = NULL;
     cJSON *refreshToken = NULL;
@@ -167,17 +185,17 @@ void read_persistent_stream(cJSON *input_json)
     audioQuality = cJSON_GetObjectItemCaseSensitive(preferences, "audio_quality");
     videoQuality = cJSON_GetObjectItemCaseSensitive(preferences, "video_quality");
 
-    parse_string(refreshToken, &config.refreshToken);
-    parse_string(accessToken, &config.accessToken); 
-    parse_number(expiresIn, (size_t *) &config.expiresIn);
-    parse_number(id, &config.userId);
-    parse_string(countryCode, &config.countryCode);
-    parse_string(audioQuality, &config.audioQuality);
-    parse_string(videoQuality, &config.videoQuality);
-    openTIDAL_ParseVerbose("Config", "Read & allocate persistent stream from file", 2);
+    parse_string(refreshToken, &session->refreshToken);
+    parse_string(accessToken, &session->accessToken); 
+    parse_number(expiresIn, (size_t *) &session->expiresIn);
+    parse_number(id, &session->userId);
+    parse_string(countryCode, &session->countryCode);
+    parse_string(audioQuality, &session->audioQuality);
+    parse_string(videoQuality, &session->videoQuality);
+    openTIDAL_ParseVerbose("Session", "Read & allocate persistent stream from file", 2);
 }
 
-int scan_persistent()
+static const int openTIDAL_SessionScanFile(openTIDAL_SessionContainer *session)
 {
     FILE *persistentJSON = NULL;
     long streamSize = 0;
@@ -185,10 +203,10 @@ int scan_persistent()
     int error = 0;
 
     /* open persistentFile  */
-    persistentJSON = fopen(config.location, "rb");
+    persistentJSON = fopen(session->location, "rb");
     if ( !persistentJSON )
     {
-        openTIDAL_ParseVerbose("Config", "File not found. Please authenticate", 1);
+        openTIDAL_ParseVerbose("Session", "File not found. Please authenticate", 1);
         error = 1;
         goto end;
     }
@@ -202,7 +220,7 @@ int scan_persistent()
     if( !stream )
     {
         fclose(persistentJSON);
-        openTIDAL_ParseVerbose("Config", "Memory allocation of persistent config file failed", 1);
+        openTIDAL_ParseVerbose("Session", "Memory allocation of persistent config file failed", 1);
         error = 1;
         goto end;
     }
@@ -213,7 +231,7 @@ int scan_persistent()
         fclose(persistentJSON);
         free(stream);
         fprintf(stderr, "entire read fails");
-        openTIDAL_ParseVerbose("Config", "Copying persistent config into buffer failed. Entire read fails", 1);
+        openTIDAL_ParseVerbose("Session", "Copying persistent config into buffer failed. Entire read fails", 1);
         error = 1;
         goto end;
     }
@@ -221,96 +239,81 @@ int scan_persistent()
 
     /* parse JSON stream    */
     cJSON *input_json = json_parse(stream);
-    read_persistent_stream(input_json);
-    config.stream = input_json;
+    openTIDAL_SessionReadFileStream(session, input_json);
+    session->stream = input_json;
     
 end:
     if ( error == 1 )
     {
-        openTIDAL_ParseVerbose("Config", "Scanning persistent config failed", 1);
+        openTIDAL_ParseVerbose("Session", "Scanning persistent config failed", 1);
         return 0;
     }
     return 1;
 }
 
-void create_persistent()
-{
-    FILE *fp = NULL;
-    fp = fopen(config.location, "w");
-    if (fp != NULL)
-    {
-        char *json = create_persistent_stream();
-        fprintf(fp, "%s", json);
-    }
-    else
-    {
-        openTIDAL_ParseVerbose("Config", "Failed to create persistent config: Could not write to file location", 1);
-    }
-    fclose(fp);
-}
 
-void refresh_persistent()
+void openTIDAL_SessionRefresh(openTIDAL_SessionContainer *session)
 {
     /* start OAuth refresh routine  */
     time_t currentTime = time(NULL);
     size_t skip = 0;
     double diff_t = 0;
-    if ( config.demoEnabled )
+    if ( session->demoEnabled )
     {
         goto end;
     }
     /* Check if ExpiryDate is in the future  */
-    if ( currentTime > config.expiresIn )
+    if ( currentTime > session->expiresIn )
     {
-        diff_t = difftime(currentTime, config.expiresIn);
+        diff_t = difftime(currentTime, session->expiresIn);
     }
     else
     {
-        diff_t = difftime(config.expiresIn, currentTime);
+        diff_t = difftime(session->expiresIn, currentTime);
     }
 
     char buffer[25];
     snprintf(buffer, sizeof(buffer), "Difference timestamp and currentTime: %zu", (size_t) diff_t);
-    openTIDAL_ParseVerbose("Config", buffer, 2); 
+    openTIDAL_ParseVerbose("Session", buffer, 2); 
     
     /* If ExpiryDate is in the future with a difference of more than 5min  */
-    if ( currentTime < config.expiresIn && (size_t) diff_t >= 300 )
+    if ( currentTime < session->expiresIn && (size_t) diff_t >= 300 )
     {
-        openTIDAL_ParseVerbose("Config",    "AccessToken renewal not necessary", 2);
+        openTIDAL_ParseVerbose("Session",    "AccessToken renewal not necessary", 2);
     }
     /* Start renewal process    */
     else
     {
-        openTIDAL_ParseVerbose("Config", "Start AccessToken renewal process", 2);
-        openTIDAL_ContentContainer res = openTIDAL_RefreshLoginToken(config.refreshToken);
+        openTIDAL_ParseVerbose("Session", "Start AccessToken renewal process", 2);
+        openTIDAL_ContentContainer res = openTIDAL_RefreshLoginToken(session->refreshToken);
         if (res.status == 1)
         {
             FILE *fp = NULL;
-            config.accessToken = res.token.access_token;
-            config.userId = res.token.userId;
-            config.expiresIn = time(NULL) + 604800; /* Calculate new ExpiryDate */
+            session->accessToken = res.token.access_token;
+            session->userId = res.token.userId;
+            session->expiresIn = time(NULL) + 604800; /* Calculate new ExpiryDate */
 
-            fp = fopen(config.location, "w");
+            fp = fopen(session->location, "w");
             if (fp != NULL)
             {
-                char *json = NULL;
-                json = create_persistent_stream();
+                const char *json = NULL;
+                json = openTIDAL_SessionCreateFileStream(session);
                 fprintf(fp, "%s", json);
 
-                openTIDAL_ParseVerbose("Config", "AccessToken renewal successful", 2);
+                openTIDAL_ParseVerbose("Session", "AccessToken renewal successful", 2);
             }
             else
             {
-                openTIDAL_ParseVerbose("Config", "AccessToken renewal partially failed. Failed to update persistent config", 1);
+                openTIDAL_ParseVerbose("Session", "AccessToken renewal partially failed. Failed to update persistent config", 1);
             }
             fclose(fp);
-            cJSON_Delete((cJSON *) config.refreshRequest);
-            config.refreshRequest = res.json;
+            cJSON_Delete((cJSON *) session->refreshRequest);
+            session->refreshRequest = res.json;
         }
         else
         {
-            openTIDAL_ParseVerbose("Config", "AccessToken refresh failed. Switching to demo-mode", 1);
-            config.demoEnabled = 1;
+            openTIDAL_ParseVerbose("Session", "AccessToken refresh failed. Switching to demo-mode", 1);
+            session->demoEnabled = 1;
         }
     }
 end:

@@ -24,9 +24,10 @@
 #include <stdlib.h>
 #include "../include/parse.h"
 #include "../include/handles.h"
-#include "../include/openTIDAL_ContentContainer.h"
+#include "../include/openTIDAL.h"
 
-openTIDAL_ContentContainer openTIDAL_GetAlbum(const size_t albumid)
+openTIDAL_ContentContainer
+openTIDAL_GetAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
 {
     openTIDAL_ContentContainer o;
     openTIDAL_CurlContainer curl;
@@ -37,9 +38,9 @@ openTIDAL_ContentContainer openTIDAL_GetAlbum(const size_t albumid)
     openTIDAL_StructAlloc(&o, 0);
 
     endpoint = url_cat("/v1/albums/", albumid, "", 0);
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    openTIDAL_CurlRequest(&curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
     if ( curl.status != -1 ) {
         cJSON *input_json = NULL;
@@ -67,7 +68,8 @@ openTIDAL_ContentContainer openTIDAL_GetAlbum(const size_t albumid)
     return o;
 }
 
-openTIDAL_ContentContainer openTIDAL_GetAlbumItems(const size_t albumid, const int limit, const int offset)
+openTIDAL_ContentContainer openTIDAL_GetAlbumItems(openTIDAL_SessionContainer *session, const size_t albumid,
+        const int limit, const int offset)
 {
     openTIDAL_ContentContainer o;
     openTIDAL_CurlContainer curl;
@@ -78,10 +80,10 @@ openTIDAL_ContentContainer openTIDAL_GetAlbumItems(const size_t albumid, const i
     openTIDAL_StructAlloc(&o, 1);
 
     endpoint = url_cat("/v1/albums/", albumid, "/items", 0);
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
 
-    openTIDAL_CurlRequest(&curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
     if ( curl.status != -1 ) {
         cJSON *input_json = NULL;
@@ -132,7 +134,8 @@ openTIDAL_ContentContainer openTIDAL_GetAlbumItems(const size_t albumid, const i
 }
 
 openTIDAL_ContentContainer
-openTIDAL_GetFavoriteAlbums(const int limit, const int offset, const char *order, const char *orderDirection)
+openTIDAL_GetFavoriteAlbums(openTIDAL_SessionContainer *session, const int limit, const int offset,
+        const char *order, const char *orderDirection)
 {
     openTIDAL_ContentContainer o;
     openTIDAL_CurlContainer curl;
@@ -142,11 +145,11 @@ openTIDAL_GetFavoriteAlbums(const int limit, const int offset, const char *order
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 0);
 
-    endpoint = url_cat("/v1/users/", config.userId, "/favorites/albums", 0);
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/albums", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-        config.countryCode, limit, offset, order, orderDirection);
+        session->countryCode, limit, offset, order, orderDirection);
     
-    openTIDAL_CurlRequest(&curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
     if ( curl.status != -1 ) {
         cJSON *input_json = NULL;
@@ -183,7 +186,7 @@ openTIDAL_GetFavoriteAlbums(const int limit, const int offset, const char *order
             o.status = 1;
         }
         else {
-            o.status = parse_status(input_json, &curl, config.userId, NULL);
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
 
         o.json = input_json;
@@ -198,7 +201,7 @@ openTIDAL_GetFavoriteAlbums(const int limit, const int offset, const char *order
 
 /* create & delete favourites */
 
-int openTIDAL_AddFavoriteAlbum(const size_t albumid)
+int openTIDAL_AddFavoriteAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
 {
     openTIDAL_CurlContainer curl;
     char *endpoint = NULL;
@@ -206,9 +209,9 @@ int openTIDAL_AddFavoriteAlbum(const size_t albumid)
     char buffer[60];
     
     snprintf(buffer, 60, "albumIds=%zu&onArtifactNotFound=FAIL", albumid);
-    endpoint = url_cat("/v1/users/", config.userId, "/favorites/albums", 1);
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/albums", 1);
 
-    openTIDAL_CurlRequest(&curl, "POST", endpoint, NULL, buffer, 0, 1);
+    openTIDAL_CurlRequest(session, &curl, "POST", endpoint, NULL, buffer, 0, 1);
     free(endpoint);
     if ( curl.status != -1 ) {
         status = parse_raw_status(&curl.responseCode);
@@ -221,16 +224,16 @@ int openTIDAL_AddFavoriteAlbum(const size_t albumid)
     return status;
 }
 
-int openTIDAL_DeleteFavoriteAlbum(const size_t albumid)
+int openTIDAL_DeleteFavoriteAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
 {
     openTIDAL_CurlContainer curl;
     int status;
     char buffer[80];
     
-    snprintf(buffer, 80, "/v1/users/%zu/favorites/albums/%zu?countryCode=%s", config.userId,
-                        albumid, config.countryCode);
+    snprintf(buffer, 80, "/v1/users/%zu/favorites/albums/%zu?countryCode=%s", session->userId,
+                        albumid, session->countryCode);
     
-    openTIDAL_CurlRequest(&curl, "DELETE", buffer, NULL, NULL, 0, 1);
+    openTIDAL_CurlRequest(session, &curl, "DELETE", buffer, NULL, NULL, 0, 1);
     if ( curl.status != -1 ) {
         status = parse_raw_status(&curl.responseCode); 
     }

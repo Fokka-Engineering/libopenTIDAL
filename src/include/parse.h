@@ -57,19 +57,19 @@ json_manifest_model json_parse_manifest(cJSON *directObject);
 
 /* parse Values */
 void parse_login_code_values(openTIDAL_LoginCodeContainer *code, 
-                                                         json_login_code_model *json);
+    json_login_code_model *json);
 
 void parse_login_token_values(openTIDAL_LoginTokenContainer *token,
-                                                            json_login_token_model *json);
+    json_login_token_model *json);
 
 void parse_user_values(openTIDAL_UserContainer *user,
-                                             json_user_model *json);
+    json_user_model *json);
 
 void parse_user_subscription_values(openTIDAL_UserSubscriptionContainer *sub,
-                                                                        json_user_subscription_model *json);
+    json_user_subscription_model *json);
 
 void parse_playlist_values(openTIDAL_PlaylistContainer *playlist,
-                                                     json_playlist_model *json);
+    json_playlist_model *json);
 
 void parse_items_values(openTIDAL_ItemsContainer *items, json_items_model *json);
 
@@ -80,7 +80,7 @@ void parse_artist_values(openTIDAL_ArtistContainer *artist, json_artist_model *j
 void parse_link_values(openTIDAL_LinkContainer *link, json_links_model *json);
 
 void parse_contributor_values(openTIDAL_ContributorContainer *contrib,
-                                                            json_contributor_model *json);
+    json_contributor_model *json);
 
 void parse_mix_values(openTIDAL_MixContainer *mix, json_mix_model *json);
 
@@ -94,14 +94,5 @@ void parse_home(openTIDAL_ContentContainer *o, cJSON *input_json);
 char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode);
 char *url_cat_str(const char *strOne, const char *id, const char *strTwo);
 
-/* persistentJSON */
-char *create_persistent_stream();
-void read_persistent_stream(cJSON *input_json);
-
 /* encoding */
 char *url_encode(const char *str);
-
-/* persistent json  */
-int scan_persistent();
-void create_persistent();
-void refresh_persistent();
