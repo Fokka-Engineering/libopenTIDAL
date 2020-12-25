@@ -27,51 +27,54 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetPlaylist(const char *playlistid)
+openTIDAL_ContentContainer
+openTIDAL_GetPlaylist(openTIDAL_SessionContainer *session, const char *playlistid)
 {
-    openTIDAL o;
-    char *endpoint;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
  
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 3);
 
     endpoint = url_cat_str("/v1/playlists/", playlistid, "");
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_PlaylistModel Value;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0); 
+    if ( curl.status != -1 ) {
+        cJSON *input_json = json_parse(curl.body);
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_PlaylistContainer Value;
+
             json_playlist_model processed_json = json_parse_playlist(input_json);
             parse_playlist_values(&Value, &processed_json); 
+            
             o.status = 1;
             openTIDAL_StructAddPlaylist(&o, Value);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, 0, playlistid);
+        else {
+            o.status = parse_status(input_json, &curl, 0, playlistid);
         }
         
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
-        free(req.body);
         o.status = -1;
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetPlaylistItems(openTIDAL_SessionContainer *session, 
+        const char *playlistid, const int limit, const int offset)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char *endpoint;
     char baseparams[50];
     
@@ -79,30 +82,32 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const int limit, co
     openTIDAL_StructAlloc(&o, 1);
 
     endpoint = url_cat_str("/v1/playlists/", playlistid, "/items");
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode,
-                        limit, offset);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
+        limit, offset);
+
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+
+        if ( curl.responseCode == 200 ) {
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            cJSON *items = NULL;
             cJSON *item = NULL;
+            
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            items = cJSON_GetObjectItem(input_json, "items");
                         
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ItemsModel Value;
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ItemsContainer Value;
                     cJSON *innerItem = cJSON_GetObjectItem(item, "item");
+                    
                     json_items_model processed_json = json_parse_items(innerItem);
-        
                     parse_items_values(&Value, &processed_json);
                     parse_signed_number(limit, &Value.limit); 
                     parse_signed_number(offset, &Value.offset);
@@ -110,59 +115,60 @@ openTIDAL openTIDAL_GetPlaylistItems(const char *playlistid, const int limit, co
 
                     openTIDAL_StructAddItem(&o, Value);
                 }
+                o.status = 1;
             }
- 
-            o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, 0, playlistid);
+        else {
+            o.status = parse_status(input_json, &curl, 0, playlistid);
         }
         
-        free(req.body);
         o.json = input_json; 
-        return o;
     }
-    else
-    {
-        free(req.body);
+    else {
         o.status = -1;
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL
-openTIDAL_GetFavoritePlaylists(const int limit, const int offset, const char *order, const char *orderDirection)
+openTIDAL_ContentContainer
+openTIDAL_GetFavoritePlaylists(openTIDAL_SessionContainer *session, 
+        const int limit, const int offset, const char *order, const char *orderDirection)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/playlistsAndFavoritePlaylists", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[150];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 3);
 
+    endpoint = url_cat("/v1/users/", session->userId, "/playlistsAndFavoritePlaylists", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-                         config.countryCode, limit, offset, order, orderDirection);
+                         session->countryCode, limit, offset, order, orderDirection);
 
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            cJSON *items = NULL;
             cJSON *item = NULL;
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            
+            items = cJSON_GetObjectItem(input_json, "items");
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_PlaylistModel playlist;
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_PlaylistContainer playlist;
                     cJSON *innerItem = cJSON_GetObjectItem(item, "playlist");
 
                     json_playlist_model processed_json = json_parse_playlist(innerItem);
@@ -178,43 +184,41 @@ openTIDAL_GetFavoritePlaylists(const int limit, const int offset, const char *or
             
             o.status = 1;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
         
-        free(req.body);
         o.json = input_json;
-        return o;
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
 
-openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
+openTIDAL_ETagContainer
+openTIDAL_GetPlaylistETag(openTIDAL_SessionContainer *session,
+        const char *playlistid)
 {
-    openTIDAL_ETagModel Value;
+    openTIDAL_ETagContainer Value;
+    openTIDAL_CurlContainer curl;
     /* Request playlist endpoint to scrape eTag Header  */
     char *endpoint;
     char baseparams[20];
 
     endpoint = url_cat_str("/v1/playlists/", playlistid, "");
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
-    curl_model req = curl_head(endpoint, baseparams); /* Returns Header with eTag */
-    free(endpoint);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    if (req.status != -1)
-    {
-        if (req.responseCode == 200)
-        {
+    openTIDAL_CurlRequest(session, &curl, "HEAD", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        if ( curl.responseCode == 200 ) {
             size_t i = 0; /* Counter for Buffer (Header) Splitter  */
             size_t e; /* Counter for ETag-String Extraction  */
-            char *p = strtok (req.header, "\n");
+            char *p = strtok (curl.header, "\n");
             char eTag[32];
             /* Buffer for splitted HTTP-Header  */ 
             char *array[30];
@@ -252,24 +256,25 @@ openTIDAL_ETagModel openTIDAL_GetPlaylistETag(const char *playlistid)
             openTIDAL_ParseVerbose("Request Error", "Could not parse eTag-Header. Not a 200 Response", 1); 
             Value.status = 0;
         }
-        free(req.header);
-        return Value;
     }
     else
     {
-        free(req.header);
         Value.status = -1;
-        return Value;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    free(endpoint);
+    return Value;
 }
 
-int openTIDAL_DeletePlaylist(const char *playlistid)
+/*int openTIDAL_DeletePlaylist(openTIDAL_SessionContainer *session, const char *playlistid)
 {
+    openTIDAL_CurlContainer curl;
     char buffer[100];
-    snprintf(buffer, 100, "/v1/playlists/%s?countryCode=%s", playlistid, config.countryCode);
+
+    snprintf(buffer, 100, "/v1/playlists/%s?countryCode=%s", playlistid, session->countryCode);
 
     curl_model req = curl_delete(buffer, "", "");
-    free(req.body); 
     if (req.status != -1)
     {
         int status = parse_raw_status(&req.responseCode);
@@ -292,7 +297,6 @@ int openTIDAL_DeletePlaylistItem(const char *playlistid, const int index)
     snprintf(buffer, 100, "/v1/playlists/%s/items/%d?countryCode=%s", playlistid, index, config.countryCode);
     curl_model req = curl_delete(buffer, "", etag_buffer);
     
-    /* cleanup */
     free(req.body);
 
     if (req.status != -1)
@@ -306,7 +310,6 @@ int openTIDAL_DeletePlaylistItem(const char *playlistid, const int index)
     }
 }
 
-/* TODO: FIX THIS SHIT!  */
 int openTIDAL_MovePlaylistItem(const char *playlistid, const int index, const int toIndex)
 {
     char buffer[100];
@@ -321,7 +324,6 @@ int openTIDAL_MovePlaylistItem(const char *playlistid, const int index, const in
     
     curl_model req = curl_post(buffer, index_buffer, etag_buffer);
     
-    /* cleanup */
     free(req.body);
 
     if (req.status != -1)
@@ -348,7 +350,6 @@ int openTIDAL_AddPlaylistItem(const char *playlistid, const int trackid, const c
     snprintf(buffer, 100, "/v1/playlists/%s/items?countryCode=%s", playlistid, config.countryCode);
      
     curl_model req = curl_post(buffer, index_buffer, etag_buffer);
-    /* cleanup */
     free(req.body);
 
     if (req.status != -1)
@@ -377,7 +378,6 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
     
     curl_model req = curl_post(buffer, index_buffer, etag_buffer);
     
-    /* cleanup */
     free(req.body);
 
     if (req.status != -1)
@@ -390,13 +390,13 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
         return -1;
     }
 
-}
+}*/
 
 /* create & delete favourites */
 
-openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
+/*openTIDAL_ContentContainer openTIDAL_CreatePlaylist(const char *title, const char *description)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
     char *endpoint = url_cat("/v1/users/", config.userId, "/playlists", 1);
     char *data = malloc(strlen(title)+strlen(description)+7+14+1);
     strcpy(data, "title=");
@@ -408,7 +408,6 @@ openTIDAL openTIDAL_CreatePlaylist(const char *title, const char *description)
     openTIDAL_StructAlloc(&o, 3);
 
     curl_model req = curl_post(endpoint, data, "");
-    /*Cleanup*/
     free(endpoint);
     free(data);
 
@@ -473,7 +472,6 @@ int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
     snprintf(buffer, 80, "/v1/users/%zu/favorites/playlists/%s?countryCode=%s", config.userId, playlistid, config.countryCode);
 
     curl_model req = curl_delete(buffer, "", "");
-    /*Cleanup*/
     free(req.body);
 
     if (req.status != -1)
@@ -485,5 +483,4 @@ int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
     {
         return -1;
     }
-}
-
+} */

@@ -435,26 +435,19 @@ openTIDAL_ContentContainer openTIDAL_GetUserSubscription();
 
 
 openTIDAL_ContentContainer
-openTIDAL_GetPlaylist(const char *playlistid);
+openTIDAL_GetPlaylist(openTIDAL_SessionContainer *session, const char *playlistid);
 
 openTIDAL_ContentContainer
-openTIDAL_GetFavoritePlaylists(const int limit,
+openTIDAL_GetFavoritePlaylists(openTIDAL_SessionContainer *session, const int limit,
     const int offset, const char *order, const char *orderDirection);
 
 openTIDAL_ContentContainer
-openTIDAL_CreatePlaylist(const char *title, const char *description);
+openTIDAL_CreatePlaylist(openTIDAL_SessionContainer *session,
+        const char *title, const char *description);
 
 openTIDAL_ContentContainer
-openTIDAL_GetPlaylistItems(const char *playlistid, const int limit, const int offset);
-
-int openTIDAL_DeletePlaylist(const char *playlistid);
-int openTIDAL_DeletePlaylistItem(const char *playlistid, const int index);
-int openTIDAL_MovePlaylistItem(const char *playlistid, const int index, const int toIndex);
-int openTIDAL_AddPlaylistItem(const char *playlistid, const int trackid, const char *onDupes);
-int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, const char *onDupes);
-int openTIDAL_DeleteFavoritePlaylist(const char *playlistid);
-int openTIDAL_AddFavoritePlaylist(const char *playlistid);
-
+openTIDAL_GetPlaylistItems(openTIDAL_SessionContainer *session,
+        const char *playlistid, const int limit, const int offset);
 
 
 /* Album Endpoints */
