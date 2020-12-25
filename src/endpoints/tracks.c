@@ -28,77 +28,85 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetTrack(const size_t trackid)
+openTIDAL_ContentContainer
+openTIDAL_GetTrack(openTIDAL_SessionContainer *session, const size_t trackid)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/tracks/", trackid, "", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    endpoint = url_cat("/v1/tracks/", trackid, "", 0);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_ItemsModel track;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_ItemsContainer track;
+            
             json_items_model processed_json = json_parse_items(input_json);
             parse_items_values(&track, &processed_json);
+            
             o.status = 1;
             openTIDAL_StructAddItem(&o, track);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, trackid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, trackid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+    
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL
-openTIDAL_GetFavoriteTracks(const int limit, const int offset, const char *order, const char *orderDirection)
+openTIDAL_ContentContainer
+openTIDAL_GetFavoriteTracks(openTIDAL_SessionContainer *session, const int limit,
+        const int offset, const char *order, const char *orderDirection)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/tracks", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[150];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/tracks", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-                         config.countryCode, limit, offset, order, orderDirection);
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
-            cJSON *item = NULL;
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+        session->countryCode, limit, offset, order, orderDirection);
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
 
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ItemsModel track;
+        if ( curl.responseCode == 200 ) {
+            cJSON *items = NULL;
+            cJSON *item = NULL;
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            
+            items = cJSON_GetObjectItem(input_json, "items");
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ItemsContainer track;
                     cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
                     json_items_model processed_json = json_parse_items(innerItem);
@@ -116,39 +124,43 @@ openTIDAL_GetFavoriteTracks(const int limit, const int offset, const char *order
         }
         else
         {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o; 
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const int limit, const int offset)
+openTIDAL_ContentContainer
+openTIDAL_GetTrackContributors(openTIDAL_SessionContainer *session, 
+        const size_t trackid, const int limit, const int offset)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/tracks/", trackid, "/contributors", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[50];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 5);
 
-    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", config.countryCode, limit, offset);
+    endpoint = url_cat("/v1/tracks/", trackid, "/contributors", 0);
+    snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d",
+            session->countryCode, limit, offset);
     
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
             cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
             cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
             cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
@@ -159,7 +171,7 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const int limit, 
             {
                 cJSON_ArrayForEach(item, items)
                 {
-                    openTIDAL_ContributorModel contrib;
+                    openTIDAL_ContributorContainer contrib;
                     json_contributor_model processed_json = json_parse_contributors(item);
         
                     parse_contributor_values(&contrib, &processed_json);
@@ -174,89 +186,90 @@ openTIDAL openTIDAL_GetTrackContributors(const size_t trackid, const int limit, 
         }
         else
         {
-            o.status = parse_status(input_json, req, trackid, NULL);
+            o.status = parse_status(input_json, &curl, trackid, NULL);
         }
         
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetTrackMix(const size_t trackid)
+openTIDAL_ContentContainer
+openTIDAL_GetTrackMix(openTIDAL_SessionContainer *session, const size_t trackid)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/tracks/", trackid, "/mix", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 4);
     
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    endpoint = url_cat("/v1/tracks/", trackid, "/mix", 0);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_MixModel mix;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = json_parse(curl.body);
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_MixContainer mix;
+            
             json_mix_model processed_json = json_parse_mix(input_json);
             parse_mix_values(&mix, &processed_json);
+            
             o.status = 1;
             openTIDAL_StructAddMix(&o, mix);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, trackid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, trackid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
-        free(req.body);
         o.status = -1;
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
+openTIDAL_ContentContainer
+openTIDAL_GetTrackStream(openTIDAL_SessionContainer *session, const size_t trackid)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/tracks/", trackid, "/playbackinfopostpaywall", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char buffer[200];
     
     openTIDAL_StructInit(&o);
 
+    endpoint = url_cat("/v1/tracks/", trackid, "/playbackinfopostpaywall", 0);
     snprintf(buffer, 200, "countryCode=%s&audioquality=%s&assetpresentation=%s&playbackmode=%s",
-                        config.countryCode, config.audioQuality, "FULL", "STREAM");
-    curl_model req = curl_get(endpoint, buffer);
-    free(endpoint);
+        session->countryCode, session->audioQuality, "FULL", "STREAM");
     
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_StreamModel stream;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, buffer, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_StreamContainer stream;
             json_stream_model processed_json = json_parse_stream(input_json);
             parse_stream_values(&stream, &processed_json);       
             o.status = 0;
             char manifest_decoded[2048];
 
-            if (strcmp(stream.manifestMimeType, "application/vnd.tidal.bts") == 0)
-            {
+            if ( strcmp(stream.manifestMimeType, "application/vnd.tidal.bts") == 0 ) {
                 o.status = 1;
                 Base64decode(manifest_decoded, stream.manifest);
                 cJSON *manifest_json = json_parse(manifest_decoded);
@@ -269,8 +282,7 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
 
                 o.jsonManifest = manifest_json; 
             }
-            else
-            {
+            else {
                 o.status = -10;
                 openTIDAL_ParseVerbose("Request Error", "Not a valid manifest. MimeType is not application/vnd.tidal.bts", 1);
             }
@@ -279,36 +291,36 @@ openTIDAL openTIDAL_GetTrackStream(const size_t trackid)
         }
         else
         {
-            o.status = parse_status(input_json, req, trackid, NULL);
+            o.status = parse_status(input_json, &curl, trackid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+    
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
 /* create & delete favourites */
 
-int openTIDAL_AddFavoriteTrack(const size_t trackid)
+/*int openTIDAL_AddFavoriteTrack(const size_t trackid)
 {
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/tracks", 1);
+    char *endpoint = url_cat("/v1/users/", session->userId, "/favorites/tracks", 1);
     int status;
     char buffer[100];
     snprintf(buffer, 100, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
 
-    curl_model req = curl_post(endpoint, buffer, "");
+    curl_model curl = curl_post(endpoint, buffer, "");
     free(endpoint);
-    free(req.body);
-    if (req.status != -1)
+    free(curl.body);
+    if (curl.status != -1)
     {
-        status = parse_raw_status(&req.responseCode);
+        status = parse_raw_status(&curl.responseCode);
         return status;
     }
     else
@@ -321,15 +333,14 @@ int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
 {
     int status;
     char buffer[80];
-    snprintf(buffer, 80, "/v1/users/%zu/favorites/tracks/%zu?countryCode=%s", config.userId, trackid, config.countryCode);
+    snprintf(buffer, 80, "/v1/users/%zu/favorites/tracks/%zu?countryCode=%s", session->userId, trackid, session->countryCode);
 
-    curl_model req = curl_delete(buffer, "", "");
-    /*Cleanup*/
-    free(req.body);
+    curl_model curl = curl_delete(buffer, "", "");
+    free(curl.body);
 
-    if (req.status != -1)
+    if (curl.status != -1)
     {
-        status = parse_raw_status(&req.responseCode);
+        status = parse_raw_status(&curl.responseCode);
         return status;
     }
     else
@@ -337,4 +348,4 @@ int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
         return -1;
     }
 }
-
+*/
