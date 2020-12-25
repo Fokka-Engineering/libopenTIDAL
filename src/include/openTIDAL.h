@@ -394,21 +394,34 @@ void openTIDAL_StructAddContributor(openTIDAL_ContentContainer *o, openTIDAL_Con
 void openTIDAL_StructAddCredit(openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
 void openTIDAL_StructAddLink(openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
 
+/* Session */
+
+const int
+openTIDAL_SessionInit(openTIDAL_SessionContainer *session, const char *file_location);
+void openTIDAL_SessionCreateFile(openTIDAL_SessionContainer *session);
+void openTIDAL_SessionRefresh(openTIDAL_SessionContainer *session);
+void openTIDAL_SessionCleanup(openTIDAL_SessionContainer *session);
+
+
 /* oAuth2 authorization endpoints 
  * (deviceFlow based login) */
 
+
 /* create an deviceCode and userCode pair */
-openTIDAL_ContentContainer openTIDAL_CreateLoginCode();
+openTIDAL_ContentContainer
+openTIDAL_AuthCreateUserCode(openTIDAL_SessionContainer *session);
 
 /* request access_token and refresh_token from deviceCode 
  * or poll until the user authorizes (userCode -> link.tidal.com) */
-openTIDAL_ContentContainer openTIDAL_CreateLoginToken(char *device_code);
+openTIDAL_ContentContainer
+openTIDAL_AuthCreateBearerToken(openTIDAL_SessionContainer *session, char *device_code);
 
 /* request new access_token */
-openTIDAL_ContentContainer openTIDAL_RefreshLoginToken(char *refresh_token);
+openTIDAL_ContentContainer
+openTIDAL_AuthRefreshBearerToken(openTIDAL_SessionContainer *session, char *refresh_token);
 
 /* logout session (access_token) */
-int openTIDAL_Logout();
+int openTIDAL_AuthLogout(openTIDAL_SessionContainer *session);
 
 
 /* User Endpoints */

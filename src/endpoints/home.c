@@ -27,9 +27,11 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetHome()
+openTIDAL_ContentContainer
+openTIDAL_GetHome(openTIDAL_SessionContainer *session)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char buffer[80];
 
     openTIDAL_StructInit(&o);
@@ -40,33 +42,27 @@ openTIDAL openTIDAL_GetHome()
     openTIDAL_StructAlloc(&o, 4);
 
     snprintf(buffer, sizeof(buffer), "countryCode=%s&deviceType=%s",
-        config.countryCode, "BROWSER");
+        session->countryCode, "BROWSER");
     
-    curl_model req = curl_get("/v1/pages/home/", buffer);
+    openTIDAL_CurlRequest(session, &curl, "GET", "/v1/pages/home/", buffer, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
 
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
+        if ( curl.responseCode == 200 ) {
             o.status = 1;
             parse_home(&o, input_json); 
         }
-        else
-        {
-            o.status = parse_status(input_json, req, 0, "Page Home");
+        else {
+            o.status = parse_status(input_json, &curl, 0, "Page Home");
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
-
+    
+    openTIDAL_CurlRequestCleanup(&curl);
     return o;
 }
