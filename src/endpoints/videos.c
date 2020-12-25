@@ -28,9 +28,11 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetVideo(const size_t videoid)
+openTIDAL_ContentContainer
+openTIDAL_GetVideo(openTIDAL_SessionContainer *session, const size_t videoid)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char buffer[100];
     char baseparams[20];
  
@@ -38,79 +40,84 @@ openTIDAL openTIDAL_GetVideo(const size_t videoid)
     openTIDAL_StructAlloc(&o, 1);
 
     snprintf(buffer, 100, "/v1/videos/%zu", videoid);
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
-    curl_model req = curl_get(buffer, baseparams);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_ItemsModel video;
+    openTIDAL_CurlRequest(session, &curl, "GET", buffer, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_ItemsContainer video;
+            
             json_items_model processed_json = json_parse_items(input_json);
             parse_items_values(&video, &processed_json);
 
             o.status = 1;
             openTIDAL_StructAddItem(&o, video);
         }
-        else
-        {
-            o.status = parse_status(input_json, req, videoid, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, videoid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL
-openTIDAL_GetFavoriteVideos(const int limit, const int offset, const char *order, const char *orderDirection)
+openTIDAL_ContentContainer
+openTIDAL_GetFavoriteVideos(openTIDAL_SessionContainer *session, const int limit,
+        const int offset, const char *order, const char *orderDirection)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/videos", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[150];
     
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
+    endpoint = url_cat("/v1/users/", session->userId, "/favorites/videos", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-                         config.countryCode, limit, offset, order, orderDirection);
+                         session->countryCode, limit, offset, order, orderDirection);
     
-    curl_model req = curl_get(endpoint, baseparams);
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            cJSON *items = cJSON_GetObjectItem(input_json, "items");
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            cJSON *items = NULL;
             cJSON *item = NULL;
-            cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
-            cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
+            cJSON *limit = NULL;
+            cJSON *offset = NULL;
+            cJSON *totalNumberOfItems = NULL;
+            
+            items = cJSON_GetObjectItem(input_json, "items");
+            limit = cJSON_GetObjectItem(input_json, "limit");
+            offset = cJSON_GetObjectItem(input_json, "offset");
+            totalNumberOfItems = cJSON_GetObjectItem(input_json, "totalNumberOfItems");
 
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    openTIDAL_ItemsModel video;
+            if ( cJSON_IsArray(items) ) {
+                cJSON_ArrayForEach( item, items ) {
+                    openTIDAL_ItemsContainer video;
                     cJSON *innerItem = cJSON_GetObjectItem(item, "item");
 
                     json_items_model processed_json = json_parse_items(innerItem);
                     
-        parse_items_values(&video, &processed_json);
+                    parse_items_values(&video, &processed_json);
                     parse_signed_number(limit, &video.limit);
                     parse_signed_number(offset, &video.offset);
                     parse_signed_number(totalNumberOfItems, &video.totalNumberOfItems);
         
-        openTIDAL_StructAddItem(&o, video);
+                    openTIDAL_StructAddItem(&o, video);
                 }
             }
          
@@ -118,25 +125,24 @@ openTIDAL_GetFavoriteVideos(const int limit, const int offset, const char *order
         }
         else
         {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL
+/*openTIDAL_ContentContainer
 openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int offset)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
     char buffer[100];
     char baseparams[100];
 
@@ -144,14 +150,14 @@ openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int 
     openTIDAL_StructAlloc(&o, 5);
 
     snprintf(buffer, sizeof(buffer), "/v1/videos/%zu/contributors", videoid);
-    snprintf(baseparams, sizeof(baseparams), "countryCode=%s&limit=%d&offset=%d", config.countryCode, 
+    snprintf(baseparams, sizeof(baseparams), "countryCode=%s&limit=%d&offset=%d", session->countryCode, 
                         limit, offset);
-    curl_model req = curl_get(buffer, baseparams);
+    curl_model curl = curl_get(buffer, baseparams);
     
-    if(req.status != -1)
+    if(curl.status != -1)
     {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
+        cJSON *input_json = json_parse(curl.body);
+        if (curl.responseCode == 200)
         {
             cJSON *limit = cJSON_GetObjectItem(input_json, "limit");
             cJSON *offset = cJSON_GetObjectItem(input_json, "offset");
@@ -163,7 +169,7 @@ openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int 
             {
                 cJSON_ArrayForEach(item, items)
                 {
-                    openTIDAL_ContributorModel contrib;
+                    openTIDAL_ContributorContainer contrib;
                     json_contributor_model processed_json = json_parse_contributors(item);
         
                     parse_contributor_values(&contrib, &processed_json);
@@ -179,24 +185,26 @@ openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int 
         }
         else
         {
-            o.status = parse_status(input_json, req, videoid, NULL);
+            o.status = parse_status(input_json, curl, videoid, NULL);
         }
 
-        free(req.body);
+        free(curl.body);
         o.json = input_json;
         return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
+        free(curl.body);
         return o;
     }
-}
+}*/
 
-openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
+openTIDAL_ContentContainer
+openTIDAL_GetVideoStream(openTIDAL_SessionContainer *session, const size_t videoid)
 {
-    openTIDAL o;
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
     char endpoint[100];
     char baseparams[200];
 
@@ -204,14 +212,15 @@ openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
     
     snprintf(endpoint, 100, "/v1/videos/%zu/playbackinfopostpaywall", videoid);
     snprintf(baseparams, 200, "countryCode=%s&videoquality=%s&assetpresentation=%s&playbackmode=%s",
-        config.countryCode, config.videoQuality, "FULL", "STREAM");
-    curl_model req = curl_get(endpoint, baseparams);
-    if (req.status != -1)
+        session->countryCode, session->videoQuality, "FULL", "STREAM");
+    
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if (curl.status != -1)
     {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
+        cJSON *input_json = json_parse(curl.body);
+        if (curl.responseCode == 200)
         {
-            openTIDAL_StreamModel stream;
+            openTIDAL_StreamContainer stream;
             json_stream_model processed_json = json_parse_stream(input_json);
             parse_stream_values(&stream, &processed_json);       
             o.status = 0;
@@ -243,38 +252,36 @@ openTIDAL openTIDAL_GetVideoStream(const size_t videoid)
         }
         else
         {
-            o.status = parse_status(input_json, req, videoid, NULL);
+            o.status = parse_status(input_json, &curl, videoid, NULL);
         }
 
-        free(req.body);
         o.json = input_json;
-        return o;
     }
     else
     {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
 /* create & delete favourites */
 
-int openTIDAL_AddFavoriteVideo(const size_t videoid)
+/*int openTIDAL_AddFavoriteVideo(const size_t videoid)
 {
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/videos", 1);
+    char *endpoint = url_cat("/v1/users/", session->userId, "/favorites/videos", 1);
     int status;
     char buffer[100];
     snprintf(buffer, sizeof(buffer), "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
     
-    curl_model req = curl_post(endpoint, buffer, "");
-    /*Cleanup*/
+    curl_model curl = curl_post(endpoint, buffer, "");
     free(endpoint);
-    free(req.body);
+    free(curl.body);
 
-    if (req.status != -1)
+    if (curl.status != -1)
     {
-        status = parse_raw_status(&req.responseCode);
+        status = parse_raw_status(&curl.responseCode);
         return status;
     }
     else
@@ -287,19 +294,18 @@ int openTIDAL_DeleteFavoriteVideo(const size_t videoid)
 {
     int status;
     char buffer[200];
-    snprintf(buffer, sizeof(buffer), "/v1/users/%zu/favorites/videos/%zu?countryCode=%s", config.userId, videoid, config.countryCode);
+    snprintf(buffer, sizeof(buffer), "/v1/users/%zu/favorites/videos/%zu?countryCode=%s", session->userId, videoid, session->countryCode);
 
-    curl_model req = curl_delete(buffer, "", "");
-    /*Cleanup*/
-    free(req.body);
+    curl_model curl = curl_delete(buffer, "", "");
+    free(curl.body);
 
-    if (req.status != -1)
+    if (curl.status != -1)
     {
-        status = parse_raw_status(&req.responseCode);
+        status = parse_raw_status(&curl.responseCode);
         return status;
     }
     else
     {
         return -1;
     }
-}
+}*/

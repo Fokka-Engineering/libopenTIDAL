@@ -524,43 +524,46 @@ openTIDAL_GetTrack(openTIDAL_SessionContainer *session, const size_t trackid);
 
 openTIDAL_ContentContainer
 openTIDAL_GetFavoriteTracks(openTIDAL_SessionContainer *session, const int limit,
-    const int offset, const char *order, const char *orderDirection);
-
-int openTIDAL_DeleteFavoriteTrack(openTIDAL_SessionContainer *session, const size_t trackid);
-
-int openTIDAL_AddFavoriteTrack(openTIDAL_SessionContainer *session, const size_t trackid);
+        const int offset, const char *order, const char *orderDirection);
 
 
 /* Video Endpoints  */
 
 
-openTIDAL_ContentContainer openTIDAL_GetVideo(const size_t videoid);
-openTIDAL_ContentContainer openTIDAL_GetFavoriteVideos(const int limit,
-    const int offset, const char *order, const char *orderDirection);
-openTIDAL_ContentContainer openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int offset);
-openTIDAL_ContentContainer openTIDAL_GetVideoStream(const size_t videoid);
+openTIDAL_ContentContainer openTIDAL_GetVideo(openTIDAL_SessionContainer *session,
+        const size_t videoid);
 
-int openTIDAL_AddFavoriteVideo(const size_t videoid);
-int openTIDAL_DeleteFavoriteVideo(const size_t videoid);
+openTIDAL_ContentContainer openTIDAL_GetFavoriteVideos(openTIDAL_SessionContainer *session,
+        const int limit, const int offset, const char *order, const char *orderDirection);
+
+openTIDAL_ContentContainer openTIDAL_GetVideoContributors(openTIDAL_SessionContainer *session,
+        const size_t videoid, const int limit, const int offset);
+
+openTIDAL_ContentContainer openTIDAL_GetVideoStream(openTIDAL_SessionContainer *session,
+        const size_t videoid);
 
 
 /* Mix Endpoints    */
 
 
-openTIDAL_ContentContainer openTIDAL_GetMixItems(const char *mixid);
-openTIDAL_ContentContainer openTIDAL_GetFavoriteMixes();
+openTIDAL_ContentContainer
+openTIDAL_GetMixItems(openTIDAL_SessionContainer *session,
+        const char *mixid);
+
+openTIDAL_ContentContainer
+openTIDAL_GetFavoriteMixes(openTIDAL_SessionContainer *session);
 
 
 /* Search Endpoints */
 
 
-openTIDAL_ContentContainer openTIDAL_SearchAll(char *term, const int limit);
+openTIDAL_ContentContainer openTIDAL_SearchAll(openTIDAL_SessionContainer *session, char *term, const int limit);
 
 
 /* Page Endpoints */
 
 
-openTIDAL_ContentContainer openTIDAL_GetHome();
+openTIDAL_ContentContainer openTIDAL_GetHome(openTIDAL_SessionContainer *session);
 #ifdef __cplusplus
 }
 #endif

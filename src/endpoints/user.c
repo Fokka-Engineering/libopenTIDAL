@@ -27,84 +27,85 @@
 #include "../include/handles.h"
 #include "../include/openTIDAL.h"
 
-openTIDAL openTIDAL_GetUser()
+openTIDAL_ContentContainer
+openTIDAL_GetUser(openTIDAL_SessionContainer *session)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
     
     openTIDAL_StructInit(&o);
 
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    endpoint = url_cat("/v1/users/", session->userId, "", 0);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_UserModel user;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_UserContainer user;
             json_user_model processed_json = json_parse_user(input_json);
             parse_user_values(&user, &processed_json);
             o.status = 1;
             o.user = user;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
         
         o.json = input_json;
-        free(req.body);
-        return o; /*return data structure*/
-
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
 
-openTIDAL openTIDAL_GetUserSubscription()
+openTIDAL_ContentContainer
+openTIDAL_GetUserSubscription(openTIDAL_SessionContainer *session)
 {
-    openTIDAL o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/subscription", 0);
+    openTIDAL_ContentContainer o;
+    openTIDAL_CurlContainer curl;
+    char *endpoint = NULL;
     char baseparams[20];
     
     openTIDAL_StructInit(&o);
 
-    snprintf(baseparams, 20, "countryCode=%s", config.countryCode);
+    endpoint = url_cat("/v1/users/", session->userId, "/subscription", 0);
+    snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
-    curl_model req = curl_get(endpoint, baseparams);
-    free(endpoint);
-    if (req.status != -1)
-    {
-        cJSON *input_json = json_parse(req.body);
-        if (req.responseCode == 200)
-        {
-            openTIDAL_UserSubscriptionModel Value;
+    openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
+    if ( curl.status != -1 ) {
+        cJSON *input_json = NULL;
+        input_json = json_parse(curl.body);
+        
+        if ( curl.responseCode == 200 ) {
+            openTIDAL_UserSubscriptionContainer Value;
+            
             json_user_subscription_model processed_json = json_parse_user_subscription(input_json);
             parse_user_subscription_values(&Value, &processed_json);
+            
             o.status = 1;
             o.subscription = Value;
         }
-        else
-        {
-            o.status = parse_status(input_json, req, config.userId, NULL);
+        else {
+            o.status = parse_status(input_json, &curl, session->userId, NULL);
         }
         
         o.json = input_json;
-        free(req.body);
-        return o; /*return data structure*/
 
     }
-    else
-    {
+    else {
         o.status = -1;
-        free(req.body);
-        return o;
     }
+
+    free(endpoint);
+    openTIDAL_CurlRequestCleanup(&curl);
+    return o;
 }
