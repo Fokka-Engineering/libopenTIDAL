@@ -38,7 +38,7 @@ openTIDAL_GetPlaylist(openTIDAL_SessionContainer *session, const char *playlisti
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 3);
 
-    endpoint = url_cat_str("/v1/playlists/", playlistid, "");
+    endpoint = url_cat_str(session, "/v1/playlists/", playlistid, "");
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0); 
@@ -81,7 +81,7 @@ openTIDAL_GetPlaylistItems(openTIDAL_SessionContainer *session,
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat_str("/v1/playlists/", playlistid, "/items");
+    endpoint = url_cat_str(session, "/v1/playlists/", playlistid, "/items");
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
         limit, offset);
 
@@ -145,7 +145,7 @@ openTIDAL_GetFavoritePlaylists(openTIDAL_SessionContainer *session,
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 3);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/playlistsAndFavoritePlaylists", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/playlistsAndFavoritePlaylists", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                          session->countryCode, limit, offset, order, orderDirection);
 
@@ -210,7 +210,7 @@ openTIDAL_GetPlaylistETag(openTIDAL_SessionContainer *session,
     char *endpoint;
     char baseparams[20];
 
-    endpoint = url_cat_str("/v1/playlists/", playlistid, "");
+    endpoint = url_cat_str(session, "/v1/playlists/", playlistid, "");
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "HEAD", endpoint, baseparams, NULL, 0, 0);
@@ -397,7 +397,7 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
 /*openTIDAL_ContentContainer openTIDAL_CreatePlaylist(const char *title, const char *description)
 {
     openTIDAL_ContentContainer o;
-    char *endpoint = url_cat("/v1/users/", config.userId, "/playlists", 1);
+    char *endpoint = url_cat(session, "/v1/users/", config.userId, "/playlists", 1);
     char *data = malloc(strlen(title)+strlen(description)+7+14+1);
     strcpy(data, "title=");
     strcat(data, title);
@@ -443,7 +443,7 @@ int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, con
 
 int openTIDAL_AddFavoritePlaylist(const char *playlistid)
 {
-    char *endpoint = url_cat("/v1/users/", config.userId, "/favorites/playlists", 1);
+    char *endpoint = url_cat(session, "/v1/users/", config.userId, "/favorites/playlists", 1);
     int status;
     char *data = malloc(strlen(playlistid)+10+25+1);
     strcpy(data, "uuids=");

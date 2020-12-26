@@ -37,7 +37,7 @@ openTIDAL_GetUser(openTIDAL_SessionContainer *session)
     
     openTIDAL_StructInit(&o);
 
-    endpoint = url_cat("/v1/users/", session->userId, "", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
@@ -77,7 +77,7 @@ openTIDAL_GetUserSubscription(openTIDAL_SessionContainer *session)
     
     openTIDAL_StructInit(&o);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/subscription", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/subscription", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);

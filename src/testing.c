@@ -2,18 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include "../src/include/test.h"
+#include "../src/include/openTIDAL.h"
 
-const char *access_token = "";
-CURL *curl = NULL;
+CURL *curlTwo = NULL;
 
 struct memory {
     char *response;
     size_t size;
 };
-
-typedef struct response {
-    char *memory;
-} response;
 
 static size_t cb(void *data, size_t size, size_t nmemb, void *userp)
 {
@@ -39,62 +36,44 @@ size_t cb_dummy(char *ptr, size_t size, size_t nmemb, void *userp) {
 void http_get(response *memory)
 {
     CURLcode res;
-
-    if(curl) {
-        struct curl_slist *chunk = NULL;
+    curl_global_init(CURL_GLOBAL_ALL);
+    curlTwo = curl_easy_init();
+    if(curlTwo) {
         struct memory memchunk;
        
         memchunk.response = malloc(1);
         memchunk.size = 0; 
         /* Add a custom header */
-        chunk = curl_slist_append(chunk, access_token);
     
         /* set our custom set of headers */
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
         /* Enable verbose mode */
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(curlTwo, CURLOPT_VERBOSE, 1L);
 
         /* First set the URL that is about to receive our GET. This URL can
              just as well be a https:// URL if that is what should receive the
              data. */ 
-        //curl_easy_setopt(curl, CURLOPT_URL, "https://api.tidal.com/v1/users/102489236/favorites/albums?countryCode=DE");
-        curl_easy_setopt(curl, CURLOPT_URL, "https://nuntius.dev");
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);        
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
-
+        //curl_easy_setopt(curlTwo, CURLOPT_URL, "https://api.tidal.com/v1/users/102489236/favorites/albums?countryCode=DE");
+        curl_easy_setopt(curlTwo, CURLOPT_URL, "https://nuntius.dev");
+        curl_easy_setopt(curlTwo, CURLOPT_HTTPGET, 1L);        
+        curl_easy_setopt(curlTwo, CURLOPT_CUSTOMREQUEST, NULL);
+        curl_easy_setopt(curlTwo, CURLOPT_VERBOSE, 1L);
         /* send all data to this function  */
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
+        curl_easy_setopt(curlTwo, CURLOPT_WRITEFUNCTION, cb);
 
         /* we pass our 'chunk' struct to the callback function */
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memchunk);
+        curl_easy_setopt(curlTwo, CURLOPT_WRITEDATA, &memchunk);
 
         /* Perform the request, res will get the return code */ 
-        res = curl_easy_perform(curl);
+        res = curl_easy_perform(curlTwo);
         /* Check for errors */ 
         if(res != CURLE_OK)
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                             curl_easy_strerror(res));
  
         /* free the custom headers */
-        curl_slist_free_all(chunk);
-       
+        printf("Pointer %p\n", memory->memory); 
         memory->memory = memchunk.response;
     }
 }
 
-int main()
-{
-    /* In windows, this will init the winsock stuff */ 
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl = curl_easy_init();
-
-    response mem;
-
-    http_get(&mem); 
-    printf("%s\n", mem.memory);
-    /* always cleanup */ 
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-    return 0;
-}

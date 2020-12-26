@@ -83,7 +83,7 @@ openTIDAL_GetFavoriteVideos(openTIDAL_SessionContainer *session, const int limit
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/videos", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/videos", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                          session->countryCode, limit, offset, order, orderDirection);
     
@@ -270,7 +270,7 @@ openTIDAL_GetVideoStream(openTIDAL_SessionContainer *session, const size_t video
 
 /*int openTIDAL_AddFavoriteVideo(const size_t videoid)
 {
-    char *endpoint = url_cat("/v1/users/", session->userId, "/favorites/videos", 1);
+    char *endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/videos", 1);
     int status;
     char buffer[100];
     snprintf(buffer, sizeof(buffer), "videoIds=%zu&onArtifactNotFound=FAIL", videoid);

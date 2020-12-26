@@ -118,7 +118,7 @@ openTIDAL_AuthCreateBearerToken(openTIDAL_SessionContainer *session, char *devic
             
             o.token = Value;
             /* get subscription info */
-            openTIDAL_ContentContainer sub = openTIDAL_GetUserSubscription();
+            openTIDAL_ContentContainer sub = openTIDAL_GetUserSubscription(session);
             if ( sub.status == 1 ) {
                 if ( strcmp(sub.subscription.highestSoundQuality, "HIGH") == 0 ) {
                     session->audioQuality = "HIGH";

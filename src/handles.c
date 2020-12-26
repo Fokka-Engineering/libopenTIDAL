@@ -33,7 +33,7 @@ CURL *curl = NULL;
 
 struct openTIDAL_CurlMemory
 {
-    char *response;
+    char *memory;
     size_t size;
 };
 
@@ -43,14 +43,17 @@ openTIDAL_CurlCallbackFunction(void *data, size_t size, size_t nmemb, void *user
     size_t realsize = size * nmemb;
     struct openTIDAL_CurlMemory *mem = (struct openTIDAL_CurlMemory *)userp;
   
-    char *ptr = realloc(mem->response, mem->size + realsize + 1);
+    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
     if(ptr == NULL)
-            return 0;  /* out of memory! */
+    {
+        openTIDAL_ParseVerbose("cURL Handle", "Not enough memory (realloc returned NULL)", 1);
+        return 0;  
+    }
 
-    mem->response = ptr;
-    memcpy(&(mem->response[mem->size]), data, realsize);
+    mem->memory = ptr;
+    memcpy(&(mem->memory[mem->size]), data, realsize);
     mem->size += realsize;
-    mem->response[mem->size] = 0;
+    mem->memory[mem->size] = 0;
 
     return realsize;
 }
@@ -61,11 +64,13 @@ openTIDAL_CurlCallBackDummyFunction(void *data, size_t size, size_t nmemb, void 
     return size * nmemb;
 }
 
-static void openTIDAL_CurlConcatenateAuthHeader(openTIDAL_SessionContainer *session, char *buffer)
+static void openTIDAL_CurlConcatenateAuthHeader(openTIDAL_SessionContainer *session, char **header)
 {
+    openTIDAL_ParseVerbose("cURL Handle", "Concatenate AuthHeader", 2);
     const char key[] = "Authentication: ";
     const char keyDemo[] = "X-Tidal-Token: ";
     const char authType[] = "Bearer ";
+    char *buffer = NULL;
 
     if ( !session->demoEnabled ) {
         buffer = malloc(strlen(key) + strlen(authType) + strlen(session->accessToken) + 3);
@@ -78,12 +83,16 @@ static void openTIDAL_CurlConcatenateAuthHeader(openTIDAL_SessionContainer *sess
         strcpy(buffer, keyDemo);
         strcat(buffer, session->clientId);
     }
+
+    *header = buffer;
 }
 
 static void
-openTIDAL_CurlConcatenateUrl(openTIDAL_SessionContainer *session, char *buffer, const char *endpoint,
+openTIDAL_CurlConcatenateUrl(openTIDAL_SessionContainer *session, char **url, const char *endpoint,
         const char *parameter, const int isAuth)
 {
+    openTIDAL_ParseVerbose("cURL Handle", "Concatenate Url", 2);
+    char *buffer = NULL;
     const char parameterEncoding[] = "?";
     
     if ( !isAuth ) {
@@ -116,6 +125,7 @@ openTIDAL_CurlConcatenateUrl(openTIDAL_SessionContainer *session, char *buffer, 
             strcat(buffer, endpoint);
         }
     }
+    *url = buffer;
 }
 
 static void openTIDAL_CurlModelInit(openTIDAL_CurlContainer *model)
@@ -124,6 +134,7 @@ static void openTIDAL_CurlModelInit(openTIDAL_CurlContainer *model)
     model->header = NULL;
     model->responseCode = 0;
     model->status = -1;
+    openTIDAL_ParseVerbose("cURL Handle", "Initialised Curl Container", 2);
 }
 
 void openTIDAL_CurlCleanup()
@@ -144,48 +155,66 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
 {
     CURLcode res;
     
+    openTIDAL_CurlModelInit(model);
+
     if ( !curl ) {
+        openTIDAL_ParseVerbose("cURL Handle", "Initialise cURL Global and cURL Easy Handle", 2);
         curl_global_init(CURL_GLOBAL_ALL);
         curl = curl_easy_init();
     }
     
     if ( curl ) {
+        openTIDAL_ParseVerbose("cURL Handle", "Handle is initialised. Prepare cURL Easy Request", 2);
         struct curl_slist *chunk = NULL;
         struct openTIDAL_CurlMemory memchunk;
         char *url = NULL;
         char *header = NULL;
-       
-        openTIDAL_CurlConcatenateUrl(session, url, endpoint, parameter, isAuth);
-        openTIDAL_CurlConcatenateAuthHeader(session, header);
-        openTIDAL_CurlModelInit(model);
+    
+        /* check if access_token has expired  */
+        openTIDAL_SessionRefresh(session);
+        memchunk.memory = malloc(1);
+        memchunk.size = 0;
 
+        openTIDAL_CurlConcatenateUrl(session, &url, endpoint, parameter, isAuth);
+        openTIDAL_CurlConcatenateAuthHeader(session, &header);
+
+        openTIDAL_ParseVerbose("cURL Handle", "Url", 3);
+        openTIDAL_ParseVerbose("cURL Handle", url, 3);
+        openTIDAL_ParseVerbose("cURL Handle", "Header", 3);
+        openTIDAL_ParseVerbose("cURL Handle", header, 3);
+        openTIDAL_ParseVerbose("cURL Handle", "Begin curl_easy_opt configuration", 2); 
         /* Add auth header */
         chunk = curl_slist_append(chunk, header);
-        
+       
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
         curl_easy_setopt(curl, CURLOPT_URL, url);
-        
+       
+
         if( strncmp(type, "GET", 4) == 0 ) {
+            openTIDAL_ParseVerbose("cURL Handle", "Perform a GET Request", 2);
             curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
             curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if ( strncmp(type, "POST", 5 ) == 0 ) {
+            openTIDAL_ParseVerbose("cURL Handle", "Perform a POST Request", 2);
             curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if ( strncmp(type, "DELETE", 7 ) == 0) {
+            openTIDAL_ParseVerbose("cURL Handle", "Perform a DELETE Request", 2);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
         else if ( strncmp(type, "PUT", 4 ) == 0) {
+            openTIDAL_ParseVerbose("cURL Handle", "Perform a PUT Request", 2);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
         }
        
         if ( !isDummy ) { 
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallbackFunction);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) &memchunk);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memchunk);
         }
         else {
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallBackDummyFunction);
@@ -200,20 +229,26 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         }
 
+        openTIDAL_ParseVerbose("cURL Handle", "End curl_easy_opt configuration", 2); 
+        openTIDAL_ParseVerbose("cURL Handle", "Call curl_easy_perform", 2);
         res = curl_easy_perform(curl);
 
         if ( res != CURLE_OK ) {
             openTIDAL_ParseVerbose("cURL Handle", "CURLE_OK check failed", 2);
         }
         else {
+            long http_code = 0;
+            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
+            openTIDAL_ParseVerbose("cURL Handle", "CURLE_OK check success", 2);
             model->status = 0;
-            model->body = memchunk.response;
-            curl_easy_setopt(curl, CURLINFO_RESPONSE_CODE, &model->responseCode); 
+            model->body = memchunk.memory;
+            printf("%ld\n", http_code);
         }
 
         /* cleanup */
         curl_slist_free_all(chunk);
         free(url);
         free(header);
+        openTIDAL_ParseVerbose("cURL Handle", "openTIDAL_CurlRequest Finished", 2);
     }
 }

@@ -27,7 +27,8 @@
 #include "include/openTIDAL.h"
 
 /* concatenate endpoint with an id  */
-char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appendCountryCode)
+char *url_cat(openTIDAL_SessionContainer *session, const char *strOne, const size_t id,
+        const char *strTwo, int appendCountryCode)
 {
     char *urlcat = NULL;
     char buffer[20];
@@ -40,14 +41,15 @@ char *url_cat(const char *strOne, const size_t id, const char *strTwo, int appen
     if (appendCountryCode != 0)
     {
         strcat(urlcat, "?countryCode=");
-        strcat(urlcat, config.countryCode);
+        strcat(urlcat, session->countryCode);
     }
 
     return urlcat;
 }
 
 /* concatenate endpoint with an uuid */
-char *url_cat_str(const char *strOne, const char *id, const char *strTwo)
+char *url_cat_str(openTIDAL_SessionContainer *session, const char *strOne,
+        const char *id, const char *strTwo)
 {
     char *urlcat = NULL;
     urlcat = malloc(strlen(strOne)+1+strlen(id)+strlen(strTwo));

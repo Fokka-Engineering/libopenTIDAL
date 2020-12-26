@@ -37,7 +37,7 @@ openTIDAL_GetArtist(openTIDAL_SessionContainer *session, const size_t artistid)
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 2);
 
-    endpoint = url_cat("/v1/artists/", artistid, "", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
@@ -80,7 +80,7 @@ openTIDAL_GetArtistLink(openTIDAL_SessionContainer *session,
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 7); 
 
-    endpoint = url_cat("/v1/artists/", artistid, "/links", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "/links", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
         limit, offset);
     
@@ -145,7 +145,7 @@ openTIDAL_GetArtistMix(openTIDAL_SessionContainer *session, const size_t artisti
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 4);
 
-    endpoint = url_cat("/v1/artists/", artistid, "/mix", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "/mix", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
@@ -188,7 +188,7 @@ openTIDAL_GetArtistTopTracks(openTIDAL_SessionContainer *session,const size_t ar
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/artists/", artistid, "/toptracks", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "/toptracks", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
     
@@ -253,7 +253,7 @@ openTIDAL_GetArtistVideos(openTIDAL_SessionContainer *session, const size_t arti
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/artists/", artistid, "/videos", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "/videos", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
     
@@ -317,7 +317,7 @@ openTIDAL_GetArtistAlbums(openTIDAL_SessionContainer *session, const size_t arti
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 0);
 
-    endpoint = url_cat("/v1/artists/", artistid, "/albums", 0);
+    endpoint = url_cat(session, "/v1/artists/", artistid, "/albums", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
     
@@ -381,7 +381,7 @@ openTIDAL_GetFavoriteArtists(openTIDAL_SessionContainer *session, const int limi
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 2);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/artists", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/artists", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                          session->countryCode, limit, offset, order, orderDirection);
 
@@ -445,7 +445,7 @@ int openTIDAL_AddFavoriteArtist(openTIDAL_SessionContainer *session, const size_
     char buffer[60];
     char *endpoint = NULL;
 
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/artists", 1);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/artists", 1);
     snprintf(buffer, 60, "artistIds=%zu&onArtifactNotFound=FAIL", artistid);
 
     openTIDAL_CurlRequest(session, &curl, "POST", endpoint, NULL, buffer, 0, 1);

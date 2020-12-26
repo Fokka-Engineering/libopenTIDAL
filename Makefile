@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fPIC -Wall -Werror
+CFLAGS = -fPIC -Werror
 RM = rm -f
 
 LDFLAGS = -shared -lcurl

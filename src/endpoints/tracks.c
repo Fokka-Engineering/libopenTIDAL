@@ -39,7 +39,7 @@ openTIDAL_GetTrack(openTIDAL_SessionContainer *session, const size_t trackid)
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/tracks/", trackid, "", 0);
+    endpoint = url_cat(session, "/v1/tracks/", trackid, "", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
 
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
@@ -83,7 +83,7 @@ openTIDAL_GetFavoriteTracks(openTIDAL_SessionContainer *session, const int limit
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/tracks", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/tracks", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
         session->countryCode, limit, offset, order, orderDirection);
     
@@ -151,7 +151,7 @@ openTIDAL_GetTrackContributors(openTIDAL_SessionContainer *session,
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 5);
 
-    endpoint = url_cat("/v1/tracks/", trackid, "/contributors", 0);
+    endpoint = url_cat(session, "/v1/tracks/", trackid, "/contributors", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d",
             session->countryCode, limit, offset);
     
@@ -212,7 +212,7 @@ openTIDAL_GetTrackMix(openTIDAL_SessionContainer *session, const size_t trackid)
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 4);
     
-    endpoint = url_cat("/v1/tracks/", trackid, "/mix", 0);
+    endpoint = url_cat(session, "/v1/tracks/", trackid, "/mix", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
@@ -253,7 +253,7 @@ openTIDAL_GetTrackStream(openTIDAL_SessionContainer *session, const size_t track
     
     openTIDAL_StructInit(&o);
 
-    endpoint = url_cat("/v1/tracks/", trackid, "/playbackinfopostpaywall", 0);
+    endpoint = url_cat(session, "/v1/tracks/", trackid, "/playbackinfopostpaywall", 0);
     snprintf(buffer, 200, "countryCode=%s&audioquality=%s&assetpresentation=%s&playbackmode=%s",
         session->countryCode, session->audioQuality, "FULL", "STREAM");
     
@@ -310,7 +310,7 @@ openTIDAL_GetTrackStream(openTIDAL_SessionContainer *session, const size_t track
 
 /*int openTIDAL_AddFavoriteTrack(const size_t trackid)
 {
-    char *endpoint = url_cat("/v1/users/", session->userId, "/favorites/tracks", 1);
+    char *endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/tracks", 1);
     int status;
     char buffer[100];
     snprintf(buffer, 100, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);

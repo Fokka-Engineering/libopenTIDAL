@@ -285,7 +285,7 @@ void openTIDAL_SessionRefresh(openTIDAL_SessionContainer *session)
     else
     {
         openTIDAL_ParseVerbose("Session", "Start AccessToken renewal process", 2);
-        openTIDAL_ContentContainer res = openTIDAL_RefreshLoginToken(session->refreshToken);
+        openTIDAL_ContentContainer res = openTIDAL_AuthRefreshBearerToken(session, session->refreshToken);
         if (res.status == 1)
         {
             FILE *fp = NULL;

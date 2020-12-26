@@ -37,16 +37,20 @@ openTIDAL_GetAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 0);
 
-    endpoint = url_cat("/v1/albums/", albumid, "", 0);
+    endpoint = url_cat(session, "/v1/albums/", albumid, "", 0);
     snprintf(baseparams, 20, "countryCode=%s", session->countryCode);
     
     openTIDAL_CurlRequest(session, &curl, "GET", endpoint, baseparams, NULL, 0, 0);
     free(endpoint);
     if ( curl.status != -1 ) {
         cJSON *input_json = NULL;
+        printf("Print Response\n");
+        printf("%p\n", curl.body);
+        printf("Allocate JSON\n");
         input_json = json_parse(curl.body);
         
         if ( curl.responseCode == 200 ) {
+            printf("Proceed\n");
             openTIDAL_AlbumContainer album;
             json_album_model processed_json = json_parse_album(input_json);
             parse_album_values(&album, &processed_json);
@@ -63,7 +67,7 @@ openTIDAL_GetAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
     else {
         o.status = -1;
     }
-
+    
     openTIDAL_CurlRequestCleanup(&curl);
     return o;
 }
@@ -79,7 +83,7 @@ openTIDAL_ContentContainer openTIDAL_GetAlbumItems(openTIDAL_SessionContainer *s
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 1);
 
-    endpoint = url_cat("/v1/albums/", albumid, "/items", 0);
+    endpoint = url_cat(session, "/v1/albums/", albumid, "/items", 0);
     snprintf(baseparams, 50, "countryCode=%s&limit=%d&offset=%d", session->countryCode,
                         limit, offset);
 
@@ -145,7 +149,7 @@ openTIDAL_GetFavoriteAlbums(openTIDAL_SessionContainer *session, const int limit
     openTIDAL_StructInit(&o);
     openTIDAL_StructAlloc(&o, 0);
 
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/albums", 0);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/albums", 0);
     snprintf(baseparams, 150, "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
         session->countryCode, limit, offset, order, orderDirection);
     
@@ -209,7 +213,7 @@ int openTIDAL_AddFavoriteAlbum(openTIDAL_SessionContainer *session, const size_t
     char buffer[60];
     
     snprintf(buffer, 60, "albumIds=%zu&onArtifactNotFound=FAIL", albumid);
-    endpoint = url_cat("/v1/users/", session->userId, "/favorites/albums", 1);
+    endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/albums", 1);
 
     openTIDAL_CurlRequest(session, &curl, "POST", endpoint, NULL, buffer, 0, 1);
     free(endpoint);
