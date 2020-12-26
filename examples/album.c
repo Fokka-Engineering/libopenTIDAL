@@ -12,8 +12,8 @@ int main()
     //openTIDAL_Init(NULL);
     
     openTIDAL_Verbose(3);
-    openTIDAL_SessionInit(&session, NULL);
-    //openTIDAL_SessionInit(&session, "/Users/hugo/Documents/oT-config");
+    //openTIDAL_SessionInit(&session, NULL);
+    openTIDAL_SessionInit(&session, "/Users/hugo/Documents/oT-config");
 
 
     printf("\nGet Album\n");

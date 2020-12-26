@@ -1,0 +1,30 @@
+[Session] Initialise session structure.
+[Session] Read & allocate persistent stream from file.
+[Session] Initialised openTIDAL.
+
+Get Album
+[Struct] Initialise openTIDAL_ContentContainer struct.
+[Struct] Allocate array (identifier: 0) in heap.
+[cURL Handle] Initialised Curl Container.
+[cURL Handle] Initialise cURL Global and cURL Easy Handle.
+[cURL Handle] Handle is initialised. Prepare cURL Easy Request.
+[Session] Difference timestamp and currentTime: 25.
+[Session] Start AccessToken renewal process.
+[cURL Handle] Initialised Curl Container.
+[cURL Handle] Handle is initialised. Prepare cURL Easy Request.
+[cURL Handle] Concatenate Url.
+[cURL Handle] Concatenate AuthHeader.
+[cURL Handle] Url.
+[cURL Handle] https://auth.tidal.com/v1/oauth2/token.
+[cURL Handle] Header.
+[cURL Handle] Authorization: Bearer eyJraWQiOiI4UUhqclVzdSIsImFsZyI6IlJTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxMDI0ODkyMzYsInNjb3BlIjoicl91c3Igd191c3IiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjIzMjYsImV4cCI6MTYwOTYxOTk5Miwic2lkIjoiYzU3ZjRjMzAtZGQ5NS00NDJkLWE2MjYtY2ZjMjJhMmE4NDQwIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLnRpZGFsLmNvbS92MSJ9.TAzMYZg0YKW1kZYDYdq_GIkwuk3SC91s09-yCw8DDSwVVO8CR83JQxAiLOR3Nuiy7cRfN8NJubdbexiGiDy_Ra1VaLzgwjqMhQeE65SHJ2W5ZRRIMcapp1nV-N05B65EAi4mYLXHEeIV4_hmvwzDJmNz1SnK1fNVQXneRb0h8WL0kU1jcjlk8WmLfC9hmmxtomrhrc9XYBwJ4Mvo2WKnKQXELQ4acbxKlZaeYF3dk8vVZY0O67S43FqBA-B_OBeC5KeuynCa-rfBN0tgQvvcdkc6tUolkojhXL1-izDJlf9aM0TVUij9eaOLH5PNKDHDnbop3ke-igia3Nq0AIqMMw.
+[cURL Handle] Begin curl_easy_opt configuration.
+[cURL Handle] Perform a POST Request.
+[cURL Handle] End curl_easy_opt configuration.
+[cURL Handle] Call curl_easy_perform.
+[cURL Handle] CURLE_OK check success.
+200
+[cURL Handle] openTIDAL_CurlRequest Finished.
+Stuff
+[Session] Created new json stream.
+[Session] AccessToken renewal successful.

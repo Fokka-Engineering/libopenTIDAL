@@ -33,7 +33,7 @@ void parse_bool(cJSON *object, int *number);
 void parse_string(cJSON *object, char **string);
 
 int parse_status(cJSON *input_json, openTIDAL_CurlContainer *Value, const size_t id, const char *uuid);
-int parse_raw_status(int *code);
+int parse_raw_status(long *code);
 int parse_unauthorized(cJSON *input_json, const size_t id);
 int parse_notfound(cJSON *input_json, const size_t id, const char *uuid);
 int parse_preconditionfailed(cJSON *input_json, const size_t id, const char *uuid);

@@ -49,7 +49,7 @@ int parse_status(cJSON *input_json, openTIDAL_CurlContainer *Value, const size_t
     return status;
 }
 
-int parse_raw_status(int *code)
+int parse_raw_status(long *code)
 {
     int status;
     if (*code == 200 || *code == 204 || *code == 201)

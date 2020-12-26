@@ -272,7 +272,7 @@ void openTIDAL_SessionRefresh(openTIDAL_SessionContainer *session)
         diff_t = difftime(session->expiresIn, currentTime);
     }
 
-    char buffer[25];
+    char buffer[50];
     snprintf(buffer, sizeof(buffer), "Difference timestamp and currentTime: %zu", (size_t) diff_t);
     openTIDAL_ParseVerbose("Session", buffer, 2); 
     

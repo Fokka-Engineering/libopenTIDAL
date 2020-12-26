@@ -26,7 +26,7 @@
 typedef struct openTIDAL_CurlContainer 
 {
     int status; /* custom status codes for error handling  */
-    int responseCode;
+    long responseCode;
     char *body;
     char *header;
 } openTIDAL_CurlContainer;

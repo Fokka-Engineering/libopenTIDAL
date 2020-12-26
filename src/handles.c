@@ -67,7 +67,7 @@ openTIDAL_CurlCallBackDummyFunction(void *data, size_t size, size_t nmemb, void 
 static void openTIDAL_CurlConcatenateAuthHeader(openTIDAL_SessionContainer *session, char **header)
 {
     openTIDAL_ParseVerbose("cURL Handle", "Concatenate AuthHeader", 2);
-    const char key[] = "Authentication: ";
+    const char key[] = "Authorization: ";
     const char keyDemo[] = "X-Tidal-Token: ";
     const char authType[] = "Bearer ";
     char *buffer = NULL;
@@ -171,7 +171,10 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
         char *header = NULL;
     
         /* check if access_token has expired  */
-        openTIDAL_SessionRefresh(session);
+        if ( !isAuth ) {
+            openTIDAL_SessionRefresh(session);
+        }
+
         memchunk.memory = malloc(1);
         memchunk.size = 0;
 
@@ -183,10 +186,7 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
         openTIDAL_ParseVerbose("cURL Handle", "Header", 3);
         openTIDAL_ParseVerbose("cURL Handle", header, 3);
         openTIDAL_ParseVerbose("cURL Handle", "Begin curl_easy_opt configuration", 2); 
-        /* Add auth header */
-        chunk = curl_slist_append(chunk, header);
-       
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+        
         curl_easy_setopt(curl, CURLOPT_URL, url);
        
 
@@ -224,6 +224,13 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
             curl_easy_setopt(curl, CURLOPT_USERNAME, session->clientId);
             curl_easy_setopt(curl, CURLOPT_PASSWORD, session->clientSecret);
         }
+        else {
+            /* Add auth header */
+            chunk = curl_slist_append(chunk, header);
+       
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+
+        }
 
         if ( openTIDAL_GetLogLevel() == 3 ) {
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -242,7 +249,7 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
             openTIDAL_ParseVerbose("cURL Handle", "CURLE_OK check success", 2);
             model->status = 0;
             model->body = memchunk.memory;
-            printf("%ld\n", http_code);
+            model->responseCode = http_code;
         }
 
         /* cleanup */

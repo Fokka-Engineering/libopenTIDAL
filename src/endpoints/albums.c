@@ -44,13 +44,9 @@ openTIDAL_GetAlbum(openTIDAL_SessionContainer *session, const size_t albumid)
     free(endpoint);
     if ( curl.status != -1 ) {
         cJSON *input_json = NULL;
-        printf("Print Response\n");
-        printf("%p\n", curl.body);
-        printf("Allocate JSON\n");
         input_json = json_parse(curl.body);
         
         if ( curl.responseCode == 200 ) {
-            printf("Proceed\n");
             openTIDAL_AlbumContainer album;
             json_album_model processed_json = json_parse_album(input_json);
             parse_album_values(&album, &processed_json);
