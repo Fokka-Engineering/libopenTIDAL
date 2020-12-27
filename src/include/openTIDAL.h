@@ -31,20 +31,213 @@ extern "C"
 {
 #endif
 
-typedef struct openTIDAL_LoginCodeContainer openTIDAL_LoginCodeContainer;
-typedef struct openTIDAL_LoginTokenContainer openTIDAL_LoginTokenContainer; 
-typedef struct openTIDAL_UserContainer openTIDAL_UserContainer;
-typedef struct openTIDAL_UserSubscriptionContainer openTIDAL_UserSubscriptionContainer;
-typedef struct openTIDAL_PlaylistContainer openTIDAL_PlaylistContainer;
-typedef struct openTIDAL_ItemsContainer openTIDAL_ItemsContainer;
-typedef struct openTIDAL_AlbumContainer openTIDAL_AlbumContainer;
-typedef struct openTIDAL_CreditsContainer openTIDAL_CreditsContainer;
-typedef struct openTIDAL_ArtistContainer openTIDAL_ArtistContainer;
-typedef struct openTIDAL_LinkContainer openTIDAL_LinkContainer;
-typedef struct openTIDAL_ETagContainer openTIDAL_ETagContainer;
-typedef struct openTIDAL_MixContainer openTIDAL_MixContainer;
-typedef struct openTIDAL_ContributorContainer openTIDAL_ContributorContainer;
-typedef struct openTIDAL_StreamContainer openTIDAL_StreamContainer;
+typedef struct openTIDAL_LoginCodeContainer {
+    char *deviceCode; /* deviceCode is always 36 Chars long */
+    char *userCode; /* userCode is always 5 Chars long */
+    char *verificationUri;
+    char *verificationUriComplete;
+    size_t timeFrame;
+    time_t expires_in;
+    int interval;
+} openTIDAL_LoginCodeContainer;
+
+typedef struct openTIDAL_LoginTokenContainer { 
+    time_t expires_in;
+    char *access_token;
+    char *refresh_token;
+    char *token_type;
+    size_t timeFrame;
+    char *email;
+    char *countryCode;
+    char *fullName;
+    char *firstName;
+    char *lastName;
+    char *nickname;
+    char *username;
+    char *imageId;
+    size_t created;
+    size_t updated;
+    size_t userId;
+    size_t facebookUid;
+    char *appleUid;
+    char *error;
+} openTIDAL_LoginTokenContainer;
+
+typedef struct openTIDAL_UserContainer {
+    size_t id;
+    char *username;
+    char *firstName;
+    char *lastName;
+    char *email;
+    char *countryCode;
+    char *created;
+    char *picture; /* Always 36 Chars Long */
+    int newsletter;
+    int acceptedEULA;
+    char *gender;
+    char *dateOfBirth;
+    size_t facebookUid;
+    char *appleUid;
+} openTIDAL_UserContainer;
+
+typedef struct openTIDAL_UserSubscriptionContainer {
+    char *validUntil;
+    char *accountStatus;
+    char *type;
+    size_t offlineGracePeriod;
+    char *highestSoundQuality;
+    int premiumAccess;
+    int canGetTrial;
+    char *paymentType;
+} openTIDAL_UserSubscriptionContainer;
+
+typedef struct openTIDAL_PlaylistContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int numberOfTracks;
+    int numberOfVideos;
+    char *uuid; /* Always 36 Chars Long */
+    char *title;
+    char *description;
+    size_t duration;
+    char *lastUpdated;
+    char *created;
+    int publicPlaylist;
+    char *image;
+    char *squareImage;
+    char *type;
+    int popularity;
+} openTIDAL_PlaylistContainer;
+
+typedef struct openTIDAL_ItemsContainer { 
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int subArraySize; /* 2nd ArraySize of Artist Array */
+    size_t id;
+    char *title;
+    int explicitItem;
+    size_t duration;
+    int allowStreaming;
+    int streamReady;
+    double replayGain;
+    double peak;
+    int popularity;
+    int trackNumber;
+    int volumeNumber;
+    char *version;
+    size_t *artistId;
+    char **artistName;
+    size_t albumId;
+    char *albumTitle;
+    char *cover;
+    char *videoCover;
+    char *imageId;
+    char *audioQuality;
+    char *quality;
+    int isVideo;
+} openTIDAL_ItemsContainer;
+
+typedef struct openTIDAL_AlbumContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    int subArraySize; /* 2nd ArraySize of Artist Array */
+    int explicitItem;
+    size_t duration;
+    int allowStreaming;
+    int streamReady;
+    char *copyright;
+    int numberOfTracks;
+    int numberOfVideos;
+    int numberOfVolumes;
+    int popularity;
+    size_t *artistId; /* 2D-Array for (featured) Artists    */
+    char **artistName;
+    char *quality;
+    char *version;
+    size_t id;
+    char *title;
+    char *cover;
+    char *videoCover;
+    char *releaseDate;
+} openTIDAL_AlbumContainer;
+
+typedef struct openTIDAL_CreditsContainer {
+    int limit;
+    int offset;
+    char *type;
+    char *name;
+    size_t id;
+
+} openTIDAL_CreditsContainer;
+
+typedef struct openTIDAL_ArtistContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    size_t id;
+    char *name;
+    char *picture;
+    int popularity;
+} openTIDAL_ArtistContainer;
+
+typedef struct openTIDAL_LinkContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *url;
+    char *siteName;
+    char *source;
+} openTIDAL_LinkContainer;
+
+typedef struct openTIDAL_ETagContainer {
+    int status;
+    char *id;
+} openTIDAL_ETagContainer;
+
+typedef struct openTIDAL_MixContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *id;
+    char *title;
+    char *subTitle;
+    int smallImageWidth;
+    int smallImageHeight;
+    char *smallImageUrl;
+    int mediumImageWidth;
+    int mediumImageHeight;
+    char *mediumImageUrl;
+    int largeImageWidth;
+    int largeImageHeight;
+    char *largeImageUrl;
+    char *mixType;
+} openTIDAL_MixContainer;
+
+typedef struct openTIDAL_ContributorContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *name;
+    char *role;
+} openTIDAL_ContributorContainer;
+
+typedef struct openTIDAL_StreamContainer {
+    char *url;
+    size_t trackId;
+    size_t videoId;
+    char *assetPresentation;
+    char *audioQuality;
+    char *audioMode;
+    char *videoQuality;
+    char *manifestMimeType;
+    char *manifest; //Pointer to temporary allocated Manifest
+    char *mimeType;
+    char *codec;
+    char *encryptionType;
+} openTIDAL_StreamContainer;
 
 /* implementing personalised modules of home page api */
 typedef struct openTIDAL_PageHomeContainer
@@ -99,9 +292,125 @@ typedef struct openTIDAL_PageHomeContainer
 
 } openTIDAL_PageHomeContainer;
 
-typedef struct openTIDAL_SessionContainer openTIDAL_SessionContainer;
-/* main structure with dynamic arrays (See memory management of main struct) */
-typedef struct openTIDAL_ContentContainer openTIDAL_ContentContainer;
+typedef struct openTIDAL_SessionContainer {
+    /* File location of persistent session config.
+     * If the pointer is NULL restricted authorization
+     * is enabled. */
+    char *location;
+    
+    /* Stream of a newly created json session config.
+     * Allocated in heap if a new persistent config is
+     * created or updated.  */
+    char *newStream;
+    /* Void pointer to allocated session config. Typecasted
+     * cJSON Structure. If a persistent session config is
+     * specified the file is loaded into heap and parsed with
+     * cJSON. The cJSON Structure gets deallocated with
+     * openTIDAL_SessionCleanup */
+    void *stream;
+    /* Part of the SessionAuthAutoRenewal process. Typecasted
+     * cJSON Structure. Allocated after refresh request is performed.
+     * Old cJSON Structure from previous request will be deallocated
+     * prior. */
+    void *refreshRequest;
+    /* Part of the AuthCreateBearerToken process. Typecasted cJSON
+     * Structure. Allocated after request is performed. Only used
+     * after persistent config creation. */ 
+    void *tokenRequest;
+
+    /* Boolean to specifiy state of authorization.
+     * 
+     * If no file location is specified cURL performs
+     * a clientId-based authorization (x-tidal-token: {client_id}). 
+     * 
+     * User-based and stream requests are disabled and result in a 401.
+     * A 30s preview of a track (64kbps 22.05kHz MP3) or
+     * a video (640x360 1116kbps MP4) can be requested.
+     * This mode is primarly useful for metadata requests. */
+    int demoEnabled;
+
+    /* Constant pointers initialised with openTIDAL_SessionInit */
+    const char *clientId;
+    const char *clientSecret;
+    const char *baseUrl;
+    const char *authUrl;
+   
+    /* Pointers to allocated cJSON Values. Either from the persistent
+     * session config, the tokenRequest or the refreshRequest. NULL if
+     * demoEnabled is TRUE. */ 
+    char *username;
+    size_t userId;
+    time_t expiresIn;
+    char *countryCode;
+    
+    char *accessToken;
+    char *refreshToken;
+
+    char *audioQuality;
+    char *videoQuality;
+
+    /* Typecasted CURL Structure. Persistent cURL request handle. */
+    void *curlHandle;
+} openTIDAL_SessionContainer;
+
+/* Initialised with openTIDAL_StructInit({pointer to container}). 
+ * See structCtrl.c for more detailed documentation. */
+typedef struct openTIDAL_ContentContainer {
+    openTIDAL_LoginCodeContainer code;
+    openTIDAL_LoginTokenContainer token;
+    
+    openTIDAL_UserContainer user;
+    openTIDAL_UserSubscriptionContainer subscription;
+
+    /* Pointer to dynamic arrays. Allocated one by one only if
+     * needed. The arrays can also function as content pools in
+     * case of module based endpoints (home endpoint). In this case
+     * a direct position to the content is given. 
+     * Each array has it's own identifier to retrieve the correct capacity
+     * and total items in array values. 
+     * The arrays are populated with helper functions (openTIDAL_StructAdd*)
+     * and grow automatically heap by doubling it's current size. This prevents
+     * the expensive use of realloc.
+     * The initial capacity is 10.
+     * To deallocate all arrays inside the ContentContainer call
+     * openTIDAL_StructDelete({pointer to container}). */
+    openTIDAL_AlbumContainer *albums; /* Index (Capacity & Total): 0 */
+    openTIDAL_ItemsContainer *items; /* Index (Capacity & Total): 1 */
+    openTIDAL_ArtistContainer *artists; /* Index (Capacity & Total): 2 */
+    openTIDAL_PlaylistContainer *playlists; /* Index (Capacity & Total): 3 */
+    openTIDAL_MixContainer *mixes; /* Index (Capacity & Total): 4 */
+    openTIDAL_ContributorContainer *contributors; /* Index (Capacity & Total): 5 */
+    openTIDAL_CreditsContainer *credits; /* Index (Capacity & Total): 6 */
+    openTIDAL_LinkContainer *links; /* Index (Capacity & Total): 7 */
+
+    openTIDAL_StreamContainer stream;
+    openTIDAL_PageHomeContainer home;
+
+    /* Custom status of performed request. Error handling of the tidalapi and
+     * primitive http response codes are parsed to provide detailed information
+     * about the state of the request. */
+    int status;
+
+    /* This static array is being used to store the capacity of each array.
+     * The capacity array keeps track of the allocated heap size of
+     * each dynamic array.
+     * The dynamic array identifiers are used to access the correct values */
+    int capacity[8];
+    /* This static array is being used to store the current number of items
+     * added to each dynamic array.
+     * The dynamic array identifiers are used to access the correct values */
+    int total[8];
+   
+    /* Pointer to allocated cJSON Structure. After a request is performed and
+     * is successful it's allocated buffer is parsed with cJSON and deallocated. 
+     * This pointer is used for deallocation purposes only. */
+    void *json;
+    /* Pointer to allocated cJSON Structure. After a get stream request is performed
+     * and is successful it's stream manifest gets decoded with base64 and pased with
+     * cJSON. 
+     * This pointer is used for deallocation purposes only. */
+    void *jsonManifest;
+} openTIDAL_ContentContainer;
 
 /* initialize openTIDAL with persistent config / specify location for config created by OAuth */
 const int openTIDAL_SessionInit(openTIDAL_SessionContainer *session, const char *file_location);
