@@ -290,7 +290,6 @@ void openTIDAL_SessionRefresh(openTIDAL_SessionContainer *session)
         {
             FILE *fp = NULL;
             session->accessToken = res.token.access_token;
-            session->userId = res.token.userId;
             session->expiresIn = time(NULL) + 604800; /* Calculate new ExpiryDate */
 
             fp = fopen(session->location, "w");
