@@ -25,20 +25,18 @@
 #include <string.h>
 #include "../include/parse.h"
 
-cJSON *json_parse(char * input)
+void *openTIDAL_cJSONParseHelper(char *input)
 {
-    cJSON *input_json = NULL;
+    cJSON *input_json;
     input_json = cJSON_Parse(input);
-    //int status = 0;
-    if (input_json == NULL)
-    {
-            const char *error_ptr = cJSON_GetErrorPtr();
-            if (error_ptr != NULL)
-            {
-                    /*JSON Input empty*/
-                    openTIDAL_ParseVerbose("Request Error", "cJSON_GetErrorPtr != NULL. JSON input empty", 1);
-            }
-            //status = 0;
+
+    if ( !input_json ) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if ( error_ptr ) {
+            openTIDAL_ParseVerbose("cJSONParseHelper",
+                    "cJSON_GetErrorPtr is not NULL. Error in parsing the char stream", 1);
+            return NULL;    
+        }
     }
     return input_json;
 }

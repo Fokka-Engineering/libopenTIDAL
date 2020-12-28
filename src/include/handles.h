@@ -29,6 +29,10 @@ typedef struct openTIDAL_CurlContainer
     long responseCode;
     char *body;
     char *header;
+
+    char *endpoint;
+    char *parameter;
+    char *postData;
 } openTIDAL_CurlContainer;
 
 void openTIDAL_CurlCleanup();

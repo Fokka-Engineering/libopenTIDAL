@@ -5,7 +5,7 @@
 
 void login_polling()
 {
-    openTIDAL resolve = openTIDAL_CreateLoginCode();
+    openTIDAL_ContentContainer resolve = openTIDAL_AuthCode();
     if (resolve.status == 1)
     {
         printf("DeviceCode: %s\n", resolve.code.deviceCode);
@@ -14,7 +14,7 @@ void login_polling()
         while (time(NULL) <= resolve.code.expires_in)
         {
             sleep(2);
-            openTIDAL token = openTIDAL_CreateLoginToken(resolve.code.deviceCode);
+            openTIDAL_ContentContainer token = openTIDAL_CreateLoginToken(resolve.code.deviceCode);
             if (token.status == 2)
             {
                 printf("%s\n", "Authorization Pending...");

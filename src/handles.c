@@ -29,8 +29,6 @@
 #include "include/parse.h"
 #include "include/openTIDAL.h"
 
-CURL *curl = NULL;
-
 struct openTIDAL_CurlMemory
 {
     char *memory;
@@ -132,14 +130,17 @@ static void openTIDAL_CurlModelInit(openTIDAL_CurlContainer *model)
 {
     model->body = NULL;
     model->header = NULL;
+    model->endpoint = NULL;
+    model->parameter = NULL;
+    model->postData = NULL;
     model->responseCode = 0;
     model->status = -1;
     openTIDAL_ParseVerbose("cURL Handle", "Initialised Curl Container", 2);
 }
 
-void openTIDAL_CurlCleanup()
+void openTIDAL_CurlCleanup(openTIDAL_SessionContainer *session)
 {
-    curl_easy_cleanup(curl);
+    curl_easy_cleanup(session->curlHandle);
     curl_global_cleanup();
 }
 
@@ -147,6 +148,9 @@ void openTIDAL_CurlRequestCleanup(openTIDAL_CurlContainer *model)
 {
     free(model->body);
     free(model->header);
+    free(model->endpoint);
+    free(model->parameter);
+    free(model->postData);
 }
 
 void 
@@ -157,13 +161,13 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
     
     openTIDAL_CurlModelInit(model);
 
-    if ( !curl ) {
+    if ( !session->curlHandle ) {
         openTIDAL_ParseVerbose("cURL Handle", "Initialise cURL Global and cURL Easy Handle", 2);
         curl_global_init(CURL_GLOBAL_ALL);
-        curl = curl_easy_init();
+        session->curlHandle = curl_easy_init();
     }
     
-    if ( curl ) {
+    if ( session->curlHandle ) {
         openTIDAL_ParseVerbose("cURL Handle", "Handle is initialised. Prepare cURL Easy Request", 2);
         struct curl_slist *chunk = NULL;
         struct openTIDAL_CurlMemory memchunk;
@@ -187,71 +191,71 @@ openTIDAL_CurlRequest(openTIDAL_SessionContainer *session, openTIDAL_CurlContain
         openTIDAL_ParseVerbose("cURL Handle", header, 3);
         openTIDAL_ParseVerbose("cURL Handle", "Begin curl_easy_opt configuration", 2); 
         
-        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(session->curlHandle, CURLOPT_URL, url);
        
 
         if( strncmp(type, "GET", 4) == 0 ) {
             openTIDAL_ParseVerbose("cURL Handle", "Perform a GET Request", 2);
-            curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
+            curl_easy_setopt(session->curlHandle, CURLOPT_HTTPGET, 1L);
+            curl_easy_setopt(session->curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if ( strncmp(type, "POST", 5 ) == 0 ) {
             openTIDAL_ParseVerbose("cURL Handle", "Perform a POST Request", 2);
-            curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1L);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
+            curl_easy_setopt(session->curlHandle, CURLOPT_HTTPPOST, 1L);
+            curl_easy_setopt(session->curlHandle, CURLOPT_POSTFIELDS, postData);
+            curl_easy_setopt(session->curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if ( strncmp(type, "DELETE", 7 ) == 0) {
             openTIDAL_ParseVerbose("cURL Handle", "Perform a DELETE Request", 2);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_easy_setopt(session->curlHandle, CURLOPT_POSTFIELDS, postData);
+            curl_easy_setopt(session->curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
         else if ( strncmp(type, "PUT", 4 ) == 0) {
             openTIDAL_ParseVerbose("cURL Handle", "Perform a PUT Request", 2);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
-            curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_easy_setopt(session->curlHandle, CURLOPT_POSTFIELDS, postData);
+            curl_easy_setopt(session->curlHandle, CURLOPT_CUSTOMREQUEST, "PUT");
         }
        
         if ( !isDummy ) { 
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallbackFunction);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &memchunk);
+            curl_easy_setopt(session->curlHandle, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallbackFunction);
+            curl_easy_setopt(session->curlHandle, CURLOPT_WRITEDATA, &memchunk);
         }
         else {
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallBackDummyFunction);
+            curl_easy_setopt(session->curlHandle, CURLOPT_WRITEFUNCTION, openTIDAL_CurlCallBackDummyFunction);
         }
 
         if ( isAuth ) {
-            curl_easy_setopt(curl, CURLOPT_USERNAME, session->clientId);
-            curl_easy_setopt(curl, CURLOPT_PASSWORD, session->clientSecret);
+            curl_easy_setopt(session->curlHandle, CURLOPT_USERNAME, session->clientId);
+            curl_easy_setopt(session->curlHandle, CURLOPT_PASSWORD, session->clientSecret);
         }
         else {
             /* Add auth header */
             chunk = curl_slist_append(chunk, header);
        
-            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+            curl_easy_setopt(session->curlHandle, CURLOPT_HTTPHEADER, chunk);
 
         }
 
         if ( openTIDAL_GetLogLevel() == 3 ) {
-            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+            curl_easy_setopt(session->curlHandle, CURLOPT_VERBOSE, 1L);
         }
 
         openTIDAL_ParseVerbose("cURL Handle", "End curl_easy_opt configuration", 2); 
         openTIDAL_ParseVerbose("cURL Handle", "Call curl_easy_perform", 2);
-        res = curl_easy_perform(curl);
+        res = curl_easy_perform(session->curlHandle);
 
         if ( res != CURLE_OK ) {
             openTIDAL_ParseVerbose("cURL Handle", "CURLE_OK check failed", 2);
         }
         else {
             long http_code = 0;
-            curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
+            curl_easy_getinfo (session->curlHandle, CURLINFO_RESPONSE_CODE, &http_code);
             openTIDAL_ParseVerbose("cURL Handle", "CURLE_OK check success", 2);
             model->status = 0;
             model->body = memchunk.memory;
             model->responseCode = http_code;
         }
-
+        
         /* cleanup */
         curl_slist_free_all(chunk);
         free(url);

@@ -57,7 +57,8 @@ void openTIDAL_SessionCleanup(openTIDAL_SessionContainer *session)
     cJSON_Delete((cJSON *) session->refreshRequest);
     cJSON_Delete((cJSON *) session->tokenRequest);
     cJSON_Delete((cJSON *) session->stream);
-    
+   
+    openTIDAL_CurlCleanup(session);  
     openTIDAL_ParseVerbose("Session", "Deallocated session", 2);
 }
 
@@ -87,6 +88,7 @@ static void openTIDAL_SessionInitContainer(openTIDAL_SessionContainer *session)
     session->refreshRequest = NULL;
     session->tokenRequest = NULL;
     session->demoEnabled = 1;
+    session->curlHandle = NULL;
 
     session->clientId = "8SEZWa4J1NVC5U5Y";
     session->clientSecret = "owUYDkxddz+9FpvGX24DlxECNtFEMBxipU0lBfrbq60=";

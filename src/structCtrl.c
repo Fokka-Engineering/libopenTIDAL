@@ -46,7 +46,7 @@ void openTIDAL_StructInit(openTIDAL_ContentContainer *o)
     o->home.becauseYouListenedTo_Title = NULL;
     o->home.becauseYouListenedTo_Total = NULL;
 
-    o->status = 0;
+    o->status = -1;
     o->json = NULL;
     o->jsonManifest = NULL;
 

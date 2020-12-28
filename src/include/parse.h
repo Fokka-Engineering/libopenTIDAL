@@ -25,7 +25,8 @@
 #include "handles.h"
 #include "json_models.h"
 
-cJSON *json_parse(char * input);
+void *openTIDAL_cJSONParseHelper(char *input);
+
 void parse_double(cJSON *object, double *number);
 void parse_number(cJSON *object, size_t *number);
 void parse_signed_number(cJSON *object, int *number);
@@ -89,13 +90,6 @@ void parse_stream_values(openTIDAL_StreamContainer *stream, json_stream_model *j
 /* extra */
 void parse_search(openTIDAL_ContentContainer *o, cJSON *input_json);
 void parse_home(openTIDAL_ContentContainer *o, cJSON *input_json);
-
-/* concatenation */
-char *url_cat(openTIDAL_SessionContainer *session, const char *strOne,
-        const size_t id, const char *strTwo, int appendCountryCode);
-
-char *url_cat_str(openTIDAL_SessionContainer *session, const char *strOne,
-        const char *id, const char *strTwo);
 
 /* encoding */
 char *url_encode(const char *str);

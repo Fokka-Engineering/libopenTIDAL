@@ -23,39 +23,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 #include "include/openTIDAL.h"
 
-/* concatenate endpoint with an id  */
-char *url_cat(openTIDAL_SessionContainer *session, const char *strOne, const size_t id,
-        const char *strTwo, int appendCountryCode)
-{
-    char *urlcat = NULL;
-    char buffer[20];
-    snprintf(buffer, 20, "%zu", id);
-    urlcat = malloc(strlen(strOne)+1+sizeof(buffer)+strlen(strTwo));
-    strcpy(urlcat, strOne);
-    strcat(urlcat, buffer);
-    strcat(urlcat, strTwo);
-
-    if (appendCountryCode != 0)
-    {
-        strcat(urlcat, "?countryCode=");
-        strcat(urlcat, session->countryCode);
+int openTIDAL_StringHelper(char **str, char* format, ...){
+    va_list argp;
+    va_start(argp, format);
+    char one_char[1];
+    int len = vsnprintf(one_char, 1, format, argp);
+    if (len < 1){
+        openTIDAL_ParseVerbose("StringHelper",
+                "An encoding error occurred. Setting pointer to NULL", 1);
+        *str = NULL;
+        va_end(argp);
+        return len;
     }
+    va_end(argp);
 
-    return urlcat;
-}
-
-/* concatenate endpoint with an uuid */
-char *url_cat_str(openTIDAL_SessionContainer *session, const char *strOne,
-        const char *id, const char *strTwo)
-{
-    char *urlcat = NULL;
-    urlcat = malloc(strlen(strOne)+1+strlen(id)+strlen(strTwo));
-    strcpy(urlcat, strOne);
-    strcat(urlcat, id);
-    strcat(urlcat, strTwo);
-    return urlcat;
+    *str = malloc(len+1);
+    if (!str) {
+        openTIDAL_ParseVerbose("StringHelper",
+                "Couldn't allocate encoded string into heap. Return -1", 1);
+        return -1;
+    }
+    va_start(argp, format);
+    vsnprintf(*str, len+1, format, argp);
+    va_end(argp);
+    return len;
 }
 
