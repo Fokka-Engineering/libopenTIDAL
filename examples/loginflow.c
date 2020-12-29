@@ -3,9 +3,9 @@
 #include "../src/include/openTIDAL.h"
 #include <unistd.h>
 
-void login_polling()
+void login_polling(openTIDAL_SessionContainer *session)
 {
-    openTIDAL_ContentContainer resolve = openTIDAL_AuthCode();
+    openTIDAL_ContentContainer resolve = openTIDAL_AuthCreateUserCode(session);
     if (resolve.status == 1)
     {
         printf("DeviceCode: %s\n", resolve.code.deviceCode);
@@ -14,7 +14,7 @@ void login_polling()
         while (time(NULL) <= resolve.code.expires_in)
         {
             sleep(2);
-            openTIDAL_ContentContainer token = openTIDAL_CreateLoginToken(resolve.code.deviceCode);
+            openTIDAL_ContentContainer token = openTIDAL_AuthCreateBearerToken(session, resolve.code.deviceCode);
             if (token.status == 2)
             {
                 printf("%s\n", "Authorization Pending...");
@@ -49,7 +49,12 @@ void login_polling()
 int main(void)
 {
     /* specify a file location (config will be created automatically) */
-    openTIDAL_Init("/tmp/oT-config");
-    login_polling();
-    openTIDAL_Cleanup();
+    openTIDAL_SessionContainer session;
+    openTIDAL_Verbose(1);
+    openTIDAL_SessionInit(&session, "/Users/hugo/Desktop/config.json");
+    
+    login_polling(&session);
+    
+    openTIDAL_SessionCreateFile(&session);
+    openTIDAL_SessionCleanup(&session);
 }

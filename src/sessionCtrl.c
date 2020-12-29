@@ -46,7 +46,9 @@ openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_loc
     if (file_location) {
         session->location = (char *)file_location;
         status = openTIDAL_SessionScanFile (session);
-        session->demoEnabled = 0;
+        if (status) {
+            session->demoEnabled = 0;
+        }
     }
     openTIDAL_ParseVerbose ("Session", "Initialised openTIDAL", 2);
     return status;

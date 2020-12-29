@@ -223,13 +223,19 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t vide
             json_stream_model processed_json = json_parse_stream ((cJSON *)o.json);
             parse_stream_values (&o.stream, &processed_json);
             o.status = 0;
-            // TODO: Dynamic Allocation
-            char manifest_decoded[2048];
 
             if (strcmp (o.stream.manifestMimeType, "application/vnd.tidal.emu") == 0) {
                 json_manifest_model processed_manifest;
+                char *manifest_decoded = NULL;
 
-                Base64decode (manifest_decoded, o.stream.manifest);
+                openTIDAL_ParseVerbose ("Base64", "Allocated decoded data in heap", 2);
+                manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o.stream.manifest));
+                if (!manifest_decoded) {
+                    o.status = -14;
+                    return o;
+                }
+
+                openTIDAL_Base64Decode (manifest_decoded, o.stream.manifest);
                 o.jsonManifest = openTIDAL_cJSONParseHelper (manifest_decoded);
 
                 o.status = 1;
@@ -241,6 +247,8 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t vide
                 processed_manifest = json_parse_manifest ((cJSON *)o.jsonManifest);
                 parse_string (processed_manifest.mimeType, &o.stream.mimeType);
                 parse_string (processed_manifest.url, &o.stream.url);
+
+                free (manifest_decoded);
             }
             else {
                 o.status = -10;

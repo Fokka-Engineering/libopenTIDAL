@@ -5,14 +5,15 @@
 
 int main()
 {
-    
-    openTIDAL_Init("/Users/hugo/Documents/oT-config");
+    openTIDAL_SessionContainer session;
+    //openTIDAL_SessionInit(&session, NULL);
+    openTIDAL_SessionInit(&session, "/Users/hugo/Documents/oT-config");
 
     openTIDAL_Verbose(1);
 
     printf("\nTrack Stream\n");
     
-    openTIDAL resolve = openTIDAL_GetTrackStream(13479532);
+    openTIDAL_ContentContainer resolve = openTIDAL_GetTrackStream(&session, 13479532);
     if (resolve.status == 1)
     {
         printf("%s\n", resolve.stream.url);
@@ -28,7 +29,7 @@ int main()
 
     printf("\nVideo Stream\n");
 
-    openTIDAL resolveTwo = openTIDAL_GetVideoStream(58782326);
+    openTIDAL_ContentContainer resolveTwo = openTIDAL_GetVideoStream(&session, 58782326);
     if (resolveTwo.status == 1)
     {
         printf("%s\n", resolveTwo.stream.url);
@@ -40,7 +41,7 @@ int main()
 
     openTIDAL_StructDelete(&resolve);
     openTIDAL_StructDelete(&resolveTwo);
-    openTIDAL_Cleanup();
+    openTIDAL_SessionCleanup(&session);
     
     return 0;
 }

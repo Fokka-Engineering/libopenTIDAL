@@ -92,7 +92,6 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
     if (curl.status != -1) {
-        openTIDAL_LoginTokenContainer Value;
         cJSON *check_status = NULL;
         cJSON *check_error = NULL;
 
@@ -107,18 +106,18 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
 
         if (cJSON_IsNumber (check_status) != 1) {
             json_login_token_model processed_json = json_parse_login_token ((cJSON *)o.json);
-            parse_login_token_values (&Value, &processed_json);
+            parse_login_token_values (&o.token, &processed_json);
             o.status = 1;
 
-            Value.expires_in = Value.timeFrame + time (NULL);
-            session->expiresIn = Value.expires_in;
-            session->countryCode = Value.countryCode;
-            session->userId = Value.userId;
-            session->accessToken = Value.access_token;
-            session->refreshToken = Value.refresh_token;
+            o.token.expires_in = o.token.timeFrame + time (NULL);
+            session->expiresIn = o.token.expires_in;
+            session->countryCode = o.token.countryCode;
+            session->userId = o.token.userId;
+            session->accessToken = o.token.access_token;
+            session->username = o.token.username;
+            session->refreshToken = o.token.refresh_token;
             session->tokenRequest = o.json;
 
-            o.token = Value;
             /* get subscription info */
             openTIDAL_ContentContainer sub = openTIDAL_GetUserSubscription (session);
             if (sub.status == 1) {

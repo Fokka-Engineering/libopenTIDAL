@@ -253,13 +253,19 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
             json_stream_model processed_json = json_parse_stream ((cJSON *)o.json);
             parse_stream_values (&o.stream, &processed_json);
             o.status = 0;
-            // TODO: Dynamic Allocation of decoded Manifest
-            char manifest_decoded[2048];
 
             if (strcmp (o.stream.manifestMimeType, "application/vnd.tidal.bts") == 0) {
                 json_manifest_model processed_manifest;
+                char *manifest_decoded = NULL;
 
-                Base64decode (manifest_decoded, o.stream.manifest);
+                openTIDAL_ParseVerbose ("Base64", "Allocated decoded data in heap", 2);
+                manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o.stream.manifest));
+                if (!manifest_decoded) {
+                    o.status = -14;
+                    return o;
+                }
+
+                openTIDAL_Base64Decode (manifest_decoded, o.stream.manifest);
                 o.jsonManifest = openTIDAL_cJSONParseHelper (manifest_decoded);
                 if (!o.jsonManifest) {
                     o.status = -14;
@@ -272,6 +278,7 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
                 parse_string (processed_manifest.encryptionType, &o.stream.encryptionType);
                 parse_string (processed_manifest.url, &o.stream.url);
                 o.status = 1;
+                free (manifest_decoded);
             }
             else {
                 o.status = -10;
