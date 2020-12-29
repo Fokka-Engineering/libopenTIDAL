@@ -250,17 +250,16 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_StreamContainer stream;
             json_stream_model processed_json = json_parse_stream ((cJSON *)o.json);
-            parse_stream_values (&stream, &processed_json);
+            parse_stream_values (&o.stream, &processed_json);
             o.status = 0;
             // TODO: Dynamic Allocation of decoded Manifest
             char manifest_decoded[2048];
 
-            if (strcmp (stream.manifestMimeType, "application/vnd.tidal.bts") == 0) {
+            if (strcmp (o.stream.manifestMimeType, "application/vnd.tidal.bts") == 0) {
                 json_manifest_model processed_manifest;
 
-                Base64decode (manifest_decoded, stream.manifest);
+                Base64decode (manifest_decoded, o.stream.manifest);
                 o.jsonManifest = openTIDAL_cJSONParseHelper (manifest_decoded);
                 if (!o.jsonManifest) {
                     o.status = -14;
@@ -268,10 +267,10 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
                 }
 
                 processed_manifest = json_parse_manifest ((cJSON *)o.jsonManifest);
-                parse_string (processed_manifest.mimeType, &stream.mimeType);
-                parse_string (processed_manifest.codec, &stream.codec);
-                parse_string (processed_manifest.encryptionType, &stream.encryptionType);
-                parse_string (processed_manifest.url, &stream.url);
+                parse_string (processed_manifest.mimeType, &o.stream.mimeType);
+                parse_string (processed_manifest.codec, &o.stream.codec);
+                parse_string (processed_manifest.encryptionType, &o.stream.encryptionType);
+                parse_string (processed_manifest.url, &o.stream.url);
                 o.status = 1;
             }
             else {
@@ -280,8 +279,6 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
                     "Request Error",
                     "Not a valid manifest. MimeType is not application/vnd.tidal.bts", 1);
             }
-
-            o.stream = stream;
         }
         else {
             o.status = parse_status ((cJSON *)o.json, &curl, trackid, NULL);
