@@ -37,6 +37,8 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int 
     char *encodedTerm = url_encode (term);
     const char *endpoint = "/v1/search/";
 
+    openTIDAL_StructInit (&o);
+
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&query=%s&limit=%d",
                             session->countryCode, encodedTerm, limit);
     if (!curl.parameter) {

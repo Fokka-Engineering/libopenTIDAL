@@ -245,7 +245,13 @@ openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session)
     fclose (persistentJSON);
 
     /* parse JSON stream    */
-    cJSON *input_json = json_parse (stream);
+    cJSON *input_json = NULL;
+    input_json = openTIDAL_cJSONParseHelper (stream);
+    if (!input_json) {
+        error = 1;
+        goto end;
+    }
+
     openTIDAL_SessionReadFileStream (session, input_json);
     session->stream = input_json;
 

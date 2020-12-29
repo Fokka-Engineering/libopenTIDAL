@@ -81,6 +81,8 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
     const char *endpoint = "/v1/oauth2/token";
     const char grant_type[] = "urn:ietf:params:oauth:grant-type:device_code";
 
+    openTIDAL_StructInit (&o);
+
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
                             session->clientId, device_code, grant_type, session->scopes);
     if (!curl.postData) {
@@ -150,6 +152,8 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *ref
     openTIDAL_ContentContainer o;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/token";
+
+    openTIDAL_StructInit (&o);
 
     openTIDAL_StringHelper (&curl.postData,
                             "client_id=%s&refresh_token=%s&grant_type=refresh_token&scope=%s",
