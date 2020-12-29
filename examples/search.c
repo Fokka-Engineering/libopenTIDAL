@@ -7,9 +7,11 @@ int i = 0;
 
 int main()
 {
-    openTIDAL_Init(NULL);
+    openTIDAL_Verbose(3);
+    openTIDAL_SessionContainer session;
+    openTIDAL_SessionInit(&session, NULL);
 
-    openTIDAL result = openTIDAL_SearchAll("Tingvall Trio", 10);
+    openTIDAL_ContentContainer result = openTIDAL_SearchAll(&session, "Tingvall Trio", 10);
     if (result.status == 1)
     {
         for (i = 0; i < result.total[0]; ++i)
@@ -27,8 +29,8 @@ int main()
             printf("Picture: %s\n", result.artists[i].picture);
         }
     }
-
+    
     openTIDAL_StructDelete(&result);
-    openTIDAL_Cleanup();
+    openTIDAL_SessionCleanup(&session);
     return 0;
 }

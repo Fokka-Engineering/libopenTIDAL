@@ -38,6 +38,11 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int 
     const char *endpoint = "/v1/search/";
 
     openTIDAL_StructInit (&o);
+    openTIDAL_StructAlloc (&o, 0);
+    openTIDAL_StructAlloc (&o, 1);
+    openTIDAL_StructAlloc (&o, 2);
+    openTIDAL_StructAlloc (&o, 3);
+    openTIDAL_StructAlloc (&o, 4);
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&query=%s&limit=%d",
                             session->countryCode, encodedTerm, limit);
