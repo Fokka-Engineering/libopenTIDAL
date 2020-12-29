@@ -477,23 +477,23 @@ int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((forma
 /* Memory management of main struct (Heap Allocation & Deallocation)
  * pointer to struct parameter to avoid a copy in stack  */
 /* initialize struct and it's content */
-void openTIDAL_StructInit (openTIDAL_ContentContainer *o);
+int openTIDAL_StructInit (openTIDAL_ContentContainer *o);
 /* allocate specified array in heap */
-void openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index);
+int openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index);
 /* deallocate content in struct */
 void openTIDAL_StructDelete (openTIDAL_ContentContainer *o);
 
 /* add model to array (Allocate the correct array before adding!) */
-void openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
-void openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
-void openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);
-void openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o,
-                                  openTIDAL_PlaylistContainer playlist);
-void openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix);
-void openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
-                                     openTIDAL_ContributorContainer contributor);
-void openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
-void openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
+int openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
+int openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
+int openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);
+int openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o,
+                                 openTIDAL_PlaylistContainer playlist);
+int openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix);
+int openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
+                                    openTIDAL_ContributorContainer contributor);
+int openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
+int openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
 
 /* Session */
 
