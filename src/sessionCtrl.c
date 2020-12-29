@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 #include "include/handles.h"
+#include "include/helper.h"
 #include "include/openTIDAL.h"
 #include "include/parse.h"
 
@@ -50,7 +51,7 @@ openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_loc
             session->demoEnabled = 0;
         }
     }
-    openTIDAL_ParseVerbose ("Session", "Initialised openTIDAL", 2);
+    openTIDAL_VerboseHelper ("Session", "Initialised openTIDAL", 2);
     return status;
 }
 
@@ -64,7 +65,7 @@ openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session)
     cJSON_Delete ((cJSON *)session->stream);
 
     openTIDAL_CurlCleanup (session);
-    openTIDAL_ParseVerbose ("Session", "Deallocated session", 2);
+    openTIDAL_VerboseHelper ("Session", "Deallocated session", 2);
 }
 
 void
@@ -78,7 +79,7 @@ openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session)
         fprintf (fp, "%s", json);
     }
     else {
-        openTIDAL_ParseVerbose (
+        openTIDAL_VerboseHelper (
             "Session", "Failed to create persistent config: Could not write to file location", 1);
     }
     fclose (fp);
@@ -110,7 +111,7 @@ openTIDAL_SessionInitContainer (openTIDAL_SessionContainer *session)
     session->audioQuality = "LOW";
     session->videoQuality = "LOW";
 
-    openTIDAL_ParseVerbose ("Session", "Initialise session structure", 2);
+    openTIDAL_VerboseHelper ("Session", "Initialise session structure", 2);
 }
 
 static const char *
@@ -162,7 +163,7 @@ openTIDAL_SessionCreateFileStream (openTIDAL_SessionContainer *session)
     session->newStream = string;
     cJSON_Delete (output_json);
 
-    openTIDAL_ParseVerbose ("Session", "Created new json stream", 2);
+    openTIDAL_VerboseHelper ("Session", "Created new json stream", 2);
     return string;
 }
 
@@ -202,7 +203,7 @@ openTIDAL_SessionReadFileStream (openTIDAL_SessionContainer *session, cJSON *inp
     parse_string (countryCode, &session->countryCode);
     parse_string (audioQuality, &session->audioQuality);
     parse_string (videoQuality, &session->videoQuality);
-    openTIDAL_ParseVerbose ("Session", "Read & allocate persistent stream from file", 2);
+    openTIDAL_VerboseHelper ("Session", "Read & allocate persistent stream from file", 2);
 }
 
 static const int
@@ -216,7 +217,7 @@ openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session)
     /* open persistentFile  */
     persistentJSON = fopen (session->location, "rb");
     if (!persistentJSON) {
-        openTIDAL_ParseVerbose ("Session", "File not found. Please authenticate", 1);
+        openTIDAL_VerboseHelper ("Session", "File not found. Please authenticate", 1);
         error = 1;
         goto end;
     }
@@ -229,7 +230,8 @@ openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session)
     stream = calloc (1, streamSize + 1);
     if (!stream) {
         fclose (persistentJSON);
-        openTIDAL_ParseVerbose ("Session", "Memory allocation of persistent config file failed", 1);
+        openTIDAL_VerboseHelper ("Session", "Memory allocation of persistent config file failed",
+                                 1);
         error = 1;
         goto end;
     }
@@ -239,7 +241,7 @@ openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session)
         fclose (persistentJSON);
         free (stream);
         fprintf (stderr, "entire read fails");
-        openTIDAL_ParseVerbose (
+        openTIDAL_VerboseHelper (
             "Session", "Copying persistent config into buffer failed. Entire read fails", 1);
         error = 1;
         goto end;
@@ -259,7 +261,7 @@ openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session)
 
 end:
     if (error == 1) {
-        openTIDAL_ParseVerbose ("Session", "Scanning persistent config failed", 1);
+        openTIDAL_VerboseHelper ("Session", "Scanning persistent config failed", 1);
         return 0;
     }
     return 1;
@@ -283,22 +285,20 @@ openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session)
         diff_t = difftime (session->expiresIn, currentTime);
     }
 
-    char buffer[50];
-    snprintf (buffer, sizeof (buffer), "Difference timestamp and currentTime: %zu", (size_t)diff_t);
-    openTIDAL_ParseVerbose ("Session", buffer, 2);
+    openTIDAL_VerboseHelper ("Session", "Difference timestamp and currentTime: %f", 2, diff_t);
 
     /* If ExpiryDate is in the future with a difference of more than 5min  */
     if (currentTime < session->expiresIn && (size_t)diff_t >= 300) {
-        openTIDAL_ParseVerbose ("Session", "AccessToken renewal not necessary", 2);
+        openTIDAL_VerboseHelper ("Session", "AccessToken renewal not necessary", 2);
     }
     /* Start renewal process    */
     else {
-        openTIDAL_ParseVerbose ("Session", "Start AccessToken renewal process", 2);
-        openTIDAL_ContentContainer res
+        openTIDAL_VerboseHelper ("Session", "Start AccessToken renewal process", 2);
+        openTIDAL_ContentContainer *res
             = openTIDAL_AuthRefreshBearerToken (session, session->refreshToken);
-        if (res.status == 1) {
+        if (res->status == 1) {
             FILE *fp = NULL;
-            session->accessToken = res.token.access_token;
+            session->accessToken = res->token.access_token;
             session->expiresIn = time (NULL) + 604800; /* Calculate new ExpiryDate */
 
             fp = fopen (session->location, "w");
@@ -307,20 +307,20 @@ openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session)
                 json = openTIDAL_SessionCreateFileStream (session);
                 fprintf (fp, "%s", json);
 
-                openTIDAL_ParseVerbose ("Session", "AccessToken renewal successful", 2);
+                openTIDAL_VerboseHelper ("Session", "AccessToken renewal successful", 2);
             }
             else {
-                openTIDAL_ParseVerbose (
+                openTIDAL_VerboseHelper (
                     "Session",
                     "AccessToken renewal partially failed. Failed to update persistent config", 1);
             }
             fclose (fp);
             cJSON_Delete ((cJSON *)session->refreshRequest);
-            session->refreshRequest = res.json;
+            session->refreshRequest = res->json;
         }
         else {
-            openTIDAL_ParseVerbose ("Session", "AccessToken refresh failed. Switching to demo-mode",
-                                    1);
+            openTIDAL_VerboseHelper ("Session",
+                                     "AccessToken refresh failed. Switching to demo-mode", 1);
             session->demoEnabled = 1;
         }
     }

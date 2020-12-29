@@ -20,28 +20,13 @@
     THE SOFTWARE.
 */
 
-#include "openTIDAL.h"
+#ifndef HELPER__h
+#define HELPER__h
 
-#ifndef HANDLES__h
-#define HANDLES__h
+void *openTIDAL_cJSONParseHelper (char *input);
+void openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
+    __attribute__ ((format (printf, 2, 4)));
+int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
+char *openTIDAL_UrlEncodeHelper (char *str);
 
-typedef struct openTIDAL_CurlContainer {
-    int status; /* custom status codes for error handling  */
-    long responseCode;
-    char *body;
-    char *header;
-
-    char *endpoint;
-    char *parameter;
-    char *postData;
-} openTIDAL_CurlContainer;
-
-void openTIDAL_CurlCleanup ();
-
-void openTIDAL_CurlRequestCleanup (openTIDAL_CurlContainer *model);
-
-void openTIDAL_CurlRequest (openTIDAL_SessionContainer *config, openTIDAL_CurlContainer *model,
-                            const char *type, const char *endpoint, const char *parameter,
-                            const char *postData, const int isAuth, const int isDummy);
-
-#endif // HANDLES__h
+#endif

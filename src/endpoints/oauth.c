@@ -27,66 +27,70 @@
 #include <unistd.h>
 
 #include "../include/handles.h"
+#include "../include/helper.h"
 #include "../include/openTIDAL.h"
 #include "../include/parse.h"
+#include "../include/struct.h"
 
-openTIDAL_ContentContainer
+openTIDAL_ContentContainer *
 openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/device_authorization";
 
-    openTIDAL_StructInit (&o);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&scope=%s", session->clientId,
                             session->scopes);
     if (!curl.postData) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
     if (curl.status != -1) {
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
         if (curl.responseCode == 200) {
             openTIDAL_LoginCodeContainer Value;
 
-            json_login_code_model processed_json = json_parse_login_code ((cJSON *)o.json);
+            json_login_code_model processed_json = json_parse_login_code ((cJSON *)o->json);
             parse_login_code_values (&Value, &processed_json);
-            o.status = 1;
+            o->status = 1;
             Value.expires_in = time (NULL) + Value.timeFrame;
 
-            o.code = Value;
+            o->code = Value;
         }
         else {
-            openTIDAL_ParseVerbose ("oAuth2", "Not a 200 Response", 1);
-            o.status = 0;
+            openTIDAL_VerboseHelper ("oAuth2", "Not a 200 Response", 1);
+            o->status = 0;
         }
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
 
-openTIDAL_ContentContainer
+openTIDAL_ContentContainer *
 openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *device_code)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/token";
     const char grant_type[] = "urn:ietf:params:oauth:grant-type:device_code";
 
-    openTIDAL_StructInit (&o);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
                             session->clientId, device_code, grant_type, session->scopes);
     if (!curl.postData) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
@@ -95,48 +99,48 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
         cJSON *check_status = NULL;
         cJSON *check_error = NULL;
 
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
-        check_status = cJSON_GetObjectItemCaseSensitive ((cJSON *)o.json, "status");
-        check_error = cJSON_GetObjectItemCaseSensitive ((cJSON *)o.json, "error");
+        check_status = cJSON_GetObjectItemCaseSensitive ((cJSON *)o->json, "status");
+        check_error = cJSON_GetObjectItemCaseSensitive ((cJSON *)o->json, "error");
 
         if (cJSON_IsNumber (check_status) != 1) {
-            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o.json);
-            parse_login_token_values (&o.token, &processed_json);
-            o.status = 1;
+            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
+            parse_login_token_values (&o->token, &processed_json);
+            o->status = 1;
 
-            o.token.expires_in = o.token.timeFrame + time (NULL);
-            session->expiresIn = o.token.expires_in;
-            session->countryCode = o.token.countryCode;
-            session->userId = o.token.userId;
-            session->accessToken = o.token.access_token;
-            session->username = o.token.username;
-            session->refreshToken = o.token.refresh_token;
-            session->tokenRequest = o.json;
+            o->token.expires_in = o->token.timeFrame + time (NULL);
+            session->expiresIn = o->token.expires_in;
+            session->countryCode = o->token.countryCode;
+            session->userId = o->token.userId;
+            session->accessToken = o->token.access_token;
+            session->username = o->token.username;
+            session->refreshToken = o->token.refresh_token;
+            session->tokenRequest = o->json;
 
             /* get subscription info */
-            openTIDAL_ContentContainer sub = openTIDAL_GetUserSubscription (session);
-            if (sub.status == 1) {
-                if (strcmp (sub.subscription.highestSoundQuality, "HIGH") == 0) {
+            openTIDAL_ContentContainer *sub = openTIDAL_GetUserSubscription (session);
+            if (sub->status == 1) {
+                if (strcmp (sub->subscription.highestSoundQuality, "HIGH") == 0) {
                     session->audioQuality = "HIGH";
                 }
-                else if (strcmp (sub.subscription.highestSoundQuality, "LOSSLESS") == 0) {
+                else if (strcmp (sub->subscription.highestSoundQuality, "LOSSLESS") == 0) {
                     session->audioQuality = "LOSSLESS";
                 }
-                else if (strcmp (sub.subscription.highestSoundQuality, "HI_RES") == 0) {
+                else if (strcmp (sub->subscription.highestSoundQuality, "HI_RES") == 0) {
                     session->audioQuality = "HI_RES";
                 }
             }
-            openTIDAL_StructDelete (&sub);
+            openTIDAL_StructDelete (sub);
         }
         else {
             if (!cJSON_IsNull (check_error)) {
                 if (strcmp (check_error->valuestring, "authorization_pending") == 0) {
-                    o.status = 2;
+                    o->status = 2;
                 }
             }
         }
@@ -145,36 +149,37 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
     return o;
 }
 
-openTIDAL_ContentContainer
+openTIDAL_ContentContainer *
 openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *refresh_token)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/token";
 
-    openTIDAL_StructInit (&o);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
 
     openTIDAL_StringHelper (&curl.postData,
                             "client_id=%s&refresh_token=%s&grant_type=refresh_token&scope=%s",
                             session->clientId, refresh_token, session->scopes);
     if (!curl.postData) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
     if (curl.status != -1) {
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
         if (curl.responseCode == 200) {
-            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o.json);
-            parse_login_token_values (&o.token, &processed_json);
+            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
+            parse_login_token_values (&o->token, &processed_json);
 
-            o.status = 1;
+            o->status = 1;
         }
     }
     openTIDAL_CurlRequestCleanup (&curl);

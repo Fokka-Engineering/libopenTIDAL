@@ -21,33 +21,35 @@
 */
 
 #include "../include/handles.h"
+#include "../include/helper.h"
 #include "../include/openTIDAL.h"
 #include "../include/parse.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "../include/struct.h"
 
-openTIDAL_ContentContainer
+#include <stdio.h>
+
+openTIDAL_ContentContainer *
 openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
 
-    openTIDAL_StructInit (&o);
-    openTIDAL_StructAlloc (&o, 1);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
+    openTIDAL_StructAlloc (o, 1);
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/mixes/%s/items", mixid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
@@ -58,10 +60,10 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
             cJSON *items = NULL;
             cJSON *item = NULL;
 
-            offset = cJSON_GetObjectItem ((cJSON *)o.json, "offset");
-            limit = cJSON_GetObjectItem ((cJSON *)o.json, "limit");
-            totalNumberOfItems = cJSON_GetObjectItem ((cJSON *)o.json, "totalNumberOfItems");
-            items = cJSON_GetObjectItem ((cJSON *)o.json, "items");
+            offset = cJSON_GetObjectItem ((cJSON *)o->json, "offset");
+            limit = cJSON_GetObjectItem ((cJSON *)o->json, "limit");
+            totalNumberOfItems = cJSON_GetObjectItem ((cJSON *)o->json, "totalNumberOfItems");
+            items = cJSON_GetObjectItem ((cJSON *)o->json, "items");
 
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
@@ -77,41 +79,42 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
                     parse_signed_number (offset, &Value.offset);
                     parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
 
-                    openTIDAL_StructAddItem (&o, Value);
+                    openTIDAL_StructAddItem (o, Value);
                 }
-                o.status = 1;
+                o->status = 1;
             }
         }
         else {
-            o.status = parse_status ((cJSON *)o.json, &curl, 0, mixid);
+            o->status = parse_status ((cJSON *)o->json, &curl, 0, mixid);
         }
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
 
-openTIDAL_ContentContainer
+openTIDAL_ContentContainer *
 openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/pages/my_collection_my_mixes";
 
-    openTIDAL_StructInit (&o);
-    openTIDAL_StructAlloc (&o, 4);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
+    openTIDAL_StructAlloc (o, 4);
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&deviceType=BROWSER",
                             session->countryCode);
     if (!curl.parameter) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
@@ -124,7 +127,7 @@ openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
             cJSON *items = NULL;
             cJSON *item = NULL;
 
-            rows = cJSON_GetObjectItem ((cJSON *)o.json, "rows");
+            rows = cJSON_GetObjectItem ((cJSON *)o->json, "rows");
             rowsArray = cJSON_GetArrayItem (rows, 0);
             modules = cJSON_GetObjectItem (rowsArray, "modules");
             modulesArray = cJSON_GetArrayItem (modules, 0);
@@ -139,13 +142,13 @@ openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
                     json_mix_model processed_json = json_parse_mix (item);
                     parse_mix_values (&mix, &processed_json);
 
-                    openTIDAL_StructAddMix (&o, mix);
+                    openTIDAL_StructAddMix (o, mix);
                 }
-                o.status = 1;
+                o->status = 1;
             }
         }
         else {
-            o.status = parse_status ((cJSON *)o.json, &curl, session->userId, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
     openTIDAL_CurlRequestCleanup (&curl);

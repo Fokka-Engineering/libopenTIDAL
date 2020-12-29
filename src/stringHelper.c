@@ -20,28 +20,37 @@
     THE SOFTWARE.
 */
 
-#include "openTIDAL.h"
+#include "include/helper.h"
+#include "include/openTIDAL.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifndef HANDLES__h
-#define HANDLES__h
+int
+openTIDAL_StringHelper (char **str, char *format, ...)
+{
+    va_list argp;
+    va_start (argp, format);
+    char one_char[1];
+    int len = vsnprintf (one_char, 1, format, argp);
+    if (len < 1) {
+        openTIDAL_VerboseHelper ("StringHelper",
+                                 "An encoding error occurred. Setting pointer to NULL", 1);
+        *str = NULL;
+        va_end (argp);
+        return len;
+    }
+    va_end (argp);
 
-typedef struct openTIDAL_CurlContainer {
-    int status; /* custom status codes for error handling  */
-    long responseCode;
-    char *body;
-    char *header;
+    *str = malloc (len + 1);
+    if (!str) {
+        openTIDAL_VerboseHelper ("StringHelper",
+                                 "Couldn't allocate encoded string into heap. Return -1", 1);
+        return -1;
+    }
+    va_start (argp, format);
+    vsnprintf (*str, len + 1, format, argp);
+    va_end (argp);
+    return len;
+}
 
-    char *endpoint;
-    char *parameter;
-    char *postData;
-} openTIDAL_CurlContainer;
-
-void openTIDAL_CurlCleanup ();
-
-void openTIDAL_CurlRequestCleanup (openTIDAL_CurlContainer *model);
-
-void openTIDAL_CurlRequest (openTIDAL_SessionContainer *config, openTIDAL_CurlContainer *model,
-                            const char *type, const char *endpoint, const char *parameter,
-                            const char *postData, const int isAuth, const int isDummy);
-
-#endif // HANDLES__h

@@ -25,24 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void *
-openTIDAL_cJSONParseHelper (char *input)
-{
-    cJSON *input_json;
-    input_json = cJSON_Parse (input);
-
-    if (!input_json) {
-        const char *error_ptr = cJSON_GetErrorPtr ();
-        if (error_ptr) {
-            openTIDAL_ParseVerbose (
-                "cJSONParseHelper",
-                "cJSON_GetErrorPtr is not NULL. Error in parsing the char stream", 1);
-            return NULL;
-        }
-    }
-    return input_json;
-}
-
 json_login_code_model
 json_parse_login_code (cJSON *directObject)
 {

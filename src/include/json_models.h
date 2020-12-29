@@ -1,16 +1,16 @@
 /*
     Copyright (c) 2020 Hugo Melder and openTIDAL contributors
-    
+
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,12 +21,13 @@
 */
 
 #include "cJSON.h"
-#pragma once
+
+#ifndef cJSON_MODEL__h
+#define cJSON_MODEL__h
 
 /* structures used to parse a json response */
 
-typedef struct json_login_code_model
-{
+typedef struct json_login_code_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Login Code Values */
@@ -38,8 +39,7 @@ typedef struct json_login_code_model
     cJSON *interval;
 } json_login_code_model;
 
-typedef struct json_login_token_model
-{
+typedef struct json_login_token_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Login Token Values */
@@ -62,8 +62,7 @@ typedef struct json_login_token_model
     cJSON *appleUid;
 } json_login_token_model;
 
-typedef struct json_user_model
-{
+typedef struct json_user_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* User Values */
@@ -83,8 +82,7 @@ typedef struct json_user_model
     cJSON *appleUid;
 } json_user_model;
 
-typedef struct json_user_subscription_model
-{
+typedef struct json_user_subscription_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Subscription Values */
@@ -98,8 +96,7 @@ typedef struct json_user_subscription_model
     cJSON *paymentType;
 } json_user_subscription_model;
 
-typedef struct json_playlist_model
-{
+typedef struct json_playlist_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -122,8 +119,7 @@ typedef struct json_playlist_model
     cJSON *type;
 } json_playlist_model;
 
-typedef struct json_items_model
-{
+typedef struct json_items_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -156,8 +152,7 @@ typedef struct json_items_model
     cJSON *albumTitle;
 } json_items_model;
 
-typedef struct json_album_model
-{
+typedef struct json_album_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -186,8 +181,7 @@ typedef struct json_album_model
     cJSON **artistName;
 } json_album_model;
 
-typedef struct json_artist_model
-{
+typedef struct json_artist_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -201,8 +195,7 @@ typedef struct json_artist_model
     cJSON *popularity;
 } json_artist_model;
 
-typedef struct json_link_model
-{
+typedef struct json_link_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -215,8 +208,7 @@ typedef struct json_link_model
     cJSON *source;
 } json_links_model;
 
-typedef struct json_credit_model
-{
+typedef struct json_credit_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -229,8 +221,7 @@ typedef struct json_credit_model
     cJSON *id;
 } json_credit_model;
 
-typedef struct json_contributor_model
-{
+typedef struct json_contributor_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -242,8 +233,7 @@ typedef struct json_contributor_model
     cJSON *role;
 } json_contributor_model;
 
-typedef struct json_stream_model
-{
+typedef struct json_stream_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Stream Values */
@@ -257,8 +247,7 @@ typedef struct json_stream_model
     cJSON *manifest;
 } json_stream_model;
 
-typedef struct json_manifest_model
-{
+typedef struct json_manifest_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Manifest Values */
@@ -269,8 +258,7 @@ typedef struct json_manifest_model
     cJSON *url;
 } json_manifest_model;
 
-typedef struct json_mix_model
-{
+typedef struct json_mix_model {
     /* Raw JSON Object */
     cJSON *directObject;
     /* Pagination Values */
@@ -292,3 +280,5 @@ typedef struct json_mix_model
     cJSON *largeImageUrl;
     cJSON *mixType;
 } json_mix_model;
+
+#endif

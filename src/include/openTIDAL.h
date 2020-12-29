@@ -463,37 +463,11 @@ typedef struct openTIDAL_ContentContainer {
     void *jsonManifest;
 } openTIDAL_ContentContainer;
 
-/* initialize openTIDAL with persistent config / specify location for config created by OAuth */
-const int openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_location);
-
 /* enable verbose mode stdout (enables cURL verbose and openTIDAL verbose) */
 void openTIDAL_Verbose (int loglevel);
-void openTIDAL_ParseVerbose (const char *prefix, const char *string, int loglevel);
 int openTIDAL_GetLogLevel ();
-
-/* Helper functions */
-int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
-
-/* Memory management of main struct (Heap Allocation & Deallocation)
- * pointer to struct parameter to avoid a copy in stack  */
-/* initialize struct and it's content */
-int openTIDAL_StructInit (openTIDAL_ContentContainer *o);
-/* allocate specified array in heap */
-int openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index);
 /* deallocate content in struct */
 void openTIDAL_StructDelete (openTIDAL_ContentContainer *o);
-
-/* add model to array (Allocate the correct array before adding!) */
-int openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
-int openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
-int openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);
-int openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o,
-                                 openTIDAL_PlaylistContainer playlist);
-int openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix);
-int openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
-                                    openTIDAL_ContributorContainer contributor);
-int openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
-int openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
 
 /* Session */
 
@@ -506,53 +480,53 @@ void openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session);
  * (deviceFlow based login) */
 
 /* create an deviceCode and userCode pair */
-openTIDAL_ContentContainer openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session);
 
 /* request access_token and refresh_token from deviceCode
  * or poll until the user authorizes (userCode -> link.tidal.com) */
-openTIDAL_ContentContainer openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session,
-                                                            char *device_code);
+openTIDAL_ContentContainer *openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session,
+                                                             char *device_code);
 
 /* request new access_token */
-openTIDAL_ContentContainer openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session,
-                                                             char *refresh_token);
+openTIDAL_ContentContainer *openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session,
+                                                              char *refresh_token);
 
 /* logout session (access_token) */
 int openTIDAL_AuthLogout (openTIDAL_SessionContainer *session);
 
 /* User Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_GetUser (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_GetUser (openTIDAL_SessionContainer *session);
 
-openTIDAL_ContentContainer openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session);
 
 /* Playlist Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session,
-                                                  const char *playlistid);
+openTIDAL_ContentContainer *openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session,
+                                                   const char *playlistid);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session,
-                                                           const int limit, const int offset,
-                                                           const char *order,
-                                                           const char *orderDirection);
+openTIDAL_ContentContainer *openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session,
+                                                            const int limit, const int offset,
+                                                            const char *order,
+                                                            const char *orderDirection);
 
-openTIDAL_ContentContainer openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session,
-                                                       const char *playlistid, const int limit,
-                                                       const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session,
+                                                        const char *playlistid, const int limit,
+                                                        const int offset);
 
 /* Album Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_GetAlbum (openTIDAL_SessionContainer *session,
-                                               const size_t albumid);
+openTIDAL_ContentContainer *openTIDAL_GetAlbum (openTIDAL_SessionContainer *session,
+                                                const size_t albumid);
 
-openTIDAL_ContentContainer openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session,
-                                                    const size_t albumid, const int limit,
-                                                    const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session,
+                                                     const size_t albumid, const int limit,
+                                                     const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session,
-                                                        const int limit, const int offset,
-                                                        const char *order,
-                                                        const char *orderDirection);
+openTIDAL_ContentContainer *openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session,
+                                                         const int limit, const int offset,
+                                                         const char *order,
+                                                         const char *orderDirection);
 
 int openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t albumid);
 
@@ -560,32 +534,32 @@ int openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, const si
 
 /* Artist Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_GetArtist (openTIDAL_SessionContainer *session,
-                                                const size_t artistid);
+openTIDAL_ContentContainer *openTIDAL_GetArtist (openTIDAL_SessionContainer *session,
+                                                 const size_t artistid);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session,
-                                                         const int limit, const int offset,
-                                                         const char *order,
-                                                         const char *orderDirection);
+openTIDAL_ContentContainer *openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session,
+                                                          const int limit, const int offset,
+                                                          const char *order,
+                                                          const char *orderDirection);
 
-openTIDAL_ContentContainer openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session,
-                                                    const size_t artistid, const int limit,
-                                                    const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session,
+                                                     const size_t artistid, const int limit,
+                                                     const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetArtistMix (openTIDAL_SessionContainer *session,
-                                                   const size_t artistid);
+openTIDAL_ContentContainer *openTIDAL_GetArtistMix (openTIDAL_SessionContainer *session,
+                                                    const size_t artistid);
 
-openTIDAL_ContentContainer openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session,
-                                                         const size_t artistid, const int limit,
-                                                         const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session,
+                                                          const size_t artistid, const int limit,
+                                                          const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session,
-                                                      const size_t artistid, const int limit,
-                                                      const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session,
+                                                       const size_t artistid, const int limit,
+                                                       const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session,
-                                                      const size_t artistid, const int limit,
-                                                      const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session,
+                                                       const size_t artistid, const int limit,
+                                                       const int offset);
 
 int openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, const size_t artistid);
 
@@ -593,58 +567,58 @@ int openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, const s
 
 /* Track Endpoints  */
 
-openTIDAL_ContentContainer openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session,
-                                                           const size_t trackid, const int limit,
-                                                           const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session,
+                                                            const size_t trackid, const int limit,
+                                                            const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session,
-                                                  const size_t trackid);
+openTIDAL_ContentContainer *openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session,
+                                                   const size_t trackid);
 
-openTIDAL_ContentContainer openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session,
-                                                     const size_t trackid);
+openTIDAL_ContentContainer *openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session,
+                                                      const size_t trackid);
 
-openTIDAL_ContentContainer openTIDAL_GetTrack (openTIDAL_SessionContainer *session,
-                                               const size_t trackid);
+openTIDAL_ContentContainer *openTIDAL_GetTrack (openTIDAL_SessionContainer *session,
+                                                const size_t trackid);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session,
-                                                        const int limit, const int offset,
-                                                        const char *order,
-                                                        const char *orderDirection);
+openTIDAL_ContentContainer *openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session,
+                                                         const int limit, const int offset,
+                                                         const char *order,
+                                                         const char *orderDirection);
 
 /* Video Endpoints  */
 
-openTIDAL_ContentContainer openTIDAL_GetVideo (openTIDAL_SessionContainer *session,
-                                               const size_t videoid);
+openTIDAL_ContentContainer *openTIDAL_GetVideo (openTIDAL_SessionContainer *session,
+                                                const size_t videoid);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session,
-                                                        const int limit, const int offset,
-                                                        const char *order,
-                                                        const char *orderDirection);
+openTIDAL_ContentContainer *openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session,
+                                                         const int limit, const int offset,
+                                                         const char *order,
+                                                         const char *orderDirection);
 
-openTIDAL_ContentContainer openTIDAL_GetVideoContributors (openTIDAL_SessionContainer *session,
-                                                           const size_t videoid, const int limit,
-                                                           const int offset);
+openTIDAL_ContentContainer *openTIDAL_GetVideoContributors (openTIDAL_SessionContainer *session,
+                                                            const size_t videoid, const int limit,
+                                                            const int offset);
 
-openTIDAL_ContentContainer openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session,
-                                                     const size_t videoid);
+openTIDAL_ContentContainer *openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session,
+                                                      const size_t videoid);
 
 /* Mix Endpoints    */
 
-openTIDAL_ContentContainer openTIDAL_GetMixItems (openTIDAL_SessionContainer *session,
-                                                  const char *mixid);
+openTIDAL_ContentContainer *openTIDAL_GetMixItems (openTIDAL_SessionContainer *session,
+                                                   const char *mixid);
 
-openTIDAL_ContentContainer openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session);
 
 /* Search Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term,
-                                                const int limit);
+openTIDAL_ContentContainer *openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term,
+                                                 const int limit);
 
 /* Page Endpoints */
 
-openTIDAL_ContentContainer openTIDAL_GetHome (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_GetHome (openTIDAL_SessionContainer *session);
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif // openTIDAL__h

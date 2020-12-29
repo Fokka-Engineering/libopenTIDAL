@@ -21,50 +21,53 @@
 */
 
 #include "../include/handles.h"
+#include "../include/helper.h"
 #include "../include/openTIDAL.h"
 #include "../include/parse.h"
+#include "../include/struct.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* Search */
 
-openTIDAL_ContentContainer
+openTIDAL_ContentContainer *
 openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int limit)
 {
-    openTIDAL_ContentContainer o;
+    openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
-    char *encodedTerm = url_encode (term);
+    char *encodedTerm = openTIDAL_UrlEncodeHelper (term);
     const char *endpoint = "/v1/search/";
 
-    openTIDAL_StructInit (&o);
-    openTIDAL_StructAlloc (&o, 0);
-    openTIDAL_StructAlloc (&o, 1);
-    openTIDAL_StructAlloc (&o, 2);
-    openTIDAL_StructAlloc (&o, 3);
-    openTIDAL_StructAlloc (&o, 4);
+    openTIDAL_StructMainAlloc (&o);
+    openTIDAL_StructInit (o);
+    openTIDAL_StructAlloc (o, 0);
+    openTIDAL_StructAlloc (o, 1);
+    openTIDAL_StructAlloc (o, 2);
+    openTIDAL_StructAlloc (o, 3);
+    openTIDAL_StructAlloc (o, 4);
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&query=%s&limit=%d",
                             session->countryCode, encodedTerm, limit);
     if (!curl.parameter) {
-        o.status = -14;
+        o->status = -14;
         return o;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
-        o.json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o.json) {
-            o.status = -14;
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            o->status = -14;
             return o;
         }
 
         if (curl.responseCode == 200) {
-            parse_search (&o, (cJSON *)o.json);
-            o.status = 1;
+            parse_search (o, (cJSON *)o->json);
+            o->status = 1;
         }
         else {
-            o.status = parse_status ((cJSON *)o.json, &curl, 0, "Search");
+            o->status = parse_status ((cJSON *)o->json, &curl, 0, "Search");
         }
     }
     free (encodedTerm);
