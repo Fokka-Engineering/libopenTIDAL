@@ -20,12 +20,11 @@
     THE SOFTWARE.
 */
 
-#ifndef HELPER__h
-#define HELPER__h
+#include "../../include/openTIDAL.h"
 
-void *openTIDAL_cJSONParseHelper (char *input);
-void openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
-    __attribute__ ((format (printf, 2, 4)));
-int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
-char *openTIDAL_UrlEncodeHelper (char *str);
-#endif
+#ifndef ARRAYHELPER__h
+#define ARRAYHELPER__h
+
+int openTIDAL_ParseModuleAllocHelper (openTIDAL_ContentContainer *o);
+int openTIDAL_ParseModuleAdd (openTIDAL_ContentContainer *o, int index, char *str, int number);
+#endif // ARRAYHELPER__h

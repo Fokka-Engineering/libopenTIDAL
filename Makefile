@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -fPIC -Wall -Werror
+#CFLAGS = -fPIC -Wall -Werror
+CFLAGS = -fPIC -Werror
 RM = rm -f
 
 LDFLAGS = -shared -lcurl
@@ -20,7 +21,7 @@ ifeq (Darwin, $(uname))
 	TARGET_LIB = libopenTIDAL.dylib
 endif
 
-SRCS = $(wildcard src/*.c) $(wildcard src/endpoints/*.c) $(wildcard src/parse/*.c)
+SRCS = $(wildcard src/*.c) $(wildcard src/endpoints/*.c) $(wildcard src/parse/*.c) $(wildcard src/parse/modules/*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all

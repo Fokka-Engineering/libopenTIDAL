@@ -291,13 +291,19 @@ typedef struct openTIDAL_StreamContainer {
 } openTIDAL_StreamContainer;
 
 typedef struct openTIDAL_ModuleContainer {
+    int arraySize;
+    int arrayCapacity;
+
     char **moduleType;
     int *arrayType;
-    int *start;
+    int *offset;
     int *total;
 
+    int mixedListSize;
+    int mixedListCapacity;
+
     int *mixedListTypes;
-    int *mixedListStart;
+    int *mixedListOffset;
     int *mixedListTotal;
 } openTIDAL_ModuleContainer;
 
@@ -446,6 +452,7 @@ typedef struct openTIDAL_ContentContainer {
     openTIDAL_LinkContainer *links;               /* Index (Capacity & Total): 7 */
 
     openTIDAL_StreamContainer stream;
+    openTIDAL_ModuleContainer modules;
     openTIDAL_PageHomeContainer home;
 
     /* Custom status of performed request. Error handling of the tidalapi and

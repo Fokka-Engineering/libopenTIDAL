@@ -24,6 +24,7 @@
 #include "../include/helper.h"
 #include "../include/openTIDAL.h"
 #include "../include/parse.h"
+#include "../include/parseModules.h"
 #include "../include/struct.h"
 
 #include <stdio.h>
@@ -59,7 +60,8 @@ openTIDAL_GetHome (openTIDAL_SessionContainer *session)
 
         if (curl.responseCode == 200) {
             o->status = 1;
-            parse_home (o, (cJSON *)o->json);
+            openTIDAL_ParseModules (o, (cJSON *)o->json);
+            // parse_home (o, (cJSON *)o->json);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, 0, "Page Home");

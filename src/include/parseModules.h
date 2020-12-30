@@ -20,12 +20,19 @@
     THE SOFTWARE.
 */
 
-#ifndef HELPER__h
-#define HELPER__h
+#include "cJSON.h"
+#include "openTIDAL.h"
 
-void *openTIDAL_cJSONParseHelper (char *input);
-void openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
-    __attribute__ ((format (printf, 2, 4)));
-int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
-char *openTIDAL_UrlEncodeHelper (char *str);
-#endif
+#ifndef PARSEMODULES__h
+#define PARSEMODULES__h
+
+struct moduleStruct;
+
+/* TIDALs page endpoints (home, explore, videos, mix) have a different json structure.
+ * These pages have their content seperated in segments. Each segment has a different type
+ * of media. A segment is called a module in the TIDAL API.
+ * In this case the ContentArrays inside the openTIDAL_ContentContainer structure are
+ * pools. The correct data is accessed by defined offsets. */
+int openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json);
+
+#endif // PARSEMODULES__h
