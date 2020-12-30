@@ -290,6 +290,17 @@ typedef struct openTIDAL_StreamContainer {
     char *encryptionType;
 } openTIDAL_StreamContainer;
 
+typedef struct openTIDAL_ModuleContainer {
+    char **moduleType;
+    int *arrayType;
+    int *start;
+    int *total;
+
+    int *mixedListTypes;
+    int *mixedListStart;
+    int *mixedListTotal;
+} openTIDAL_ModuleContainer;
+
 /* implementing personalised modules of home page api */
 typedef struct openTIDAL_PageHomeContainer {
     /* the recentlyPlayed module is a mixed type module.
@@ -463,9 +474,10 @@ typedef struct openTIDAL_ContentContainer {
     void *jsonManifest;
 } openTIDAL_ContentContainer;
 
-/* enable verbose mode stdout (enables cURL verbose and openTIDAL verbose) */
+/* enable verbose mode stdout//stderr (enables cURL verbose and openTIDAL verbose) */
 void openTIDAL_Verbose (int loglevel);
 int openTIDAL_GetLogLevel ();
+
 /* deallocate content in struct */
 void openTIDAL_StructDelete (openTIDAL_ContentContainer *o);
 

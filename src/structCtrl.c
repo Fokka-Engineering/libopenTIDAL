@@ -20,13 +20,12 @@
     THE SOFTWARE.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "include/cJSON.h"
 #include "include/helper.h"
 #include "include/openTIDAL.h"
 #include "include/struct.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int
 openTIDAL_StructMainAlloc (openTIDAL_ContentContainer **o)
