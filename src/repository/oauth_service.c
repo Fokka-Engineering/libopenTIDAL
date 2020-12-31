@@ -38,23 +38,27 @@ openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/device_authorization";
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&scope=%s", session->clientId,
                             session->scopes);
     if (!curl.postData) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -72,6 +76,8 @@ openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
             o->status = 0;
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -83,15 +89,19 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/token";
     const char grant_type[] = "urn:ietf:params:oauth:grant-type:device_code";
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
                             session->clientId, device_code, grant_type, session->scopes);
     if (!curl.postData) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
@@ -101,8 +111,8 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
 
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         check_status = cJSON_GetObjectItemCaseSensitive ((cJSON *)o->json, "status");
@@ -145,6 +155,8 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
             }
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -155,24 +167,28 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *ref
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/oauth2/token";
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData,
                             "client_id=%s&refresh_token=%s&grant_type=refresh_token&scope=%s",
                             session->clientId, refresh_token, session->scopes);
     if (!curl.postData) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, curl.postData, 1, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -182,6 +198,8 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *ref
             o->status = 1;
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -193,6 +211,7 @@ openTIDAL_AuthLogout (openTIDAL_SessionContainer *session)
     char *endpoint = "/v1/logout";
     int status = -1;
 
+    openTIDAL_CurlModelInit (&curl);
     openTIDAL_CurlRequest (session, &curl, "POST", endpoint, NULL, NULL, 0, 1);
     if (curl.status != 1) {
         if (curl.responseCode == 200 || curl.responseCode == 204) {

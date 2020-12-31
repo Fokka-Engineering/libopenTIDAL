@@ -33,24 +33,29 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 1);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/mixes/%s/items", mixid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -79,7 +84,8 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
                     parse_signed_number (offset, &Value.offset);
                     parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
 
-                    openTIDAL_StructAddItem (o, Value);
+                    status = openTIDAL_StructAddItem (o, Value);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -88,6 +94,8 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
             o->status = parse_status ((cJSON *)o->json, &curl, 0, mixid);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -98,24 +106,29 @@ openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     const char *endpoint = "/v1/pages/my_collection_my_mixes";
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 4);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&deviceType=BROWSER",
                             session->countryCode);
     if (!curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -142,7 +155,8 @@ openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
                     json_mix_model processed_json = json_parse_mix (item);
                     parse_mix_values (&mix, &processed_json);
 
-                    openTIDAL_StructAddMix (o, mix);
+                    status = openTIDAL_StructAddMix (o, mix);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -151,6 +165,8 @@ openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session)
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }

@@ -33,23 +33,28 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
+
+    openTIDAL_CurlModelInit (&curl);
 
     openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
     openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -61,6 +66,8 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -70,23 +77,28 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
+
+    openTIDAL_CurlModelInit (&curl);
 
     openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
     openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/subscription", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -100,6 +112,8 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }

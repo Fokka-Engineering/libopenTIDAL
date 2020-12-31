@@ -38,28 +38,38 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int 
     openTIDAL_CurlContainer curl;
     char *encodedTerm = openTIDAL_UrlEncodeHelper (term);
     const char *endpoint = "/v1/search/";
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 0);
-    openTIDAL_StructAlloc (o, 1);
-    openTIDAL_StructAlloc (o, 2);
-    openTIDAL_StructAlloc (o, 3);
-    openTIDAL_StructAlloc (o, 4);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 0);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 2);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 3);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&query=%s&limit=%d",
                             session->countryCode, encodedTerm, limit);
     if (!curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -70,6 +80,8 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int 
             o->status = parse_status ((cJSON *)o->json, &curl, 0, "Search");
         }
     }
+end:
+    if (status == -1) o->status = -14;
     free (encodedTerm);
     openTIDAL_CurlRequestCleanup (&curl);
     return o;

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/include/openTIDAL.h"
+#include "../src/openTIDAL.h"
 
 openTIDAL_SessionContainer session;
 

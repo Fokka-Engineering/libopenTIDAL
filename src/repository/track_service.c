@@ -36,24 +36,30 @@ openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const size_t trackid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 1);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/tracks/%zu", trackid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -63,12 +69,14 @@ openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const size_t trackid)
             parse_items_values (&track, &processed_json);
 
             o->status = 1;
-            openTIDAL_StructAddItem (o, track);
+            status = openTIDAL_StructAddItem (o, track);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, trackid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -79,26 +87,32 @@ openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limi
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 1);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/tracks", session->userId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                             session->countryCode, limit, offset, order, orderDirection);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -126,7 +140,8 @@ openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limi
                     parse_signed_number (offset, &track.offset);
                     parse_signed_number (totalNumberOfItems, &track.totalNumberOfItems);
 
-                    openTIDAL_StructAddItem (o, track);
+                    status = openTIDAL_StructAddItem (o, track);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -135,6 +150,8 @@ openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limi
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -145,21 +162,31 @@ openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const size_
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 5);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 5);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/tracks/%zu/contributors", trackid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&limit=%d&offset=%d",
                             session->countryCode, limit, offset);
+    if (!curl.endpoint || !curl.parameter) {
+        status = -1;
+        goto end;
+    }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -181,7 +208,8 @@ openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const size_
                     parse_signed_number (offset, &contrib.offset);
                     parse_signed_number (totalNumberOfItems, &contrib.totalNumberOfItems);
 
-                    openTIDAL_StructAddContributor (o, contrib);
+                    status = openTIDAL_StructAddContributor (o, contrib);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -190,6 +218,8 @@ openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const size_
             o->status = parse_status ((cJSON *)o->json, &curl, trackid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -199,24 +229,30 @@ openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, const size_t trackid
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 4);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/tracks/%zu/mix", trackid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -226,12 +262,14 @@ openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, const size_t trackid
             parse_mix_values (&mix, &processed_json);
 
             o->status = 1;
-            openTIDAL_StructAddMix (o, mix);
+            status = openTIDAL_StructAddMix (o, mix);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, trackid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -241,21 +279,30 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/tracks/%zu/playbackinfopostpaywall", trackid);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&audioquality=%s&assetpresentation=%s&playbackmode=%s",
                             session->countryCode, session->audioQuality, "FULL", "STREAM");
+    if (!curl.endpoint || !curl.parameter) {
+        status = -1;
+        goto end;
+    }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -270,15 +317,15 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
                 openTIDAL_VerboseHelper ("Base64", "Allocated decoded data in heap", 2);
                 manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o->stream.manifest));
                 if (!manifest_decoded) {
-                    o->status = -14;
-                    return o;
+                    status = -1;
+                    goto end;
                 }
 
                 openTIDAL_Base64Decode (manifest_decoded, o->stream.manifest);
                 o->jsonManifest = openTIDAL_cJSONParseHelper (manifest_decoded);
                 if (!o->jsonManifest) {
-                    o->status = -14;
-                    return o;
+                    status = -1;
+                    goto end;
                 }
 
                 processed_manifest = json_parse_manifest ((cJSON *)o->jsonManifest);
@@ -300,6 +347,8 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
             o->status = parse_status ((cJSON *)o->json, &curl, trackid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }

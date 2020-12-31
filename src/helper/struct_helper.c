@@ -52,13 +52,15 @@ openTIDAL_StructInit (openTIDAL_ContentContainer *o)
     o->credits = NULL;
     o->links = NULL;
 
-    o->home.recentlyPlayed_ArrayTypes = NULL;
-    o->home.recentlyPlayed_ArrayPosition = NULL;
-    o->home.radioStationsForYou_Start = NULL;
-    o->home.radioStationsForYou_Total = NULL;
-    o->home.becauseYouListenedTo_Start = NULL;
-    o->home.becauseYouListenedTo_Title = NULL;
-    o->home.becauseYouListenedTo_Total = NULL;
+    o->modules.moduleType = NULL;
+    o->modules.moduleTitle = NULL;
+    o->modules.modulePreTitle = NULL;
+    o->modules.arrayType = NULL;
+    o->modules.offset = NULL;
+    o->modules.total = NULL;
+    o->modules.mixedListTypes = NULL;
+    o->modules.mixedListOffset = NULL;
+    o->modules.mixedListTotal = NULL;
 
     o->status = -1;
     o->json = NULL;
@@ -198,13 +200,15 @@ openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
         }
     }
 
-    free (o->home.recentlyPlayed_ArrayTypes);
-    free (o->home.recentlyPlayed_ArrayPosition);
-    free (o->home.radioStationsForYou_Start);
-    free (o->home.radioStationsForYou_Total);
-    free (o->home.becauseYouListenedTo_Start);
-    free (o->home.becauseYouListenedTo_Title);
-    free (o->home.becauseYouListenedTo_Total);
+    free (o->modules.moduleType);
+    free (o->modules.moduleTitle);
+    free (o->modules.modulePreTitle);
+    free (o->modules.arrayType);
+    free (o->modules.offset);
+    free (o->modules.total);
+    free (o->modules.mixedListTypes);
+    free (o->modules.mixedListOffset);
+    free (o->modules.mixedListTotal);
 
     free (o->albums);
     free (o->items);

@@ -34,39 +34,50 @@ openTIDAL_GetHome (openTIDAL_SessionContainer *session)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 0);
-    openTIDAL_StructAlloc (o, 1);
-    openTIDAL_StructAlloc (o, 2);
-    openTIDAL_StructAlloc (o, 3);
-    openTIDAL_StructAlloc (o, 4);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 0);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 2);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 3);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&deviceType=BROWSER",
                             session->countryCode);
     if (!curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -14;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", "/v1/pages/home/", curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -14;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
             o->status = 1;
-            openTIDAL_ParseModules (o, (cJSON *)o->json);
-            // parse_home (o, (cJSON *)o->json);
+            status = openTIDAL_ParseModules (o, (cJSON *)o->json);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, 0, "Page Home");
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }

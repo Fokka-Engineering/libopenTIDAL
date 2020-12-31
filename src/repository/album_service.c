@@ -33,24 +33,30 @@ openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, const size_t albumid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 0);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 0);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%zu", albumid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -59,12 +65,14 @@ openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, const size_t albumid)
             parse_album_values (&album, &processed_json);
 
             o->status = 1;
-            openTIDAL_StructAddAlbum (o, album);
+            status = openTIDAL_StructAddAlbum (o, album);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, albumid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -75,25 +83,30 @@ openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const size_t album
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
+    openTIDAL_CurlModelInit (&curl);
     openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
     openTIDAL_StructInit (o);
+    if (status == -1) goto end;
     openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%zu/items", albumid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&limit=%d&offset=%d",
                             session->countryCode, limit, offset);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -121,7 +134,8 @@ openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const size_t album
                     parse_signed_number (offset, &Value.offset);
                     parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
 
-                    openTIDAL_StructAddItem (o, Value);
+                    status = openTIDAL_StructAddItem (o, Value);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -130,6 +144,8 @@ openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const size_t album
             o->status = parse_status ((cJSON *)o->json, &curl, albumid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -140,26 +156,31 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 0);
+    openTIDAL_CurlModelInit (&curl);
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 0);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/albums", session->userId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                             session->countryCode, limit, offset, order, orderDirection);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -187,7 +208,8 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
                     parse_number (offset, (size_t *)&album.offset);
                     parse_number (totalNumberOfItems, (size_t *)&album.totalNumberOfItems);
 
-                    openTIDAL_StructAddAlbum (o, album);
+                    status = openTIDAL_StructAddAlbum (o, album);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -196,6 +218,8 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -208,7 +232,9 @@ openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t al
     openTIDAL_CurlContainer curl;
     int status = -1;
 
+    openTIDAL_CurlModelInit (&curl);
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/albums", session->userId);
+
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     openTIDAL_StringHelper (&curl.postData, "albumIds=%zu&onArtifactNotFound=FAIL", albumid);
     if (!curl.endpoint || !curl.parameter || !curl.postData) {
@@ -231,6 +257,7 @@ openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t
     openTIDAL_CurlContainer curl;
     int status = -1;
 
+    openTIDAL_CurlModelInit (&curl);
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/albums/%zu", session->userId,
                             albumid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);

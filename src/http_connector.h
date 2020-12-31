@@ -38,6 +38,7 @@ typedef struct openTIDAL_CurlContainer {
 
 void openTIDAL_CurlCleanup ();
 
+void openTIDAL_CurlModelInit (openTIDAL_CurlContainer *curl);
 void openTIDAL_CurlRequestCleanup (openTIDAL_CurlContainer *model);
 
 void openTIDAL_CurlRequest (openTIDAL_SessionContainer *config, openTIDAL_CurlContainer *model,

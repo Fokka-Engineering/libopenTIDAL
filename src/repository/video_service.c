@@ -36,24 +36,30 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const size_t videoid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 1);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%zu", videoid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -63,12 +69,14 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const size_t videoid)
             parse_items_values (&video, &processed_json);
 
             o->status = 1;
-            openTIDAL_StructAddItem (o, video);
+            status = openTIDAL_StructAddItem (o, video);
         }
         else {
             o->status = parse_status ((cJSON *)o->json, &curl, videoid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -79,26 +87,32 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
-    openTIDAL_StructAlloc (o, 1);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/videos", session->userId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                             session->countryCode, limit, offset, order, orderDirection);
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -126,7 +140,8 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
                     parse_signed_number (offset, &video.offset);
                     parse_signed_number (totalNumberOfItems, &video.totalNumberOfItems);
 
-                    openTIDAL_StructAddItem (o, video);
+                    status = openTIDAL_StructAddItem (o, video);
+                    if (status == -1) goto end;
                 }
                 o->status = 1;
             }
@@ -135,6 +150,8 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
             o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
         }
     }
+end:
+    if (status == -1) o->status = 14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
@@ -204,25 +221,30 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t vide
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
+    int status = 0;
 
-    openTIDAL_StructMainAlloc (&o);
-    openTIDAL_StructInit (o);
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%zu/playbackinfopostpaywall", videoid);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&videoquality=%s&assetpresentation=%s&playbackmode=%s",
                             session->countryCode, session->videoQuality, "FULL", "STREAM");
     if (!curl.endpoint || !curl.parameter) {
-        o->status = -14;
-        return o;
+        status = -1;
+        goto end;
     }
 
     openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
         o->json = openTIDAL_cJSONParseHelper (curl.body);
         if (!o->json) {
-            o->status = -14;
-            return o;
+            status = -1;
+            goto end;
         }
 
         if (curl.responseCode == 200) {
@@ -237,8 +259,8 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t vide
                 openTIDAL_VerboseHelper ("Base64", "Allocated decoded data in heap", 2);
                 manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o->stream.manifest));
                 if (!manifest_decoded) {
-                    o->status = -14;
-                    return o;
+                    status = -1;
+                    goto end;
                 }
 
                 openTIDAL_Base64Decode (manifest_decoded, o->stream.manifest);
@@ -267,6 +289,8 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t vide
             o->status = parse_status ((cJSON *)o->json, &curl, videoid, NULL);
         }
     }
+end:
+    if (status == -1) o->status = -14;
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }

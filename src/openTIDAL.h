@@ -309,58 +309,6 @@ typedef struct openTIDAL_ModuleContainer {
     int *mixedListTotal;
 } openTIDAL_ModuleContainer;
 
-/* implementing personalised modules of home page api */
-typedef struct openTIDAL_PageHomeContainer {
-    /* the recentlyPlayed module is a mixed type module.
-     * A mixed type module can contain albums, playlists, mixes and items.
-     *
-     * The recentlyPlayedTypes array contains the information needed to
-     * reconstruct this module.
-     * You can't store different types in the same structure,
-     * that's why the reconstruction is necessary.
-     *
-     * Example:
-     * recentlyPlayed_Start = 0;
-     * recentlyPlayed_ArrayTypes = {0, 1, 2, 3, 4};
-     * recentlyPlayed_ArrayPosition = {0, 2, 4, 5, 1};
-     * recentlyPlayed_Total = 5;
-     *
-     * Use the identifiers of the openTIDAL Struct (Documented below) to
-     * access the correct array.
-     * The first item is an Album (0 = Album) and Position 0.
-     * The second item is a Video or a Track (1 = Items) and Position 2.
-     * The third item is an Artist (2 = Artist) and Position 4.
-     * The fourth item is a Playlist (3 = Playlist) and Position 5.
-     * The fifth item is a Mix (4 = Mix) and Position 1.
-     *
-     * The Array Position specifies the position in the corresponding array.
-     * The Start Parameter Defines the array start position of the allocated
-     * array(s) inside the openTIDAL struct
-     */
-    int *recentlyPlayed_ArrayTypes;
-    int *recentlyPlayed_ArrayPosition;
-    int recentlyPlayed_Total;
-
-    int mixesForYou_Start;
-    int mixesForYou_Total;
-
-    int *radioStationsForYou_Start; /* a radioStation is a Mix */
-    int *radioStationsForYou_Total;
-    int radioStationsForYou_ArraySize;
-
-    int yourHistory_Start; /* Mix List */
-    int yourHistory_Total;
-
-    int featuredPlaylists_Start;
-    int featuredPlaylists_Total;
-
-    int *becauseYouListenedTo_Start;
-    char **becauseYouListenedTo_Title;
-    int *becauseYouListenedTo_Total;
-    int becauseYouListenedTo_ArraySize;
-
-} openTIDAL_PageHomeContainer;
-
 typedef struct openTIDAL_SessionContainer {
     /* File location of persistent session config.
      * If the pointer is NULL restricted authorization
@@ -455,7 +403,6 @@ typedef struct openTIDAL_ContentContainer {
 
     openTIDAL_StreamContainer stream;
     openTIDAL_ModuleContainer modules;
-    openTIDAL_PageHomeContainer home;
 
     /* Custom status of performed request. Error handling of the tidalapi and
      * primitive http response codes are parsed to provide detailed information

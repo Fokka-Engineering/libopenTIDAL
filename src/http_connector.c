@@ -127,7 +127,7 @@ openTIDAL_CurlConcatenateUrl (openTIDAL_SessionContainer *session, char **url, c
     *url = buffer;
 }
 
-static void
+void
 openTIDAL_CurlModelInit (openTIDAL_CurlContainer *model)
 {
     model->body = NULL;
@@ -163,8 +163,6 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
                        const char *postData, const int isAuth, const int isDummy)
 {
     CURLcode res;
-
-    openTIDAL_CurlModelInit (model);
 
     if (!session->curlHandle) {
         openTIDAL_VerboseHelper ("cURL Handle", "Initialise cURL Global and cURL Easy Handle", 2);
