@@ -20,10 +20,10 @@
     THE SOFTWARE.
 */
 
-#include "cJSON.h"
-#include "handles.h"
-#include "json_models.h"
-#include "openTIDAL.h"
+#include "../external/cJSON.h"
+#include "../http_connector.h"
+#include "../openTIDAL.h"
+#include "models.h"
 
 #ifndef PARSE__h
 #define PARSE__h

@@ -20,37 +20,35 @@
     THE SOFTWARE.
 */
 
-#include "include/helper.h"
-#include "include/openTIDAL.h"
-#include <stdarg.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int
-openTIDAL_StringHelper (char **str, char *format, ...)
+#include "../helper/helper.h"
+
+/* converts an integer value to its hex character*/
+char
+to_hex (char code)
 {
-    va_list argp;
-    va_start (argp, format);
-    char one_char[1];
-    int len = vsnprintf (one_char, 1, format, argp);
-    if (len < 1) {
-        openTIDAL_VerboseHelper ("StringHelper",
-                                 "An encoding error occurred. Setting pointer to NULL", 1);
-        *str = NULL;
-        va_end (argp);
-        return len;
-    }
-    va_end (argp);
-
-    *str = malloc (len + 1);
-    if (!str) {
-        openTIDAL_VerboseHelper ("StringHelper",
-                                 "Couldn't allocate encoded string into heap. Return -1", 1);
-        return -1;
-    }
-    va_start (argp, format);
-    vsnprintf (*str, len + 1, format, argp);
-    va_end (argp);
-    return len;
+    static char hex[] = "0123456789abcdef";
+    return hex[code & 15];
 }
 
+/* returns a url-encoded version of str */
+char *
+openTIDAL_UrlEncodeHelper (char *str)
+{
+    char *pstr = str, *buf = malloc (strlen (str) * 3 + 1), *pbuf = buf;
+    while (*pstr) {
+        if (isalnum (*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
+            *pbuf++ = *pstr;
+        else if (*pstr == ' ')
+            *pbuf++ = '+';
+        else
+            *pbuf++ = '%', *pbuf++ = to_hex (*pstr >> 4), *pbuf++ = to_hex (*pstr & 15);
+        pstr++;
+    }
+    *pbuf = '\0';
+    return buf;
+}

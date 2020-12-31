@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-#include "../../include/openTIDAL.h"
+#include "../../openTIDAL.h"
 
 #ifndef ARRAYHELPER__h
 #define ARRAYHELPER__h

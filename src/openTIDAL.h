@@ -295,6 +295,8 @@ typedef struct openTIDAL_ModuleContainer {
     int arrayCapacity;
 
     char **moduleType;
+    char **moduleTitle;
+    char **modulePreTitle;
     int *arrayType;
     int *offset;
     int *total;

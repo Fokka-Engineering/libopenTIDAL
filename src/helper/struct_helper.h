@@ -23,7 +23,7 @@
 #ifndef STRUCT__h
 #define STRUCT__h
 
-#include "openTIDAL.h"
+#include "../openTIDAL.h"
 
 /* Memory management of main struct (Heap Allocation & Deallocation)
  * pointer to struct parameter to avoid a copy in stack  */

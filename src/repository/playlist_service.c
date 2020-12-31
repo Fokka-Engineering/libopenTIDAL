@@ -20,11 +20,11 @@
     THE SOFTWARE.
 */
 
-#include "../include/handles.h"
-#include "../include/helper.h"
-#include "../include/openTIDAL.h"
-#include "../include/parse.h"
-#include "../include/struct.h"
+#include "../helper/helper.h"
+#include "../helper/struct_helper.h"
+#include "../http_connector.h"
+#include "../openTIDAL.h"
+#include "../parse/parse.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -20,10 +20,10 @@
     THE SOFTWARE.
 */
 
-#include "include/cJSON.h"
-#include "include/helper.h"
-#include "include/openTIDAL.h"
-#include "include/struct.h"
+#include "../helper/struct_helper.h"
+#include "../external/cJSON.h"
+#include "../helper/helper.h"
+#include "../openTIDAL.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -342,7 +342,9 @@ openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContaine
     }
     o->albums[o->total[index]++] = album;
 
-    openTIDAL_VerboseHelper ("Struct", "Add item to array (identifier 0)", 2);
+    openTIDAL_VerboseHelper ("Struct",
+                             "Add item to array (identifier 0) // Total: %d // Capacity: %d", 2,
+                             o->total[index], o->capacity[index]);
     return 0;
 }
 
@@ -356,8 +358,9 @@ openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer
         if (status == -1) return -1;
     }
     o->items[o->total[index]++] = item;
-
-    openTIDAL_VerboseHelper ("Struct", "Add item to array (identifier 1)", 2);
+    openTIDAL_VerboseHelper ("Struct",
+                             "Add item to array (identifier 1) // Total: %d // Capacity: %d", 2,
+                             o->total[index], o->capacity[index]);
     return 0;
 }
 
@@ -372,7 +375,9 @@ openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContai
     }
     o->artists[o->total[index]++] = artist;
 
-    openTIDAL_VerboseHelper ("Struct", "Add item to array (identifier 2)", 2);
+    openTIDAL_VerboseHelper ("Struct",
+                             "Add item to array (identifier 2) // Total: %d // Capacity: %d", 2,
+                             o->total[index], o->capacity[index]);
     return 0;
 }
 
@@ -387,7 +392,9 @@ openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o, openTIDAL_PlaylistCo
     }
     o->playlists[o->total[index]++] = playlist;
 
-    openTIDAL_VerboseHelper ("Struct", "Add item to array (identifier 3)", 2);
+    openTIDAL_VerboseHelper ("Struct",
+                             "Add item to array (identifier 3) // Total: %d // Capacity: %d", 2,
+                             o->total[index], o->capacity[index]);
     return 0;
 }
 
@@ -402,7 +409,9 @@ openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mi
     }
     o->mixes[o->total[index]++] = mix;
 
-    openTIDAL_VerboseHelper ("Struct", "Add item to array (identifier 4)", 2);
+    openTIDAL_VerboseHelper ("Struct",
+                             "Add item to array (identifier 4) // Total: %d // Capacity: %d", 2,
+                             o->total[index], o->capacity[index]);
     return 0;
 }
 

@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-#include "../../include/openTIDAL.h"
+#include "../../openTIDAL.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -33,10 +33,13 @@ openTIDAL_ParseModuleAllocHelper (openTIDAL_ContentContainer *o)
     o->modules.arraySize = 0;
 
     o->modules.moduleType = malloc (sizeof (char *) * init_capacity);
+    o->modules.moduleTitle = malloc (sizeof (char *) * init_capacity);
+    o->modules.modulePreTitle = malloc (sizeof (char *) * init_capacity);
     o->modules.arrayType = malloc (sizeof (int) * init_capacity);
     o->modules.offset = malloc (sizeof (int) * init_capacity);
     o->modules.total = malloc (sizeof (int) * init_capacity);
-    if (!o->modules.moduleType || !o->modules.arrayType || !o->modules.offset || !o->modules.total)
+    if (!o->modules.moduleType || !o->modules.arrayType || !o->modules.offset || !o->modules.total
+        || !o->modules.moduleTitle || !o->modules.modulePreTitle)
         return -1;
     return 0;
 }
@@ -45,11 +48,17 @@ static int
 openTIDAL_ParseModuleResize (openTIDAL_ContentContainer *o, int capacity)
 {
     o->modules.moduleType = realloc (o->modules.moduleType, sizeof (char *) * capacity);
+    if (!o->modules.moduleType) return -1;
     o->modules.arrayType = realloc (o->modules.arrayType, sizeof (int) * capacity);
+    if (!o->modules.arrayType) return -1;
     o->modules.offset = realloc (o->modules.offset, sizeof (int) * capacity);
+    if (!o->modules.offset) return -1;
     o->modules.total = realloc (o->modules.total, sizeof (int) * capacity);
-    if (!o->modules.moduleType || !o->modules.arrayType || !o->modules.offset || !o->modules.total)
-        return -1;
+    if (!o->modules.total) return -1;
+    o->modules.moduleTitle = realloc (o->modules.moduleTitle, sizeof (char *) * capacity);
+    if (!o->modules.moduleTitle) return -1;
+    o->modules.modulePreTitle = realloc (o->modules.modulePreTitle, sizeof (char *) * capacity);
+    if (!o->modules.modulePreTitle) return -1;
     return 0;
 }
 
@@ -66,7 +75,10 @@ openTIDAL_ParseModuleAdd (openTIDAL_ContentContainer *o, int index, char *str, i
 
     switch (index) {
     case 0: // moduleType
-        if (str) o->modules.moduleType[o->modules.arraySize] = str;
+        if (str)
+            o->modules.moduleType[o->modules.arraySize] = str;
+        else
+            o->modules.moduleType[o->modules.arraySize] = NULL;
         break;
     case 1: // arrayType
         o->modules.arrayType[o->modules.arraySize] = number;
@@ -76,6 +88,18 @@ openTIDAL_ParseModuleAdd (openTIDAL_ContentContainer *o, int index, char *str, i
         break;
     case 3: // total
         o->modules.total[o->modules.arraySize] = number;
+        break;
+    case 4: // moduleTitle
+        if (str)
+            o->modules.moduleTitle[o->modules.arraySize] = str;
+        else
+            o->modules.moduleTitle[o->modules.arraySize] = NULL;
+        break;
+    case 5: // modulePreTitle
+        if (str)
+            o->modules.modulePreTitle[o->modules.arraySize] = str;
+        else
+            o->modules.modulePreTitle[o->modules.arraySize] = NULL;
         break;
     }
     return 0;

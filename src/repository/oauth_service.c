@@ -26,11 +26,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "../include/handles.h"
-#include "../include/helper.h"
-#include "../include/openTIDAL.h"
-#include "../include/parse.h"
-#include "../include/struct.h"
+#include "../helper/helper.h"
+#include "../helper/struct_helper.h"
+#include "../http_connector.h"
+#include "../openTIDAL.h"
+#include "../parse/parse.h"
 
 openTIDAL_ContentContainer *
 openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)

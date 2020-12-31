@@ -20,11 +20,11 @@
     THE SOFTWARE.
 */
 
-#include "../../include/cJSON.h"
-#include "../../include/openTIDAL.h"
-#include "../../include/parse.h"
-#include "../../include/parseModules.h"
-#include "../../include/struct.h"
+#include "modules.h"
+#include "../../external/cJSON.h"
+#include "../../helper/struct_helper.h"
+#include "../../openTIDAL.h"
+#include "../parse.h"
 #include "arrayHelper.h"
 #include <stdio.h>
 #include <string.h>
@@ -88,54 +88,59 @@ openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json)
             parse_string (m.preTitle, &m.preTitleString);
             parse_string (m.type, &m.typeString);
 
-            /* Set Offset and Total to 0  */
+            /* Set Offset and Total to 0
+             * Check for Reallocation error once since this is a common array.  */
             status = openTIDAL_ParseModuleAdd (o, 2, NULL, 0);
             if (status == -1) return -1;
-            status = openTIDAL_ParseModuleAdd (o, 3, NULL, 0);
-            if (status == -1) return -1;
+            openTIDAL_ParseModuleAdd (o, 3, NULL, 0);
 
             /* Determine the type of the module. */
             if (m.typeString)
                 for (i = 0; i < 6; i++) {
                     int type = -2;
                     if (strcmp (moduleTypes[i], m.typeString) == 0) {
+
+                        if (status == -1) return -1;
+
                         switch (i) {
                         case 0: // MIXED_TYPES_LIST / ID = -1
                             type = -1;
                             break;
                         case 1: // ALBUM_LIST
                             type = 0;
-
+                            openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
                             openTIDAL_ParseModuleAlbumList (o, &m);
                             break;
                         case 2: // TRACK_LIST
                             type = 1;
+                            openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
                             openTIDAL_ParseModuleTrackList (o, &m);
                             break;
                         case 3: // VIDEO_LIST
                             type = 1;
+                            openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
                             openTIDAL_ParseModuleVideoList (o, &m);
                             break;
                         case 4: // PLAYLIST_LIST
                             type = 3;
+                            openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
                             openTIDAL_ParseModulePlaylistList (o, &m);
                             break;
                         case 5: // MIX_LIST
                             type = 4;
+                            openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
                             openTIDAL_ParseModuleMixList (o, &m);
                             break;
                         }
-                        status = openTIDAL_ParseModuleAdd (o, 2, NULL, o->total[type]);
-                        if (status == -1) return -1;
-                        status = openTIDAL_ParseModuleAdd (o, 1, NULL, type);
-                        if (status == -1) return -1;
-                        status = openTIDAL_ParseModuleAdd (o, 0, m.typeString, 0);
-                        if (status == -1) return -1;
+
+                        openTIDAL_ParseModuleAdd (o, 1, NULL, type);
+                        openTIDAL_ParseModuleAdd (o, 0, m.typeString, 0);
+                        openTIDAL_ParseModuleAdd (o, 4, m.titleString, 0);
+                        openTIDAL_ParseModuleAdd (o, 5, m.preTitleString, 0);
+                        o->modules.arraySize++;
                         break;
                     }
-                    // break;
                 };
-            o->modules.arraySize++;
         };
     return 0;
 }

@@ -25,10 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "include/handles.h"
-#include "include/helper.h"
-#include "include/openTIDAL.h"
-#include "include/parse.h"
+#include "external/cJSON.h"
+#include "helper/helper.h"
+#include "http_connector.h"
+#include "openTIDAL.h"
+#include "parse/parse.h"
 
 struct openTIDAL_CurlMemory {
     char *memory;

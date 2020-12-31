@@ -20,51 +20,37 @@
     THE SOFTWARE.
 */
 
+#include "../helper/helper.h"
+#include "../openTIDAL.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/helper.h"
-#include "include/openTIDAL.h"
-
-/* Loglevel:
- *   0 = Disabled
- *   1 = Error
- *   2 = Debug
- *   3 = Trace*/
-int globalLoglevel = 1;
-
-void
-openTIDAL_Verbose (int loglevel)
-{
-    globalLoglevel = loglevel;
-}
-
 int
-openTIDAL_GetLogLevel ()
+openTIDAL_StringHelper (char **str, char *format, ...)
 {
-    return globalLoglevel;
-}
-
-void
-openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
-{
-    char str[256];
-
-    if (loglevel <= globalLoglevel) {
-        va_list argp;
-        va_start (argp, loglevel);
-        vsnprintf (str, sizeof (str), format, argp);
+    va_list argp;
+    va_start (argp, format);
+    char one_char[1];
+    int len = vsnprintf (one_char, 1, format, argp);
+    if (len < 1) {
+        openTIDAL_VerboseHelper ("StringHelper",
+                                 "An encoding error occurred. Setting pointer to NULL", 1);
+        *str = NULL;
         va_end (argp);
-
-        switch (loglevel) {
-        case 1:
-            fprintf (stderr, "[%s] %s.\n", prefix, str);
-            break;
-
-        default:
-            fprintf (stdout, "[%s] %s.\n", prefix, str);
-            break;
-        }
+        return len;
     }
+    va_end (argp);
+
+    *str = malloc (len + 1);
+    if (!str) {
+        openTIDAL_VerboseHelper ("StringHelper",
+                                 "Couldn't allocate encoded string into heap. Return -1", 1);
+        return -1;
+    }
+    va_start (argp, format);
+    vsnprintf (*str, len + 1, format, argp);
+    va_end (argp);
+    return len;
 }
+

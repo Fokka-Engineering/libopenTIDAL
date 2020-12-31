@@ -20,19 +20,51 @@
     THE SOFTWARE.
 */
 
-#include "cJSON.h"
-#include "openTIDAL.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifndef PARSEMODULES__h
-#define PARSEMODULES__h
+#include "../helper/helper.h"
+#include "../openTIDAL.h"
 
-struct moduleStruct;
+/* Loglevel:
+ *   0 = Disabled
+ *   1 = Error
+ *   2 = Debug
+ *   3 = Trace*/
+int globalLoglevel = 1;
 
-/* TIDALs page endpoints (home, explore, videos, mix) have a different json structure.
- * These pages have their content seperated in segments. Each segment has a different type
- * of media. A segment is called a module in the TIDAL API.
- * In this case the ContentArrays inside the openTIDAL_ContentContainer structure are
- * pools. The correct data is accessed by defined offsets. */
-int openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json);
+void
+openTIDAL_Verbose (int loglevel)
+{
+    globalLoglevel = loglevel;
+}
 
-#endif // PARSEMODULES__h
+int
+openTIDAL_GetLogLevel ()
+{
+    return globalLoglevel;
+}
+
+void
+openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
+{
+    char str[256];
+
+    if (loglevel <= globalLoglevel) {
+        va_list argp;
+        va_start (argp, loglevel);
+        vsnprintf (str, sizeof (str), format, argp);
+        va_end (argp);
+
+        switch (loglevel) {
+        case 1:
+            fprintf (stderr, "[%s] %s.\n", prefix, str);
+            break;
+
+        default:
+            fprintf (stdout, "[%s] %s.\n", prefix, str);
+            break;
+        }
+    }
+}

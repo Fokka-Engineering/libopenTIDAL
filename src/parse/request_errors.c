@@ -20,9 +20,9 @@
     THE SOFTWARE.
 */
 
-#include "../include/helper.h"
-#include "../include/openTIDAL.h"
-#include "../include/parse.h"
+#include "../helper/helper.h"
+#include "../openTIDAL.h"
+#include "parse.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-#include "cJSON.h"
+#include "../external/cJSON.h"
 
 #ifndef cJSON_MODEL__h
 #define cJSON_MODEL__h

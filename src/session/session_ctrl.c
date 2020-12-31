@@ -26,10 +26,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "include/handles.h"
-#include "include/helper.h"
-#include "include/openTIDAL.h"
-#include "include/parse.h"
+#include "../helper/helper.h"
+#include "../http_connector.h"
+#include "../openTIDAL.h"
+#include "../parse/parse.h"
 
 static void openTIDAL_SessionInitContainer (openTIDAL_SessionContainer *session);
 static const char *openTIDAL_SessionCreateFileStream (openTIDAL_SessionContainer *session);

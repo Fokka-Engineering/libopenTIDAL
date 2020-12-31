@@ -20,25 +20,19 @@
     THE SOFTWARE.
 */
 
-#include "include/cJSON.h"
-#include "include/helper.h"
-#include "include/openTIDAL.h"
+#include "../../external/cJSON.h"
+#include "../../openTIDAL.h"
 
-void *
-openTIDAL_cJSONParseHelper (char *input)
-{
-    cJSON *input_json;
-    input_json = cJSON_Parse (input);
+#ifndef PARSEMODULES__h
+#define PARSEMODULES__h
 
-    if (!input_json) {
-        const char *error_ptr = cJSON_GetErrorPtr ();
-        if (error_ptr) {
-            openTIDAL_VerboseHelper (
-                "cJSONParseHelper",
-                "cJSON_GetErrorPtr is not NULL. Error in parsing the char stream", 1);
-            return NULL;
-        }
-    }
-    return input_json;
-}
+struct moduleStruct;
 
+/* TIDALs page endpoints (home, explore, videos, mix) have a different json structure.
+ * These pages have their content seperated in segments. Each segment has a different type
+ * of media. A segment is called a module in the TIDAL API.
+ * In this case the ContentArrays inside the openTIDAL_ContentContainer structure are
+ * pools. The correct data is accessed by defined offsets. */
+int openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json);
+
+#endif // PARSEMODULES__h
