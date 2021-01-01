@@ -43,9 +43,9 @@ A python module using openTIDAL is also available and easy to install.
 * Mixes (also known as Radio)
 * Favourites Management
 * Recently Played, Your History, Because You Listened To {album} and other user-based content recommendations
-* Pagination
+* Pagination (Limit & Offset)
 * Order & Sort Filters
-* DRM-Free Content HTTP Streams (Audio & Video)
+* Content HTTP Streams (Audio & Video)
 * Easy and Extensive Error Handling
 
 ### Building
