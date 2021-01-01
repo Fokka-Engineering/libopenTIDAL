@@ -30,6 +30,8 @@
 
 void *openTIDAL_cJSONParseHelper (char *input);
 
+void openTIDAL_ParseHeaderKeyHelper (char *buffer, char *key, char **Value);
+
 void parse_double (cJSON *object, double *number);
 void parse_number (cJSON *object, size_t *number);
 void parse_signed_number (cJSON *object, int *number);
@@ -89,6 +91,5 @@ void parse_stream_values (openTIDAL_StreamContainer *stream, json_stream_model *
 
 /* extra */
 void parse_search (openTIDAL_ContentContainer *o, cJSON *input_json);
-void parse_home (openTIDAL_ContentContainer *o, cJSON *input_json);
 
 #endif

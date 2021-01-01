@@ -21,5 +21,33 @@
 */
 
 #include "parse.h"
-
 #include <stdio.h>
+#include <string.h>
+
+/* Parse libcURL allocated http headerdata callback.
+ * HTTP Header Scheme:
+ * {key}: {value}
+ *
+ * Usage:
+ * Specify the buffer and key values. If the key is equal to a key in the buffer, the Value pointer
+ * will point to the value. If the comparison results in no match, the Value pointer is NULL. */
+void
+openTIDAL_ParseHeaderKeyHelper (char *buffer, char *key, char **Value)
+{
+    const char delim[] = "\n";
+    char *token, *sep;
+    sep = NULL;
+    int i;
+
+    token = strtok (buffer, delim);
+    while (token != NULL) {
+        i = 0;
+        if (strncmp (token, key, strlen (key)) == 0) {
+            while ((sep = strsep (&token, ":")) != NULL) {
+                if (i == 1) *Value = sep + 1;
+                i += 1;
+            }
+        }
+        token = strtok (NULL, delim);
+    }
+}

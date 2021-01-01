@@ -177,6 +177,7 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
         struct openTIDAL_CurlMemory memchunk;
         char *url = NULL;
         char *header = NULL;
+        int isHead = 0;
 
         /* check if access_token has expired  */
         if (!isAuth) {
@@ -193,17 +194,19 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
         openTIDAL_VerboseHelper ("cURL Handle", "Begin curl_easy_opt configuration", 2);
 
         curl_easy_setopt (session->curlHandle, CURLOPT_URL, url);
+        curl_easy_setopt (session->curlHandle, CURLOPT_NOBODY, 0L);
+        curl_easy_setopt (session->curlHandle, CURLOPT_HEADERFUNCTION, NULL);
+        curl_easy_setopt (session->curlHandle, CURLOPT_HEADERDATA, NULL);
+        curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
 
         if (strncmp (type, "GET", 4) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a GET Request", 2);
             curl_easy_setopt (session->curlHandle, CURLOPT_HTTPGET, 1L);
-            curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if (strncmp (type, "POST", 5) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a POST Request", 2);
             curl_easy_setopt (session->curlHandle, CURLOPT_HTTPPOST, 1L);
             curl_easy_setopt (session->curlHandle, CURLOPT_POSTFIELDS, postData);
-            curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
         }
         else if (strncmp (type, "DELETE", 7) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a DELETE Request", 2);
@@ -215,8 +218,16 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
             curl_easy_setopt (session->curlHandle, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, "PUT");
         }
+        else if (strncmp (type, "HEAD", 5) == 0) {
+            openTIDAL_VerboseHelper ("cURL Handle", "Perform a HEAD Request", 1);
+            curl_easy_setopt (session->curlHandle, CURLOPT_NOBODY, 1L);
+            curl_easy_setopt (session->curlHandle, CURLOPT_HEADERFUNCTION,
+                              openTIDAL_CurlCallbackFunction);
+            curl_easy_setopt (session->curlHandle, CURLOPT_HEADERDATA, &memchunk);
+            isHead = 1;
+        }
 
-        if (!isDummy) {
+        if (!isDummy && !isHead) {
             curl_easy_setopt (session->curlHandle, CURLOPT_WRITEFUNCTION,
                               openTIDAL_CurlCallbackFunction);
             curl_easy_setopt (session->curlHandle, CURLOPT_WRITEDATA, &memchunk);
