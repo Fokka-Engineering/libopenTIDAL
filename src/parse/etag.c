@@ -20,51 +20,6 @@
     THE SOFTWARE.
 */
 
-#include <stdarg.h>
+#include "parse.h"
+
 #include <stdio.h>
-#include <stdlib.h>
-
-#include "../helper/helper.h"
-#include "../openTIDAL.h"
-
-/* Loglevel:
- *   0 = Disabled
- *   1 = Error
- *   2 = Debug
- *   3 = Trace*/
-int globalLoglevel = 1;
-
-void
-openTIDAL_Verbose (int loglevel)
-{
-    globalLoglevel = loglevel;
-}
-
-int
-openTIDAL_GetLogLevel ()
-{
-    return globalLoglevel;
-}
-
-void
-openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
-{
-    char str[256];
-
-    if (loglevel <= globalLoglevel) {
-        va_list argp;
-        va_start (argp, loglevel);
-        vsnprintf (str, sizeof (str), format, argp);
-        va_end (argp);
-
-        switch (loglevel) {
-        case 1:
-            fprintf (stderr, "[%s] %s.\n", prefix, str);
-            break;
-
-        default:
-            fprintf (stdout, "[%s] %s.\n", prefix, str);
-            break;
-        }
-    }
-}
