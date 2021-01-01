@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetHome (openTIDAL_SessionContainer *session)
+openTIDAL_GetPageHome (openTIDAL_SessionContainer *session)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -51,6 +51,8 @@ openTIDAL_GetHome (openTIDAL_SessionContainer *session)
     status = openTIDAL_StructAlloc (o, 3);
     if (status == -1) goto end;
     status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -6);
     if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&deviceType=BROWSER",
@@ -81,3 +83,52 @@ end:
     openTIDAL_CurlRequestCleanup (&curl);
     return o;
 }
+
+openTIDAL_ContentContainer *
+openTIDAL_GetPageMixes (openTIDAL_SessionContainer *session)
+{
+    openTIDAL_ContentContainer *o = NULL;
+    openTIDAL_CurlContainer curl;
+    const char *endpoint = "/v1/pages/my_collection_my_mixes";
+    int status = 0;
+
+    openTIDAL_CurlModelInit (&curl);
+
+    status = openTIDAL_StructMainAlloc (&o);
+    if (status == -1) return NULL;
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructAlloc (o, 4);
+    if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -6);
+    if (status == -1) goto end;
+
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&deviceType=BROWSER",
+                            session->countryCode);
+    if (!curl.parameter) {
+        status = -1;
+        goto end;
+    }
+
+    openTIDAL_CurlRequest (session, &curl, "GET", endpoint, curl.parameter, NULL, 0, 0);
+    if (curl.status != -1) {
+        o->json = openTIDAL_cJSONParseHelper (curl.body);
+        if (!o->json) {
+            status = -1;
+            goto end;
+        }
+
+        if (curl.responseCode == 200) {
+            o->status = 1;
+            status = openTIDAL_ParseModules (o, (cJSON *)o->json);
+        }
+        else {
+            o->status = parse_status ((cJSON *)o->json, &curl, 0, "Page Mixes");
+        }
+    }
+end:
+    if (status == -1) o->status = -14;
+    openTIDAL_CurlRequestCleanup (&curl);
+    return o;
+}
+

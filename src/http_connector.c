@@ -187,7 +187,6 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
         memchunk.size = 0;
 
         openTIDAL_CurlConcatenateUrl (session, &url, endpoint, parameter, isAuth);
-        openTIDAL_CurlConcatenateAuthHeader (session, &header);
 
         openTIDAL_VerboseHelper ("cURL Handle", "Url: %s", 3, url);
         openTIDAL_VerboseHelper ("cURL Handle", "Header: %s", 3, header);
@@ -233,8 +232,9 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
         }
         else {
             /* Add auth header */
-            chunk = curl_slist_append (chunk, header);
+            openTIDAL_CurlConcatenateAuthHeader (session, &header);
 
+            chunk = curl_slist_append (chunk, header);
             curl_easy_setopt (session->curlHandle, CURLOPT_HTTPHEADER, chunk);
         }
 

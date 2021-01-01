@@ -45,6 +45,8 @@ openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
     openTIDAL_CurlModelInit (&curl);
     status = openTIDAL_StructInit (o);
     if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -1);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&scope=%s", session->clientId,
                             session->scopes);
@@ -62,14 +64,10 @@ openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_LoginCodeContainer Value;
-
             json_login_code_model processed_json = json_parse_login_code ((cJSON *)o->json);
-            parse_login_code_values (&Value, &processed_json);
+            parse_login_code_values (o->code, &processed_json);
             o->status = 1;
-            Value.expires_in = time (NULL) + Value.timeFrame;
-
-            o->code = Value;
+            o->code->expires_in = time (NULL) + o->code->timeFrame;
         }
         else {
             openTIDAL_VerboseHelper ("oAuth2", "Not a 200 Response", 1);
@@ -96,6 +94,8 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
     openTIDAL_CurlModelInit (&curl);
     status = openTIDAL_StructInit (o);
     if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -2);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData, "client_id=%s&device_code=%s&grant_type=%s&scope=%s",
                             session->clientId, device_code, grant_type, session->scopes);
@@ -120,28 +120,28 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *devi
 
         if (cJSON_IsNumber (check_status) != 1) {
             json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
-            parse_login_token_values (&o->token, &processed_json);
+            parse_login_token_values (o->token, &processed_json);
             o->status = 1;
 
-            o->token.expires_in = o->token.timeFrame + time (NULL);
-            session->expiresIn = o->token.expires_in;
-            session->countryCode = o->token.countryCode;
-            session->userId = o->token.userId;
-            session->accessToken = o->token.access_token;
-            session->username = o->token.username;
-            session->refreshToken = o->token.refresh_token;
+            o->token->expires_in = o->token->timeFrame + time (NULL);
+            session->expiresIn = o->token->expires_in;
+            session->countryCode = o->token->countryCode;
+            session->userId = o->token->userId;
+            session->accessToken = o->token->access_token;
+            session->username = o->token->username;
+            session->refreshToken = o->token->refresh_token;
             session->tokenRequest = o->json;
 
             /* get subscription info */
             openTIDAL_ContentContainer *sub = openTIDAL_GetUserSubscription (session);
             if (sub->status == 1) {
-                if (strcmp (sub->subscription.highestSoundQuality, "HIGH") == 0) {
+                if (strcmp (sub->subscription->highestSoundQuality, "HIGH") == 0) {
                     session->audioQuality = "HIGH";
                 }
-                else if (strcmp (sub->subscription.highestSoundQuality, "LOSSLESS") == 0) {
+                else if (strcmp (sub->subscription->highestSoundQuality, "LOSSLESS") == 0) {
                     session->audioQuality = "LOSSLESS";
                 }
-                else if (strcmp (sub->subscription.highestSoundQuality, "HI_RES") == 0) {
+                else if (strcmp (sub->subscription->highestSoundQuality, "HI_RES") == 0) {
                     session->audioQuality = "HI_RES";
                 }
             }
@@ -174,6 +174,8 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *ref
     openTIDAL_CurlModelInit (&curl);
     status = openTIDAL_StructInit (o);
     if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -2);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.postData,
                             "client_id=%s&refresh_token=%s&grant_type=refresh_token&scope=%s",
@@ -193,7 +195,7 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *ref
 
         if (curl.responseCode == 200) {
             json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
-            parse_login_token_values (&o->token, &processed_json);
+            parse_login_token_values (o->token, &processed_json);
 
             o->status = 1;
         }

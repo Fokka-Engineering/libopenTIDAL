@@ -82,81 +82,6 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limit, const int offset,
-                             const char *order, const char *orderDirection)
-{
-    openTIDAL_ContentContainer *o = NULL;
-    openTIDAL_CurlContainer curl;
-    int status = 0;
-
-    openTIDAL_CurlModelInit (&curl);
-
-    status = openTIDAL_StructMainAlloc (&o);
-    if (status == -1) return NULL;
-    status = openTIDAL_StructInit (o);
-    if (status == -1) goto end;
-    status = openTIDAL_StructAlloc (o, 1);
-    if (status == -1) goto end;
-
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/tracks", session->userId);
-    openTIDAL_StringHelper (&curl.parameter,
-                            "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
-                            session->countryCode, limit, offset, order, orderDirection);
-    if (!curl.endpoint || !curl.parameter) {
-        status = -1;
-        goto end;
-    }
-
-    openTIDAL_CurlRequest (session, &curl, "GET", curl.endpoint, curl.parameter, NULL, 0, 0);
-    if (curl.status != -1) {
-        o->json = openTIDAL_cJSONParseHelper (curl.body);
-        if (!o->json) {
-            status = -1;
-            goto end;
-        }
-
-        if (curl.responseCode == 200) {
-            cJSON *items = NULL;
-            cJSON *item = NULL;
-            cJSON *limit = NULL;
-            cJSON *offset = NULL;
-            cJSON *totalNumberOfItems = NULL;
-
-            items = cJSON_GetObjectItem ((cJSON *)o->json, "items");
-            limit = cJSON_GetObjectItem ((cJSON *)o->json, "limit");
-            offset = cJSON_GetObjectItem ((cJSON *)o->json, "offset");
-            totalNumberOfItems = cJSON_GetObjectItem ((cJSON *)o->json, "totalNumberOfItems");
-
-            if (cJSON_IsArray (items)) {
-                cJSON_ArrayForEach (item, items)
-                {
-                    openTIDAL_ItemsContainer track;
-                    cJSON *innerItem = cJSON_GetObjectItem (item, "item");
-
-                    json_items_model processed_json = json_parse_items (innerItem);
-
-                    parse_items_values (&track, &processed_json);
-                    parse_signed_number (limit, &track.limit);
-                    parse_signed_number (offset, &track.offset);
-                    parse_signed_number (totalNumberOfItems, &track.totalNumberOfItems);
-
-                    status = openTIDAL_StructAddItem (o, track);
-                    if (status == -1) goto end;
-                }
-                o->status = 1;
-            }
-        }
-        else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
-        }
-    }
-end:
-    if (status == -1) o->status = -14;
-    openTIDAL_CurlRequestCleanup (&curl);
-    return o;
-}
-
-openTIDAL_ContentContainer *
 openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const size_t trackid,
                                 const int limit, const int offset)
 {
@@ -287,6 +212,8 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
     if (status == -1) return NULL;
     status = openTIDAL_StructInit (o);
     if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -5);
+    if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/tracks/%zu/playbackinfopostpaywall", trackid);
     openTIDAL_StringHelper (&curl.parameter,
@@ -307,21 +234,21 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
 
         if (curl.responseCode == 200) {
             json_stream_model processed_json = json_parse_stream ((cJSON *)o->json);
-            parse_stream_values (&o->stream, &processed_json);
+            parse_stream_values (o->stream, &processed_json);
             o->status = 0;
 
-            if (strcmp (o->stream.manifestMimeType, "application/vnd.tidal.bts") == 0) {
+            if (strcmp (o->stream->manifestMimeType, "application/vnd.tidal.bts") == 0) {
                 json_manifest_model processed_manifest;
                 char *manifest_decoded = NULL;
 
                 openTIDAL_VerboseHelper ("Base64", "Allocated decoded data in heap", 2);
-                manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o->stream.manifest));
+                manifest_decoded = malloc (openTIDAL_Base64DecodeLen (o->stream->manifest));
                 if (!manifest_decoded) {
                     status = -1;
                     goto end;
                 }
 
-                openTIDAL_Base64Decode (manifest_decoded, o->stream.manifest);
+                openTIDAL_Base64Decode (manifest_decoded, o->stream->manifest);
                 o->jsonManifest = openTIDAL_cJSONParseHelper (manifest_decoded);
                 if (!o->jsonManifest) {
                     status = -1;
@@ -329,10 +256,10 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trac
                 }
 
                 processed_manifest = json_parse_manifest ((cJSON *)o->jsonManifest);
-                parse_string (processed_manifest.mimeType, &o->stream.mimeType);
-                parse_string (processed_manifest.codec, &o->stream.codec);
-                parse_string (processed_manifest.encryptionType, &o->stream.encryptionType);
-                parse_string (processed_manifest.url, &o->stream.url);
+                parse_string (processed_manifest.mimeType, &o->stream->mimeType);
+                parse_string (processed_manifest.codec, &o->stream->codec);
+                parse_string (processed_manifest.encryptionType, &o->stream->encryptionType);
+                parse_string (processed_manifest.url, &o->stream->url);
                 o->status = 1;
                 free (manifest_decoded);
             }
@@ -353,47 +280,3 @@ end:
     return o;
 }
 
-/* create & delete favourites */
-
-/*int openTIDAL_AddFavoriteTrack(const size_t trackid)
-{
-    char *endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/tracks", 1);
-    int status;
-    char buffer[100];
-    snprintf(buffer, 100, "trackIds=%zu&onArtifactNotFound=FAIL", trackid);
-
-    curl_model curl = curl_post(endpoint, buffer, "");
-    free(endpoint);
-    free(curl.body);
-    if (curl.status != -1)
-    {
-        status = parse_raw_status(&curl.responseCode);
-        return status;
-    }
-    else
-    {
-        return -1;
-    }
-}
-
-int openTIDAL_DeleteFavoriteTrack(const size_t trackid)
-{
-    int status;
-    char buffer[80];
-    snprintf(buffer, 80, "/v1/users/%zu/favorites/tracks/%zu?countryCode=%s", session->userId,
-trackid, session->countryCode);
-
-    curl_model curl = curl_delete(buffer, "", "");
-    free(curl.body);
-
-    if (curl.status != -1)
-    {
-        status = parse_raw_status(&curl.responseCode);
-        return status;
-    }
-    else
-    {
-        return -1;
-    }
-}
-*/

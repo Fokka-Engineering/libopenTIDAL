@@ -1,4 +1,4 @@
-#include "../src/include/openTIDAL.h"
+#include "../src/openTIDAL.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,25 +7,25 @@ void
 login_polling (openTIDAL_SessionContainer *session)
 {
     openTIDAL_ContentContainer *resolve = openTIDAL_AuthCreateUserCode (session);
-    if (resolve.status == 1) {
-        printf ("DeviceCode: %s\n", resolve.code.deviceCode);
-        printf ("UserCode: %s\n", resolve.code.userCode);
+    if (resolve->status == 1) {
+        printf ("DeviceCode: %s\n", resolve->code->deviceCode);
+        printf ("UserCode: %s\n", resolve->code->userCode);
         size_t i;
-        while (time (NULL) <= resolve.code.expires_in) {
+        while (time (NULL) <= resolve->code->expires_in) {
             sleep (2);
             openTIDAL_ContentContainer *token
-                = openTIDAL_AuthCreateBearerToken (session, resolve.code.deviceCode);
-            if (token.status == 2) {
+                = openTIDAL_AuthCreateBearerToken (session, resolve->code->deviceCode);
+            if (token->status == 2) {
                 printf ("%s\n", "Authorization Pending...");
             }
-            else if (token.status == 1) {
+            else if (token->status == 1) {
                 printf ("%s\n", "Authorization Successfull!");
-                printf ("AccessToken: %s\n", token.token.access_token);
-                printf ("RefreshToken: %s\n", token.token.refresh_token);
-                printf ("Timestamp: %zu\n", token.token.expires_in);
-                printf ("Username: %s\n", token.token.username);
-                printf ("CountryCode: %s\n", token.token.countryCode);
-                printf ("UserId: %zu\n", token.token.userId);
+                printf ("AccessToken: %s\n", token->token->access_token);
+                printf ("RefreshToken: %s\n", token->token->refresh_token);
+                printf ("Timestamp: %zu\n", token->token->expires_in);
+                printf ("Username: %s\n", token->token->username);
+                printf ("CountryCode: %s\n", token->token->countryCode);
+                printf ("UserId: %zu\n", token->token->userId);
                 break;
             }
             else {

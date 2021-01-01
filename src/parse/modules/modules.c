@@ -137,7 +137,7 @@ openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json)
                         openTIDAL_ParseModuleAdd (o, 0, m.typeString, 0);
                         openTIDAL_ParseModuleAdd (o, 4, m.titleString, 0);
                         openTIDAL_ParseModuleAdd (o, 5, m.preTitleString, 0);
-                        o->modules.arraySize++;
+                        o->modules->arraySize++;
                         break;
                     }
                 };
@@ -228,7 +228,7 @@ openTIDAL_ParseModuleAlbumList (openTIDAL_ContentContainer *o, struct moduleStru
             status = openTIDAL_StructAddAlbum (o, album);
             if (status == -1) return -1;
 
-            o->modules.total[o->modules.arraySize]++;
+            o->modules->total[o->modules->arraySize]++;
         };
     return 0;
 }
@@ -246,7 +246,7 @@ openTIDAL_ParseModuleTrackList (openTIDAL_ContentContainer *o, struct moduleStru
             status = openTIDAL_StructAddItem (o, item);
             if (status == -1) return -1;
 
-            o->modules.total[o->modules.arraySize]++;
+            o->modules->total[o->modules->arraySize]++;
         };
     return 0;
 }
@@ -264,7 +264,7 @@ openTIDAL_ParseModuleVideoList (openTIDAL_ContentContainer *o, struct moduleStru
             status = openTIDAL_StructAddItem (o, item);
             if (status == -1) return -1;
 
-            o->modules.total[o->modules.arraySize]++;
+            o->modules->total[o->modules->arraySize]++;
         };
     return 0;
 }
@@ -282,7 +282,7 @@ openTIDAL_ParseModulePlaylistList (openTIDAL_ContentContainer *o, struct moduleS
             status = openTIDAL_StructAddPlaylist (o, playlist);
             if (status == -1) return -1;
 
-            o->modules.total[o->modules.arraySize]++;
+            o->modules->total[o->modules->arraySize]++;
         };
     return 0;
 }
@@ -300,7 +300,7 @@ openTIDAL_ParseModuleMixList (openTIDAL_ContentContainer *o, struct moduleStruct
             status = openTIDAL_StructAddMix (o, mix);
             if (status == -1) return -1;
 
-            o->modules.total[o->modules.arraySize]++;
+            o->modules->total[o->modules->arraySize]++;
         };
     return 0;
 }

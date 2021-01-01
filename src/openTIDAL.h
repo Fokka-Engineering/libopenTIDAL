@@ -374,12 +374,14 @@ typedef struct openTIDAL_SessionContainer {
 /* Initialised with openTIDAL_StructInit({pointer to container}).
  * See structCtrl.c for more detailed documentation. */
 typedef struct openTIDAL_ContentContainer {
-    openTIDAL_LoginCodeContainer code;
-    openTIDAL_LoginTokenContainer token;
+    openTIDAL_LoginCodeContainer *code;
+    openTIDAL_LoginTokenContainer *token;
 
-    openTIDAL_UserContainer user;
-    openTIDAL_UserSubscriptionContainer subscription;
+    openTIDAL_UserContainer *user;
+    openTIDAL_UserSubscriptionContainer *subscription;
 
+    openTIDAL_StreamContainer *stream;
+    openTIDAL_ModuleContainer *modules;
     /* Pointer to dynamic arrays. Allocated one by one only if
      * needed. The arrays can also function as content pools in
      * case of module based endpoints (home endpoint). In this case
@@ -400,9 +402,6 @@ typedef struct openTIDAL_ContentContainer {
     openTIDAL_ContributorContainer *contributors; /* Index (Capacity & Total): 5 */
     openTIDAL_CreditsContainer *credits;          /* Index (Capacity & Total): 6 */
     openTIDAL_LinkContainer *links;               /* Index (Capacity & Total): 7 */
-
-    openTIDAL_StreamContainer stream;
-    openTIDAL_ModuleContainer modules;
 
     /* Custom status of performed request. Error handling of the tidalapi and
      * primitive http response codes are parsed to provide detailed information
@@ -449,23 +448,18 @@ void openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session);
 
 /* create an deviceCode and userCode pair */
 openTIDAL_ContentContainer *openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session);
-
 /* request access_token and refresh_token from deviceCode
  * or poll until the user authorizes (userCode -> link.tidal.com) */
 openTIDAL_ContentContainer *openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session,
                                                              char *device_code);
-
 /* request new access_token */
 openTIDAL_ContentContainer *openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session,
                                                               char *refresh_token);
-
 /* logout session (access_token) */
 int openTIDAL_AuthLogout (openTIDAL_SessionContainer *session);
 
 /* User Endpoints */
-
 openTIDAL_ContentContainer *openTIDAL_GetUser (openTIDAL_SessionContainer *session);
-
 openTIDAL_ContentContainer *openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session);
 
 /* Playlist Endpoints */
@@ -571,20 +565,17 @@ openTIDAL_ContentContainer *openTIDAL_GetVideoStream (openTIDAL_SessionContainer
                                                       const size_t videoid);
 
 /* Mix Endpoints    */
-
 openTIDAL_ContentContainer *openTIDAL_GetMixItems (openTIDAL_SessionContainer *session,
                                                    const char *mixid);
 
-openTIDAL_ContentContainer *openTIDAL_GetFavoriteMixes (openTIDAL_SessionContainer *session);
-
 /* Search Endpoints */
-
 openTIDAL_ContentContainer *openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term,
                                                  const int limit);
 
 /* Page Endpoints */
+openTIDAL_ContentContainer *openTIDAL_GetPageHome (openTIDAL_SessionContainer *session);
+openTIDAL_ContentContainer *openTIDAL_GetPageMixes (openTIDAL_SessionContainer *session);
 
-openTIDAL_ContentContainer *openTIDAL_GetHome (openTIDAL_SessionContainer *session);
 #ifdef __cplusplus
 }
 #endif

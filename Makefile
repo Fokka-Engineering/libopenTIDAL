@@ -21,7 +21,7 @@ ifeq (Darwin, $(uname))
 	TARGET_LIB = libopenTIDAL.dylib
 endif
 
-SRCS = $(wildcard src/*.c) $(wildcard src/external/*.c) $(wildcard src/helper/*.c) $(wildcard src/repository/*.c) $(wildcard src/session/*.c) $(wildcard src/parse/*.c) $(wildcard src/parse/modules/*.c)
+SRCS = $(wildcard src/*.c) $(wildcard src/external/*.c) $(wildcard src/helper/*.c) $(wildcard src/repository/*.c) $(wildcard src/repository/user_service/*.c) $(wildcard src/parse/*.c) $(wildcard src/parse/modules/*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all

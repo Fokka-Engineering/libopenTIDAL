@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/include/openTIDAL.h"
+#include "../src/openTIDAL.h"
 
 int
 main ()
@@ -12,16 +12,16 @@ main ()
     openTIDAL_Verbose (1);
     openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
 
-    openTIDAL_ContentContainer *resolve = openTIDAL_GetHome (&session);
+    openTIDAL_ContentContainer *resolve = openTIDAL_GetPageHome (&session);
 
-    printf ("ArraySize: %d\n", resolve->modules.arraySize);
-    for (i = 0; i < resolve->modules.arraySize; i++) {
-        printf ("Type : %d\n", resolve->modules.arrayType[i]);
-        printf ("TypeString : %s\n", resolve->modules.moduleType[i]);
-        printf ("Title : %s\n", resolve->modules.moduleTitle[i]);
-        printf ("PreTitle : %s\n", resolve->modules.modulePreTitle[i]);
-        printf ("Start : %d\n", resolve->modules.offset[i]);
-        printf ("Total: %d\n", resolve->modules.total[i]);
+    printf ("ArraySize: %d\n", resolve->modules->arraySize);
+    for (i = 0; i < resolve->modules->arraySize; i++) {
+        printf ("Type : %d\n", resolve->modules->arrayType[i]);
+        printf ("TypeString : %s\n", resolve->modules->moduleType[i]);
+        printf ("Title : %s\n", resolve->modules->moduleTitle[i]);
+        printf ("PreTitle : %s\n", resolve->modules->modulePreTitle[i]);
+        printf ("Start : %d\n", resolve->modules->offset[i]);
+        printf ("Total: %d\n", resolve->modules->total[i]);
     }
     openTIDAL_StructDelete (resolve);
     openTIDAL_SessionCleanup (&session);

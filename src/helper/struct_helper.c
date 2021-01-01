@@ -52,15 +52,12 @@ openTIDAL_StructInit (openTIDAL_ContentContainer *o)
     o->credits = NULL;
     o->links = NULL;
 
-    o->modules.moduleType = NULL;
-    o->modules.moduleTitle = NULL;
-    o->modules.modulePreTitle = NULL;
-    o->modules.arrayType = NULL;
-    o->modules.offset = NULL;
-    o->modules.total = NULL;
-    o->modules.mixedListTypes = NULL;
-    o->modules.mixedListOffset = NULL;
-    o->modules.mixedListTotal = NULL;
+    o->code = NULL;
+    o->token = NULL;
+    o->user = NULL;
+    o->subscription = NULL;
+    o->stream = NULL;
+    o->modules = NULL;
 
     o->status = -1;
     o->json = NULL;
@@ -68,6 +65,83 @@ openTIDAL_StructInit (openTIDAL_ContentContainer *o)
 
     openTIDAL_VerboseHelper ("Struct", "Initialised openTIDAL_ContentContainer struct", 2);
 
+    return 0;
+}
+
+/* Allocate a structure in heap. Point the pointer in openTIDAL_ContentContainer to
+ * the memory location
+ * Index:
+ * -1 = openTIDAL_LoginCodeContainer
+ * -2 = openTIDAL_LoginTokenContainer
+ * -3 = openTIDAL_UserContainer
+ * -4 = openTIDAL_UserSubscriptionContainer
+ * -5 = openTIDAL_StreamContainer
+ * -6 = openTIDAL_ModuleContainer
+ * These identifiers are only used by this helper function. */
+int
+openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
+{
+    switch (index) {
+    case -1:
+        o->code = malloc (sizeof (openTIDAL_LoginCodeContainer));
+        if (!o->code) {
+            openTIDAL_VerboseHelper ("Struct",
+                                     "Allocation of CodeContainer failed. Malloc returned NULL", 1);
+            return -1;
+        }
+        break;
+    case -2:
+        o->token = malloc (sizeof (openTIDAL_LoginTokenContainer));
+        if (!o->token) {
+            openTIDAL_VerboseHelper (
+                "Struct", "Allocation of TokenContainer failed. Malloc returned NULL", 1);
+            return -1;
+        }
+        break;
+    case -3:
+        o->user = malloc (sizeof (openTIDAL_UserContainer));
+        if (!o->user) {
+            openTIDAL_VerboseHelper ("Struct",
+                                     "Allocation of UserContainer failed. Malloc returned NULL", 1);
+            return -1;
+        }
+        break;
+    case -4:
+        o->subscription = malloc (sizeof (openTIDAL_UserSubscriptionContainer));
+        if (!o->subscription) {
+            openTIDAL_VerboseHelper (
+                "Struct", "Allocation of UserSubscriptionContainer failed. Malloc returned NULL",
+                1);
+            return -1;
+        }
+        break;
+    case -5:
+        o->stream = malloc (sizeof (openTIDAL_StreamContainer));
+        if (!o->stream) {
+            openTIDAL_VerboseHelper (
+                "Struct", "Allocation of StreamContainer failed. Malloc returned NULL", 1);
+            return -1;
+        }
+        break;
+    case -6:
+        o->modules = malloc (sizeof (openTIDAL_ModuleContainer));
+        if (!o->modules) {
+            openTIDAL_VerboseHelper (
+                "Struct", "Allocation of ModuleContainer failed. Malloc returned NULL", 1);
+            return -1;
+        }
+        /* Initialise pointers in structure */
+        o->modules->moduleType = NULL;
+        o->modules->moduleTitle = NULL;
+        o->modules->modulePreTitle = NULL;
+        o->modules->arrayType = NULL;
+        o->modules->offset = NULL;
+        o->modules->total = NULL;
+        o->modules->mixedListTypes = NULL;
+        o->modules->mixedListOffset = NULL;
+        o->modules->mixedListTotal = NULL;
+        break;
+    }
     return 0;
 }
 
@@ -191,7 +265,6 @@ openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
             free (o->albums[i].artistName);
         }
     }
-
     if (o->items) {
         int i;
         for (i = 0; i < o->total[1]; ++i) {
@@ -199,16 +272,17 @@ openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
             free (o->items[i].artistName);
         }
     }
-
-    free (o->modules.moduleType);
-    free (o->modules.moduleTitle);
-    free (o->modules.modulePreTitle);
-    free (o->modules.arrayType);
-    free (o->modules.offset);
-    free (o->modules.total);
-    free (o->modules.mixedListTypes);
-    free (o->modules.mixedListOffset);
-    free (o->modules.mixedListTotal);
+    if (o->modules) {
+        free (o->modules->moduleType);
+        free (o->modules->moduleTitle);
+        free (o->modules->modulePreTitle);
+        free (o->modules->arrayType);
+        free (o->modules->offset);
+        free (o->modules->total);
+        free (o->modules->mixedListTypes);
+        free (o->modules->mixedListOffset);
+        free (o->modules->mixedListTotal);
+    }
 
     free (o->albums);
     free (o->items);
@@ -218,6 +292,13 @@ openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
     free (o->contributors);
     free (o->credits);
     free (o->links);
+
+    free (o->code);
+    free (o->token);
+    free (o->user);
+    free (o->subscription);
+    free (o->stream);
+    free (o->modules);
 
     free (o);
     openTIDAL_VerboseHelper ("Struct", "Deallocate all arrays in structure", 2);
@@ -335,6 +416,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
     return 0;
 }
 
+/* Add items to the dynamic arrays in the ContentContainer */
 int
 openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album)
 {

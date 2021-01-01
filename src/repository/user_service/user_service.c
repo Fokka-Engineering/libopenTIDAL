@@ -20,11 +20,11 @@
     THE SOFTWARE.
 */
 
-#include "../helper/helper.h"
-#include "../helper/struct_helper.h"
-#include "../http_connector.h"
-#include "../openTIDAL.h"
-#include "../parse/parse.h"
+#include "../../helper/helper.h"
+#include "../../helper/struct_helper.h"
+#include "../../http_connector.h"
+#include "../../openTIDAL.h"
+#include "../../parse/parse.h"
 
 #include <stdio.h>
 
@@ -37,9 +37,11 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
 
     openTIDAL_CurlModelInit (&curl);
 
-    openTIDAL_StructMainAlloc (&o);
+    status = openTIDAL_StructMainAlloc (&o);
     if (status == -1) return NULL;
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -3);
     if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu", session->userId);
@@ -59,7 +61,7 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
 
         if (curl.responseCode == 200) {
             json_user_model processed_json = json_parse_user ((cJSON *)o->json);
-            parse_user_values (&o->user, &processed_json);
+            parse_user_values (o->user, &processed_json);
             o->status = 1;
         }
         else {
@@ -81,9 +83,11 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
 
     openTIDAL_CurlModelInit (&curl);
 
-    openTIDAL_StructMainAlloc (&o);
+    status = openTIDAL_StructMainAlloc (&o);
     if (status == -1) return NULL;
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructInit (o);
+    if (status == -1) goto end;
+    status = openTIDAL_StructOneTimeAlloc (o, -4);
     if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/subscription", session->userId);
@@ -104,7 +108,7 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
         if (curl.responseCode == 200) {
             json_user_subscription_model processed_json;
             processed_json = json_parse_user_subscription ((cJSON *)o->json);
-            parse_user_subscription_values (&o->subscription, &processed_json);
+            parse_user_subscription_values (o->subscription, &processed_json);
 
             o->status = 1;
         }

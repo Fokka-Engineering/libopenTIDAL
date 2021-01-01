@@ -31,10 +31,12 @@
 int openTIDAL_StructMainAlloc (openTIDAL_ContentContainer **o);
 int openTIDAL_StructInit (openTIDAL_ContentContainer *o);
 
-/* allocate specified array in heap */
+/* Allocate sepcified structure in heap */
+int openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index);
+/* Allocate specified array in heap */
 int openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index);
 
-/* add model to array (Allocate the correct array before adding!) */
+/* Add model to array (Allocate the correct array before adding!) */
 int openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
 int openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
 int openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);

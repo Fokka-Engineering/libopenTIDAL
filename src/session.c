@@ -26,21 +26,26 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "../helper/helper.h"
-#include "../http_connector.h"
-#include "../openTIDAL.h"
-#include "../parse/parse.h"
+#include "helper/helper.h"
+#include "http_connector.h"
+#include "openTIDAL.h"
+#include "parse/parse.h"
 
+/* Function prototypes */
 static void openTIDAL_SessionInitContainer (openTIDAL_SessionContainer *session);
 static const char *openTIDAL_SessionCreateFileStream (openTIDAL_SessionContainer *session);
 static const int openTIDAL_SessionScanFile (openTIDAL_SessionContainer *session);
 static void openTIDAL_SessionReadFileStream (openTIDAL_SessionContainer *session,
                                              cJSON *input_json);
 
+/* Initialise session and check if a persistent config location is present.
+ * If file_location is NULL the preconfiguration of the session
+ * (openTIDAL_SessionInitContainer) won't be overwritten. DemoEnabled is
+ * TRUE. */
 const int
 openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_location)
 {
-    int status = 0;
+    int status = 0; // Status of openTIDAL_SessionScanFile operation
     openTIDAL_SessionInitContainer (session);
 
     /* Scan persistent config file and exit demo-mode */
@@ -58,13 +63,15 @@ openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_loc
 void
 openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session)
 {
-
+    /* cJSON_Print stream created by openTIDAL_SessionCreateFileStream */
     free (session->newStream);
+    /* cJSON structures created by various requests and openTIDAL_SessionScanFile*/
     cJSON_Delete ((cJSON *)session->refreshRequest);
     cJSON_Delete ((cJSON *)session->tokenRequest);
     cJSON_Delete ((cJSON *)session->stream);
-
+    /* Cleanup opened cURL easy handle */
     openTIDAL_CurlCleanup (session);
+
     openTIDAL_VerboseHelper ("Session", "Deallocated session", 2);
 }
 
@@ -298,7 +305,7 @@ openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session)
             = openTIDAL_AuthRefreshBearerToken (session, session->refreshToken);
         if (res->status == 1) {
             FILE *fp = NULL;
-            session->accessToken = res->token.access_token;
+            session->accessToken = res->token->access_token;
             session->expiresIn = time (NULL) + 604800; /* Calculate new ExpiryDate */
 
             fp = fopen (session->location, "w");
