@@ -1,4 +1,5 @@
--14 Memory Allocation in Heap Error
+-15 Entity Tag Request failed\
+-14 Memory Allocation in Heap Error\
 -13 User does not have a valid session\
 -12 User not found\
 -11 Undefined 400 Error\
