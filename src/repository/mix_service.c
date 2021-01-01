@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixid)
+openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, char *mixid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

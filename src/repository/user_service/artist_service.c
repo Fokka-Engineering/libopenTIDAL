@@ -29,8 +29,8 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, const int limit,
-                              const int offset, const char *order, const char *orderDirection)
+openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, int limit, int offset,
+                              char *order, char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -106,7 +106,7 @@ end:
 /* create & delete favourites */
 
 int
-openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, const size_t artistid)
+openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, size_t artistid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
@@ -130,7 +130,7 @@ openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, const size_t a
 }
 
 int
-openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, const size_t artistid)
+openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, size_t artistid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;

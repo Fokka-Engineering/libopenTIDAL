@@ -29,8 +29,8 @@
 #include "../../parse/parse.h"
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limit, const int offset,
-                             const char *order, const char *orderDirection)
+openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, int limit, int offset,
+                             char *order, char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -103,45 +103,49 @@ end:
     return o;
 }
 
-/*int openTIDAL_AddFavoriteVideo(const size_t videoid)
+int
+openTIDAL_AddFavoriteVideo (openTIDAL_SessionContainer *session, size_t videoid)
 {
-    char *endpoint = url_cat(session, "/v1/users/", session->userId, "/favorites/videos", 1);
-    int status;
-    char buffer[100];
-    snprintf(buffer, sizeof(buffer), "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
+    openTIDAL_CurlContainer curl;
+    int status = -1;
 
-    curl_model curl = curl_post(endpoint, buffer, "");
-    free(endpoint);
-    free(curl.body);
-
-    if (curl.status != -1)
-    {
-        status = parse_raw_status(&curl.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/videos", session->userId);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.postData, "videoIds=%zu&onArtifactNotFound=FAIL", videoid);
+    if (!curl.endpoint || !curl.parameter || !curl.postData) {
+        status = -14;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
+                           1);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
     }
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
 }
 
-int openTIDAL_DeleteFavoriteVideo(const size_t videoid)
+int
+openTIDAL_DeleteFavoriteVideo (openTIDAL_SessionContainer *session, size_t videoid)
 {
-    int status;
-    char buffer[200];
-    snprintf(buffer, sizeof(buffer), "/v1/users/%zu/favorites/videos/%zu?countryCode=%s",
-session->userId, videoid, session->countryCode);
+    openTIDAL_CurlContainer curl;
+    int status = -1;
 
-    curl_model curl = curl_delete(buffer, "", "");
-    free(curl.body);
-
-    if (curl.status != -1)
-    {
-        status = parse_raw_status(&curl.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/videos/%zu", session->userId,
+                            videoid);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    if (!curl.endpoint || !curl.parameter) {
+        status = -14;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
     }
-}*/
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
+}

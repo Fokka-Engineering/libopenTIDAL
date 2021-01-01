@@ -29,8 +29,8 @@
 #include "../../parse/parse.h"
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limit, const int offset,
-                             const char *order, const char *orderDirection)
+openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, int limit, int offset,
+                             char *order, char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -103,7 +103,7 @@ end:
 }
 
 int
-openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t albumid)
+openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, size_t albumid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
@@ -128,7 +128,7 @@ openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t al
 }
 
 int
-openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, const size_t albumid)
+openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, size_t albumid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;

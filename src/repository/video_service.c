@@ -32,7 +32,7 @@
 #include <string.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const size_t videoid)
+openTIDAL_GetVideo (openTIDAL_SessionContainer *session, size_t videoid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -82,7 +82,7 @@ end:
 }
 
 /*openTIDAL_ContentContainer *
-openTIDAL_GetVideoContributors(const size_t videoid, const int limit, const int offset)
+openTIDAL_GetVideoContributors( size_t videoid,  int limit,  int offset)
 {
     openTIDAL_ContentContainer * o;
     char buffer[100];
@@ -142,7 +142,7 @@ session->countryCode, limit, offset); curl_model curl = curl_get(buffer, basepar
 }*/
 
 openTIDAL_ContentContainer *
-openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const size_t videoid)
+openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, size_t videoid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

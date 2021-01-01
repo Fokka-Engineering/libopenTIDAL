@@ -30,7 +30,7 @@
 #include <stdlib.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session, const char *playlistid)
+openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session, char *playlistid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -79,8 +79,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session, const char *playlistid,
-                            const int limit, const int offset)
+openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session, char *playlistid, int limit,
+                            int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -151,7 +151,7 @@ end:
 }
 
 /*openTIDAL_ETagContainer
-    openTIDAL_GetPlaylistETag (openTIDAL_SessionContainer *session, const char *playlistid)
+    openTIDAL_GetPlaylistETag (openTIDAL_SessionContainer *session,  char *playlistid)
     {
         openTIDAL_ETagContainer Value;
         openTIDAL_CurlContainer curl;
@@ -210,7 +210,7 @@ strcat (&eTag[eTagCounter + 1], "\0");
     return Value;
 }*/
 
-/*int openTIDAL_DeletePlaylist(openTIDAL_SessionContainer *session, const char *playlistid)
+/*int openTIDAL_DeletePlaylist(openTIDAL_SessionContainer *session,  char *playlistid)
 {
     openTIDAL_CurlContainer curl;
     char buffer[100];
@@ -229,7 +229,7 @@ strcat (&eTag[eTagCounter + 1], "\0");
     }
 }
 
-int openTIDAL_DeletePlaylistItem(const char *playlistid, const int index)
+int openTIDAL_DeletePlaylistItem( char *playlistid,  int index)
 {
     char buffer[100];
     char etag_buffer[50];
@@ -253,7 +253,7 @@ config.countryCode); curl_model req = curl_delete(buffer, "", etag_buffer);
     }
 }
 
-int openTIDAL_MovePlaylistItem(const char *playlistid, const int index, const int toIndex)
+int openTIDAL_MovePlaylistItem( char *playlistid,  int index,  int toIndex)
 {
     char buffer[100];
     char etag_buffer[50];
@@ -281,7 +281,7 @@ config.countryCode);
     }
 }
 
-int openTIDAL_AddPlaylistItem(const char *playlistid, const int trackid, const char *onDupes)
+int openTIDAL_AddPlaylistItem( char *playlistid,  int trackid,  char *onDupes)
 {
     char buffer[100];
     char etag_buffer[50];
@@ -309,7 +309,7 @@ config.countryCode);
 
 }
 
-int openTIDAL_AddPlaylistItems(const char *playlistid, const char *trackids, const char
+int openTIDAL_AddPlaylistItems( char *playlistid,  char *trackids,  char
 *onDupes)
 {
     char buffer[100];
@@ -341,7 +341,7 @@ config.countryCode);
 
 /* create & delete favourites */
 
-/*openTIDAL_ContentContainer * openTIDAL_CreatePlaylist(const char *title, const char
+/*openTIDAL_ContentContainer * openTIDAL_CreatePlaylist( char *title,  char
 *description)
 {
     openTIDAL_ContentContainer * o;

@@ -29,8 +29,8 @@
 #include "../../parse/parse.h"
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, const int limit,
-                                const int offset, const char *order, const char *orderDirection)
+openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, int limit, int offset,
+                                char *order, char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -103,48 +103,49 @@ end:
     return o;
 }
 
-/*
-int openTIDAL_AddFavoritePlaylist(const char *playlistid)
+int
+openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, char *playlistid)
 {
-    char *endpoint = url_cat(session, "/v1/users/", config.userId, "/favorites/playlists", 1);
-    int status;
-    char *data = malloc(strlen(playlistid)+10+25+1);
-    strcpy(data, "uuids=");
-    strcat(data, playlistid);
-    strcat(data, "&onArtifactNotFound=FAIL");
+    openTIDAL_CurlContainer curl;
+    int status = -1;
 
-    curl_model req = curl_post(endpoint, data, "");
-    free(endpoint);
-    free(data);
-    free(req.body);
-    if (req.status != -1)
-    {
-        status = parse_raw_status(&req.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/playlists", session->userId);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.postData, "uuids=%s&onArtifactNotFound=FAIL", playlistid);
+    if (!curl.endpoint || !curl.parameter || !curl.postData) {
+        status = -14;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
+                           1);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
     }
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
 }
 
-int openTIDAL_DeleteFavoritePlaylist(const char *playlistid)
+int
+openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session, char *playlistid)
 {
-    int status;
-    char buffer[80];
-    snprintf(buffer, 80, "/v1/users/%zu/favorites/playlists/%s?countryCode=%s", config.userId,
-playlistid, config.countryCode);
+    openTIDAL_CurlContainer curl;
+    int status = -1;
 
-    curl_model req = curl_delete(buffer, "", "");
-    free(req.body);
-
-    if (req.status != -1)
-    {
-        status = parse_raw_status(&req.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/playlists/%s", session->userId,
+                            playlistid);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    if (!curl.endpoint || !curl.parameter) {
+        status = -14;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
     }
-} */
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
+}

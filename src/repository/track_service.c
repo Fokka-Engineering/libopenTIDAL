@@ -32,7 +32,7 @@
 #include <string.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const size_t trackid)
+openTIDAL_GetTrack (openTIDAL_SessionContainer *session, size_t trackid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -82,8 +82,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const size_t trackid,
-                                const int limit, const int offset)
+openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, size_t trackid, int limit,
+                                int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -150,7 +150,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, const size_t trackid)
+openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, size_t trackid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -200,7 +200,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const size_t trackid)
+openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, size_t trackid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

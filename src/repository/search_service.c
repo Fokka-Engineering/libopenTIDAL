@@ -32,7 +32,7 @@
 /* Search */
 
 openTIDAL_ContentContainer *
-openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int limit)
+openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, int limit)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

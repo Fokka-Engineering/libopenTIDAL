@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtist (openTIDAL_SessionContainer *session, const size_t artistid)
+openTIDAL_GetArtist (openTIDAL_SessionContainer *session, size_t artistid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -77,8 +77,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session, const size_t artistid,
-                         const int limit, const int offset)
+openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session, size_t artistid, int limit,
+                         int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -151,7 +151,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtistMix (openTIDAL_SessionContainer *session, const size_t artistid)
+openTIDAL_GetArtistMix (openTIDAL_SessionContainer *session, size_t artistid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -199,8 +199,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session, const size_t artistid,
-                              const int limit, const int offset)
+openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session, size_t artistid, int limit,
+                              int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -272,8 +272,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session, const size_t artistid,
-                           const int limit, const int offset)
+openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session, size_t artistid, int limit,
+                           int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -343,8 +343,8 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session, const size_t artistid,
-                           const int limit, const int offset)
+openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session, size_t artistid, int limit,
+                           int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

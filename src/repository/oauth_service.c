@@ -210,7 +210,7 @@ int
 openTIDAL_AuthLogout (openTIDAL_SessionContainer *session)
 {
     openTIDAL_CurlContainer curl;
-    char *endpoint = "/v1/logout";
+    const char *endpoint = "/v1/logout";
     int status = -1;
 
     openTIDAL_CurlModelInit (&curl);

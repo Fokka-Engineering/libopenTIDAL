@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, const size_t albumid)
+openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, size_t albumid)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -78,8 +78,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const size_t albumid, const int limit,
-                         const int offset)
+openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, size_t albumid, int limit, int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

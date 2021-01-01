@@ -134,7 +134,7 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
     parse_number (json->albumId, &Value->albumId);
     parse_string (json->albumTitle, &Value->albumTitle);
 
-    if (cJSON_IsNull (json->album)) {
+    if (cJSON_IsObject (json->quality)) {
         Value->isVideo = 1;
     }
     else {
