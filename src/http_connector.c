@@ -210,15 +210,18 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
         else if (strncmp (type, "POST", 5) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a POST Request", 2);
             curl_easy_setopt (session->curlHandle, CURLOPT_HTTPPOST, 1L);
+            if (!postData) postData = "";
             curl_easy_setopt (session->curlHandle, CURLOPT_POSTFIELDS, postData);
         }
         else if (strncmp (type, "DELETE", 7) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a DELETE Request", 2);
+            if (!postData) postData = "";
             curl_easy_setopt (session->curlHandle, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
         else if (strncmp (type, "PUT", 4) == 0) {
             openTIDAL_VerboseHelper ("cURL Handle", "Perform a PUT Request", 2);
+            if (!postData) postData = "";
             curl_easy_setopt (session->curlHandle, CURLOPT_POSTFIELDS, postData);
             curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, "PUT");
         }

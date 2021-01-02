@@ -56,11 +56,11 @@ openTIDAL_StringHelper (char **str, char *format, ...)
 }
 
 int
-openTIDAL_ArrayToStringHelper (char **str, char **array, int length)
+openTIDAL_ArrayToStringHelper (char **str, const char **array, const int length)
 {
     size_t memsize = 0;
     int i;
-    char *ptr;
+    char *ptr = NULL;
 
     for (i = 0; i < length; i++)
         /* length of ASCII string + separator ", " */

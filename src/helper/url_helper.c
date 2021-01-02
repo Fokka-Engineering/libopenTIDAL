@@ -40,6 +40,7 @@ char *
 openTIDAL_UrlEncodeHelper (char *str)
 {
     char *pstr = str, *buf = malloc (strlen (str) * 3 + 1), *pbuf = buf;
+    if (!buf) return NULL;
     while (*pstr) {
         if (isalnum (*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~')
             *pbuf++ = *pstr;

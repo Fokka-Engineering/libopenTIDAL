@@ -141,7 +141,7 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
     if (cJSON_IsArray (json->artists)) {
         int i;
         Value->subArraySize = cJSON_GetArraySize (json->artists);
-        Value->artistId = malloc (sizeof (size_t) * Value->subArraySize);
+        Value->artistId = malloc (sizeof (char *) * Value->subArraySize);
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {
@@ -180,7 +180,7 @@ parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
     if (cJSON_IsArray (json->artists)) {
         int i;
         Value->subArraySize = cJSON_GetArraySize (json->artists);
-        Value->artistId = malloc (sizeof (size_t) * Value->subArraySize);
+        Value->artistId = malloc (sizeof (char *) * Value->subArraySize);
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {

@@ -206,7 +206,7 @@ end:
     return o;
 }
 
-int
+const int
 openTIDAL_AuthLogout (openTIDAL_SessionContainer *session)
 {
     openTIDAL_CurlContainer curl;

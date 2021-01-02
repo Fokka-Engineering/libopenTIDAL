@@ -28,13 +28,12 @@ int
 main ()
 {
     openTIDAL_SessionContainer session;
-    openTIDAL_Verbose (1);
+    openTIDAL_Verbose (3);
     openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
 
-    char *value = openTIDAL_GetPlaylistEntityTag (&session, "7079f26e-174c-4012-8c3e-1f27b8189596");
-    if (value) printf ("EntityTag: %s\n", value);
+    openTIDAL_AddPlaylistItem (&session, "7079f26e-174c-4012-8c3e-1f27b8189596", "62929297", "FAIL",
+                               "ADD");
 
     openTIDAL_SessionCleanup (&session);
-    free (value);
     return 0;
 }

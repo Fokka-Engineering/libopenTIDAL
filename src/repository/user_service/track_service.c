@@ -20,13 +20,13 @@
     THE SOFTWARE.
 */
 
-#include <stdio.h>
-
 #include "../../helper/helper.h"
 #include "../../helper/struct_helper.h"
 #include "../../http_connector.h"
 #include "../../openTIDAL.h"
 #include "../../parse/parse.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 openTIDAL_ContentContainer *
 openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limit, const int offset,
@@ -103,8 +103,9 @@ end:
     return o;
 }
 
-int
-openTIDAL_AddFavoriteTrack (openTIDAL_SessionContainer *session, const char *trackId)
+const int
+openTIDAL_AddFavoriteTrack (openTIDAL_SessionContainer *session, const char *trackId,
+                            const char *onArtifactNotFound)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
@@ -112,7 +113,8 @@ openTIDAL_AddFavoriteTrack (openTIDAL_SessionContainer *session, const char *tra
     openTIDAL_CurlModelInit (&curl);
     openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/tracks", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
-    openTIDAL_StringHelper (&curl.postData, "trackIds=%s&onArtifactNotFound=FAIL", trackId);
+    openTIDAL_StringHelper (&curl.postData, "trackIds=%s&onArtifactNotFound=%s", trackId,
+                            onArtifactNotFound);
     if (!curl.endpoint || !curl.parameter || !curl.postData) {
         status = -14;
         return status;
@@ -127,7 +129,41 @@ openTIDAL_AddFavoriteTrack (openTIDAL_SessionContainer *session, const char *tra
     return status;
 }
 
-int
+const int
+openTIDAL_AddFavoriteTracks (openTIDAL_SessionContainer *session, const char **trackIds,
+                             const int size, const char *onArtifactNotFound)
+{
+    openTIDAL_CurlContainer curl;
+    int status = -1;
+    char *ptr;
+
+    openTIDAL_CurlModelInit (&curl);
+
+    openTIDAL_ArrayToStringHelper (&ptr, trackIds, size);
+    if (!ptr) {
+        status = -14;
+        return status;
+    }
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/tracks", session->userId);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.postData, "trackIds=%s&onArtifactNotFound=%s", ptr,
+                            onArtifactNotFound);
+    if (!curl.endpoint || !curl.parameter || !curl.postData) {
+        status = -14;
+        return status;
+    }
+
+    openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
+                           1);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
+    }
+    free (ptr);
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
+}
+
+const int
 openTIDAL_DeleteFavoriteTrack (openTIDAL_SessionContainer *session, const char *trackId)
 {
     openTIDAL_CurlContainer curl;
