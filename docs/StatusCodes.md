@@ -1,4 +1,4 @@
--14 Memory Allocation in Heap Error
+-14 Memory Allocation in Heap Error\
 -13 User does not have a valid session\
 -12 User not found\
 -11 Undefined 400 Error\
@@ -9,7 +9,7 @@
 -6 Token has invalid header\
 -5 The token has expired. (Expired on time)
 
--4 If-None-Match failed\
+-4 If-None-Match failed or Entity Tag Request failed\
 -3 Asset is not ready for playback\
 -2 Resource not found\
 -1 Critical cURL Error\
