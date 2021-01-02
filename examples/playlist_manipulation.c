@@ -28,12 +28,12 @@ int
 main ()
 {
     openTIDAL_SessionContainer session;
-    openTIDAL_Verbose (3);
+    openTIDAL_Verbose (2);
     openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
 
-    openTIDAL_AddPlaylistItem (&session, "7079f26e-174c-4012-8c3e-1f27b8189596", "62929297", "FAIL",
-                               "ADD");
-
+    openTIDAL_DeletePlaylist (&session, "7079f26e-174c-4012-8c3e-1f27b8189596");
+    // openTIDAL_DeletePlaylistItem (&session, "7079f26e-174c-4012-8c3e-1f27b8189596", 0);
+    // openTIDAL_MovePlaylistItem (&session, "7079f26e-174c-4012-8c3e-1f27b8189596", 1, 2);
     openTIDAL_SessionCleanup (&session);
     return 0;
 }
