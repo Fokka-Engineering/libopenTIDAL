@@ -20,13 +20,21 @@
     THE SOFTWARE.
 */
 
-#ifndef HELPER__h
-#define HELPER__h
+#include "../src/openTIDAL.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-void openTIDAL_ParseHeaderKeyHelper (char *buffer, char *key, char **Value);
-void *openTIDAL_cJSONParseHelper (char *input);
-void openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
-    __attribute__ ((format (printf, 2, 4)));
-int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
-char *openTIDAL_UrlEncodeHelper (char *str);
-#endif
+int
+main ()
+{
+    openTIDAL_SessionContainer session;
+    openTIDAL_Verbose (1);
+    openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
+
+    char *value = openTIDAL_GetPlaylistEntityTag (&session, "7079f26e-174c-4012-8c3e-1f27b8189596");
+    if (value) printf ("EntityTag: %s\n", value);
+
+    openTIDAL_SessionCleanup (&session);
+    free (value);
+    return 0;
+}

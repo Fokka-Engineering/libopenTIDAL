@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 openTIDAL_ContentContainer *
 openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session, char *playlistid)
@@ -150,196 +151,157 @@ end:
     return o;
 }
 
-/*openTIDAL_ETagContainer
-    openTIDAL_GetPlaylistETag (openTIDAL_SessionContainer *session,  char *playlistid)
-    {
-        openTIDAL_ETagContainer Value;
-        openTIDAL_CurlContainer curl;
-        Request playlist endpoint to scrape eTag Header
-        char *endpoint;
-        char baseparams[20];
-
-        endpoint = url_cat_str (session, "/v1/playlists/", playlistid, "");
-        snprintf (baseparams, 20, "countryCode=%s", session->countryCode);
-
-        openTIDAL_CurlRequest (session, &curl, "HEAD", endpoint, baseparams, NULL, 0, 0);
-        if (curl.status != -1) {
-            if (curl.responseCode == 200) {*/
-// size_t i = 0; /* Counter for Buffer (Header) Splitter  */
-// size_t e;     /* Counter for ETag-String Extraction  */
-// char *p = strtok (curl.header, "\n");
-// char eTag[32];
-/* Buffer for splitted HTTP-Header  */
-// char *array[30];
-// while (p != NULL) {
-// array[i++] = p;
-/* Split if char is \n  */
-// p = strtok (NULL, "\n");
-//}
-// for (e = 0; e < i; ++e) {
-/* If String begins with ETag  */
-/*if (strncmp (array[e], "ETag", 4) == 0) {
-    size_t charCounter;
-    size_t eTagCounter = 0;*/
-/* Extract ETag Values */
-/*for (charCounter = 7; charCounter < strlen (array[e]); ++charCounter) {
-    if (array[e][charCounter] != '"') {
-        strcpy (&eTag[eTagCounter], &array[e][charCounter]);
-        eTagCounter = eTagCounter + 1;
-    }
-}
-strcat (&eTag[eTagCounter + 1], "\0");
-}
-}*/
-/* copy eTag to struct */
-/*            Value.id = eTag;
-            Value.status = 1;
-        }
-        else {
-            openTIDAL_ParseVerbose ("Request Error",
-                                    "Could not parse eTag-Header. Not a 200 Response", 1);
-            Value.status = 0;
-        }
-    }
-    else {
-        Value.status = -1;
-    }
-
-    openTIDAL_CurlRequestCleanup (&curl);
-    free (endpoint);
-    return Value;
-}*/
-
-/*int openTIDAL_DeletePlaylist(openTIDAL_SessionContainer *session,  char *playlistid)
+char *
+openTIDAL_GetPlaylistEntityTag (openTIDAL_SessionContainer *session, char *playlistid)
 {
     openTIDAL_CurlContainer curl;
-    char buffer[100];
+    int status = 0;
+    char *ptr = NULL;
+    char *value = NULL;
 
-    snprintf(buffer, 100, "/v1/playlists/%s?countryCode=%s", playlistid, session->countryCode);
+    openTIDAL_CurlModelInit (&curl);
 
-    curl_model req = curl_delete(buffer, "", "");
-    if (req.status != -1)
-    {
-        int status = parse_raw_status(&req.responseCode);
-        return status;
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/playlists/%s", playlistid);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    if (!curl.endpoint || !curl.parameter) {
+        status = -1;
+        goto end;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "HEAD", curl.endpoint, curl.parameter, NULL, 0, 0);
+    if (curl.status != -1) {
+        if (curl.responseCode == 200) {
+            openTIDAL_ParseHeaderKeyHelper (curl.header, "etag", &ptr);
+            value = strdup (ptr);
+        }
     }
+end:
+    if (status == -1) return NULL;
+    openTIDAL_CurlRequestCleanup (&curl);
+    return value;
 }
 
-int openTIDAL_DeletePlaylistItem( char *playlistid,  int index)
+int
+openTIDAL_DeletePlaylist (openTIDAL_SessionContainer *session, char *playlistid)
 {
-    char buffer[100];
-    char etag_buffer[50];
+    openTIDAL_CurlContainer curl;
+    int status = -1;
+    openTIDAL_CurlModelInit (&curl);
 
-    openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
-
-    snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-    snprintf(buffer, 100, "/v1/playlists/%s/items/%d?countryCode=%s", playlistid, index,
-config.countryCode); curl_model req = curl_delete(buffer, "", etag_buffer);
-
-    free(req.body);
-
-    if (req.status != -1)
-    {
-        int status = parse_raw_status(&req.responseCode);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/playlists/%s", playlistid);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    if (!curl.endpoint || !curl.parameter) {
+        status = -14;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 0);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
     }
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
 }
 
-int openTIDAL_MovePlaylistItem( char *playlistid,  int index,  int toIndex)
+int
+openTIDAL_DeletePlaylistItem (openTIDAL_SessionContainer *session, char *playlistid, int index)
 {
-    char buffer[100];
-    char etag_buffer[50];
-    char index_buffer[20];
+    openTIDAL_CurlContainer curl;
+    char *value;
+    int status = -1;
 
-    openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
-
-    snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-    snprintf(index_buffer, 20, "toIndex=%d", toIndex);
-    snprintf(buffer, 100, "/v1/playlists/%s/items/%d?countryCode=%s", playlistid, index,
-config.countryCode);
-
-    curl_model req = curl_post(buffer, index_buffer, etag_buffer);
-
-    free(req.body);
-
-    if (req.status != -1)
-    {
-        int status = parse_raw_status(&req.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    value = openTIDAL_GetPlaylistEntityTag (session, playlistid);
+    if (!value) {
+        status = -4;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/playlists/%s/items/%d", playlistid, index);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.entityTagHeader, "if-none-match: %s", value);
+    if (!curl.endpoint || !curl.parameter || !curl.entityTagHeader) {
+        status = -14;
+        return status;
     }
+
+    openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 0);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
+    }
+    free (value);
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
 }
 
-int openTIDAL_AddPlaylistItem( char *playlistid,  int trackid,  char *onDupes)
+int
+openTIDAL_MovePlaylistItem (openTIDAL_SessionContainer *session, char *playlistid, int index,
+                            int toIndex)
 {
-    char buffer[100];
-    char etag_buffer[50];
-    char index_buffer[100];
+    openTIDAL_CurlContainer curl;
+    char *value;
+    int status = -1;
 
-    openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
-
-    snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-    snprintf(index_buffer, 100, "trackIds=%d&onArtifactNotFound=%s&onDupes=%s", trackid, "FAIL",
-onDupes); snprintf(buffer, 100, "/v1/playlists/%s/items?countryCode=%s", playlistid,
-config.countryCode);
-
-    curl_model req = curl_post(buffer, index_buffer, etag_buffer);
-    free(req.body);
-
-    if (req.status != -1)
-    {
-        int status = parse_raw_status(&req.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    value = openTIDAL_GetPlaylistEntityTag (session, playlistid);
+    if (!value) {
+        status = -4;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/playlists/%s/items/%d", playlistid, index);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.postData, "toIndex=%d", toIndex);
+    openTIDAL_StringHelper (&curl.entityTagHeader, "if-none-match: %s", value);
+    if (!curl.endpoint || !curl.parameter || !curl.entityTagHeader || !curl.postData) {
+        status = -14;
+        return status;
     }
 
+    openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
+                           0);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
+    }
+    free (value);
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
 }
 
-int openTIDAL_AddPlaylistItems( char *playlistid,  char *trackids,  char
-*onDupes)
+int
+openTIDAL_AddPlaylistItem (openTIDAL_SessionContainer *session, char *playlistid, size_t itemid,
+                           char *onArtifactNotFound, char *onDupes)
 {
-    char buffer[100];
-    char etag_buffer[50];
-    char index_buffer[1000];
+    openTIDAL_CurlContainer curl;
+    char *value;
+    int status = -1;
 
-    openTIDAL_ETagModel etag = openTIDAL_GetPlaylistETag(playlistid);
-
-    snprintf(etag_buffer, 50, "if-none-match: %s", etag.id);
-    snprintf(index_buffer, 1000, "trackIds=%s&onArtifactNotFound=%s&onDupes=%s", trackids,
-"FAIL", onDupes); snprintf(buffer, 100, "/v1/playlists/%s/items?countryCode=%s", playlistid,
-config.countryCode);
-
-    curl_model req = curl_post(buffer, index_buffer, etag_buffer);
-
-    free(req.body);
-
-    if (req.status != -1)
-    {
-        int status = parse_raw_status(&req.responseCode);
+    openTIDAL_CurlModelInit (&curl);
+    value = openTIDAL_GetPlaylistEntityTag (session, playlistid);
+    if (!value) {
+        status = -4;
         return status;
     }
-    else
-    {
-        return -1;
+
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/playlists/%s/items/", playlistid);
+    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.postData, "itemIds=%zu&onArtifactNotFound=%s&onDupes=%s", itemid,
+                            onArtifactNotFound, onDupes);
+    openTIDAL_StringHelper (&curl.entityTagHeader, "if-none-match: %s", value);
+    if (!curl.endpoint || !curl.parameter || !curl.entityTagHeader || !curl.postData) {
+        status = -14;
+        return status;
     }
 
-}*/
-
-/* create & delete favourites */
+    openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
+                           0);
+    if (curl.status != -1) {
+        status = parse_raw_status (&curl.responseCode);
+    }
+    free (value);
+    openTIDAL_CurlRequestCleanup (&curl);
+    return status;
+}
 
 /*openTIDAL_ContentContainer * openTIDAL_CreatePlaylist( char *title,  char
 *description)

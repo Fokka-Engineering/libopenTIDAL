@@ -31,6 +31,7 @@ typedef struct openTIDAL_CurlContainer {
     char *body;
     char *header;
 
+    char *entityTagHeader;
     char *endpoint;
     char *parameter;
     char *postData;

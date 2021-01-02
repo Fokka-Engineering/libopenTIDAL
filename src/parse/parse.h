@@ -28,10 +28,6 @@
 #ifndef PARSE__h
 #define PARSE__h
 
-void *openTIDAL_cJSONParseHelper (char *input);
-
-void openTIDAL_ParseHeaderKeyHelper (char *buffer, char *key, char **Value);
-
 void parse_double (cJSON *object, double *number);
 void parse_number (cJSON *object, size_t *number);
 void parse_signed_number (cJSON *object, int *number);

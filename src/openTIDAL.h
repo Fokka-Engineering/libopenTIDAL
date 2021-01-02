@@ -466,7 +466,7 @@ openTIDAL_ContentContainer *openTIDAL_GetUserSubscription (openTIDAL_SessionCont
 
 openTIDAL_ContentContainer *openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session,
                                                    char *playlistid);
-
+char *openTIDAL_GetPlaylistEntityTag (openTIDAL_SessionContainer *session, char *playlistid);
 openTIDAL_ContentContainer *openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session,
                                                             int limit, int offset, char *order,
                                                             char *orderDirection);

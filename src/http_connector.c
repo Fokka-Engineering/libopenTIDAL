@@ -133,6 +133,7 @@ openTIDAL_CurlModelInit (openTIDAL_CurlContainer *model)
     model->body = NULL;
     model->header = NULL;
     model->endpoint = NULL;
+    model->entityTagHeader = NULL;
     model->parameter = NULL;
     model->postData = NULL;
     model->responseCode = 0;
@@ -145,6 +146,7 @@ openTIDAL_CurlCleanup (openTIDAL_SessionContainer *session)
 {
     curl_easy_cleanup (session->curlHandle);
     curl_global_cleanup ();
+    openTIDAL_VerboseHelper ("cURL Handle", "curl_global_cleanup and curl_easy_cleanup called", 2);
 }
 
 void
@@ -155,6 +157,8 @@ openTIDAL_CurlRequestCleanup (openTIDAL_CurlContainer *model)
     free (model->endpoint);
     free (model->parameter);
     free (model->postData);
+    free (model->entityTagHeader);
+    openTIDAL_VerboseHelper ("cURL Handle", "Deallocated openTIDAL_CurlContainer Structure", 2);
 }
 
 void
@@ -219,7 +223,7 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
             curl_easy_setopt (session->curlHandle, CURLOPT_CUSTOMREQUEST, "PUT");
         }
         else if (strncmp (type, "HEAD", 5) == 0) {
-            openTIDAL_VerboseHelper ("cURL Handle", "Perform a HEAD Request", 1);
+            openTIDAL_VerboseHelper ("cURL Handle", "Perform a HEAD Request", 2);
             curl_easy_setopt (session->curlHandle, CURLOPT_NOBODY, 1L);
             curl_easy_setopt (session->curlHandle, CURLOPT_HEADERFUNCTION,
                               openTIDAL_CurlCallbackFunction);
@@ -246,6 +250,7 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
             openTIDAL_CurlConcatenateAuthHeader (session, &header);
 
             chunk = curl_slist_append (chunk, header);
+            if (model->entityTagHeader) chunk = curl_slist_append (chunk, model->entityTagHeader);
             curl_easy_setopt (session->curlHandle, CURLOPT_HTTPHEADER, chunk);
         }
 
@@ -265,7 +270,10 @@ openTIDAL_CurlRequest (openTIDAL_SessionContainer *session, openTIDAL_CurlContai
             curl_easy_getinfo (session->curlHandle, CURLINFO_RESPONSE_CODE, &http_code);
             openTIDAL_VerboseHelper ("cURL Handle", "CURLE_OK check success", 2);
             model->status = 0;
-            model->body = memchunk.memory;
+            if (isHead)
+                model->header = memchunk.memory;
+            else
+                model->body = memchunk.memory;
             model->responseCode = http_code;
         }
 
