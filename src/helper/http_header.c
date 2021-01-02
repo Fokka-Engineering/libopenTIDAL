@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-#include "parse.h"
+#include "../parse/parse.h"
 #include <stdio.h>
 #include <string.h>
 

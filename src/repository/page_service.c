@@ -75,7 +75,7 @@ openTIDAL_GetPageHome (openTIDAL_SessionContainer *session)
             status = openTIDAL_ParseModules (o, (cJSON *)o->json);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, 0, "Page Home");
+            o->status = parse_status ((cJSON *)o->json, &curl, "Page Home");
         }
     }
 end:
@@ -123,7 +123,7 @@ openTIDAL_GetPageMixes (openTIDAL_SessionContainer *session)
             status = openTIDAL_ParseModules (o, (cJSON *)o->json);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, 0, "Page Mixes");
+            o->status = parse_status ((cJSON *)o->json, &curl, "Page Mixes");
         }
     }
 end:

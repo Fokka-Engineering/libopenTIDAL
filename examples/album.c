@@ -17,7 +17,7 @@ main ()
     openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
 
     printf ("\nGet Album\n");
-    openTIDAL_ContentContainer *resolve = openTIDAL_GetAlbum (&session, 4753719);
+    openTIDAL_ContentContainer *resolve = openTIDAL_GetAlbum (&session, "4753719");
     if (resolve->status == 1) {
         for (i = 0; i < resolve->total[0]; ++i) {
             int artists;
@@ -25,6 +25,7 @@ main ()
             printf ("Title: %s\n", resolve->albums[i].title);
 
             for (artists = 0; artists < resolve->albums[i].subArraySize; ++artists) {
+                printf ("ArtistId: %s\n", resolve->albums[i].artistId[artists]);
                 printf ("ArtistName #%d: %s\n", artists, resolve->albums[i].artistName[artists]);
             }
         }
@@ -32,7 +33,7 @@ main ()
     openTIDAL_StructDelete (resolve);
 
     printf ("\nGet Album Items\n");
-    openTIDAL_ContentContainer *resolveTwo = openTIDAL_GetAlbumItems (&session, 4753719, 20, 0);
+    openTIDAL_ContentContainer *resolveTwo = openTIDAL_GetAlbumItems (&session, "4753719", 20, 0);
     if (resolveTwo->status == 1) {
         for (i = 0; i < resolveTwo->total[1]; ++i) {
             int artists;

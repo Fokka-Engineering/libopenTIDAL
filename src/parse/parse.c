@@ -56,6 +56,16 @@ parse_signed_number (cJSON *object, int *number)
 }
 
 void
+parse_number_string (cJSON *object, char **string)
+{
+    *string = NULL;
+
+    if (cJSON_IsNumber (object) && (!cJSON_IsNull (object))) {
+        *string = object->valueintstring;
+    }
+}
+
+void
 parse_double (cJSON *object, double *number)
 {
     *number = 0;

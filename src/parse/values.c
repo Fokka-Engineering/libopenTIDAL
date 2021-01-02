@@ -45,7 +45,7 @@ parse_login_token_values (openTIDAL_LoginTokenContainer *Value, json_login_token
     parse_string (json->refresh_token, &Value->refresh_token);
     parse_string (json->token_type, &Value->token_type);
     parse_number (json->expires_in, &Value->timeFrame);
-    parse_number (json->userId, &Value->userId);
+    parse_number_string (json->userId, &Value->userId);
     parse_string (json->email, &Value->email);
     parse_string (json->countryCode, &Value->countryCode);
     parse_string (json->fullName, &Value->fullName);
@@ -54,16 +54,14 @@ parse_login_token_values (openTIDAL_LoginTokenContainer *Value, json_login_token
     parse_string (json->nickname, &Value->nickname);
     parse_string (json->username, &Value->username);
     parse_string (json->imageId, &Value->imageId);
-    parse_number (json->created, &Value->created);
-    parse_number (json->updated, &Value->updated);
-    parse_number (json->facebookUid, &Value->facebookUid);
+    parse_number_string (json->facebookUid, &Value->facebookUid);
     parse_string (json->appleUid, &Value->appleUid);
 }
 
 void
 parse_user_values (openTIDAL_UserContainer *Value, json_user_model *json)
 {
-    parse_number (json->id, &Value->id);
+    parse_number_string (json->id, &Value->id);
     parse_string (json->username, &Value->username);
     parse_string (json->firstName, &Value->firstName);
     parse_string (json->lastName, &Value->lastName);
@@ -75,7 +73,7 @@ parse_user_values (openTIDAL_UserContainer *Value, json_user_model *json)
     parse_bool (json->acceptedEULA, &Value->acceptedEULA);
     parse_string (json->gender, &Value->gender);
     parse_string (json->dateOfBirth, &Value->dateOfBirth);
-    parse_number (json->facebookUid, &Value->facebookUid);
+    parse_number_string (json->facebookUid, &Value->facebookUid);
     parse_string (json->appleUid, &Value->appleUid);
 }
 
@@ -86,7 +84,7 @@ parse_user_subscription_values (openTIDAL_UserSubscriptionContainer *Value,
     parse_string (json->validUntil, &Value->validUntil);
     parse_string (json->status, &Value->accountStatus);
     parse_string (json->type, &Value->type);
-    parse_number (json->offlineGracePeriod, &Value->offlineGracePeriod);
+    parse_signed_number (json->offlineGracePeriod, &Value->offlineGracePeriod);
     parse_string (json->highestSoundQuality, &Value->highestSoundQuality);
     parse_bool (json->premiumAccess, &Value->premiumAccess);
     parse_bool (json->canGetTrial, &Value->canGetTrial);
@@ -100,7 +98,7 @@ parse_playlist_values (openTIDAL_PlaylistContainer *playlist, json_playlist_mode
     parse_string (json->title, &playlist->title);
     parse_string (json->description, &playlist->description);
     parse_signed_number (json->popularity, &playlist->popularity);
-    parse_number (json->duration, &playlist->duration);
+    parse_signed_number (json->duration, &playlist->duration);
     parse_string (json->created, &playlist->created);
     parse_string (json->lastUpdated, &playlist->lastUpdated);
     parse_signed_number (json->numberOfTracks, &playlist->numberOfTracks);
@@ -114,9 +112,9 @@ parse_playlist_values (openTIDAL_PlaylistContainer *playlist, json_playlist_mode
 void
 parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
 {
-    parse_number (json->id, &Value->id);
+    parse_number_string (json->id, &Value->id);
     parse_string (json->title, &Value->title);
-    parse_number (json->duration, &Value->duration);
+    parse_signed_number (json->duration, &Value->duration);
     parse_signed_number (json->popularity, &Value->popularity);
     parse_signed_number (json->trackNumber, &Value->trackNumber);
     parse_signed_number (json->volumeNumber, &Value->volumeNumber);
@@ -131,7 +129,7 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
     parse_bool (json->streamReady, &Value->streamReady);
     parse_double (json->replayGain, &Value->replayGain);
     parse_double (json->peak, &Value->peak);
-    parse_number (json->albumId, &Value->albumId);
+    parse_number_string (json->albumId, &Value->albumId);
     parse_string (json->albumTitle, &Value->albumTitle);
 
     if (cJSON_IsObject (json->quality)) {
@@ -147,7 +145,7 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {
-            parse_number (json->artistId[i], &Value->artistId[i]);
+            parse_number_string (json->artistId[i], &Value->artistId[i]);
             parse_string (json->artistName[i], &Value->artistName[i]);
         }
 
@@ -162,9 +160,9 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
 void
 parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
 {
-    parse_number (json->id, &Value->id);
+    parse_number_string (json->id, &Value->id);
     parse_string (json->title, &Value->title);
-    parse_number (json->duration, &Value->duration);
+    parse_signed_number (json->duration, &Value->duration);
     parse_signed_number (json->popularity, &Value->popularity);
     parse_string (json->copyright, &Value->copyright);
     parse_string (json->quality, &Value->quality);
@@ -186,7 +184,7 @@ parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {
-            parse_number (json->artistId[i], &Value->artistId[i]);
+            parse_number_string (json->artistId[i], &Value->artistId[i]);
             parse_string (json->artistName[i], &Value->artistName[i]);
         }
 
@@ -201,7 +199,7 @@ parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
 void
 parse_artist_values (openTIDAL_ArtistContainer *Value, json_artist_model *json)
 {
-    parse_number (json->id, &Value->id);
+    parse_number_string (json->id, &Value->id);
     parse_string (json->name, &Value->name);
     parse_string (json->picture, &Value->picture);
     parse_signed_number (json->popularity, &Value->popularity);
@@ -242,8 +240,8 @@ parse_mix_values (openTIDAL_MixContainer *Value, json_mix_model *json)
 void
 parse_stream_values (openTIDAL_StreamContainer *Value, json_stream_model *json)
 {
-    parse_number (json->trackId, &Value->trackId);
-    parse_number (json->videoId, &Value->videoId);
+    parse_number_string (json->trackId, &Value->trackId);
+    parse_number_string (json->videoId, &Value->videoId);
     parse_string (json->assetPresentation, &Value->assetPresentation);
     parse_string (json->audioQuality, &Value->audioQuality);
     parse_string (json->audioMode, &Value->audioMode);

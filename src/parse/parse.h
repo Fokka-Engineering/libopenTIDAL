@@ -31,16 +31,16 @@
 void parse_double (cJSON *object, double *number);
 void parse_number (cJSON *object, size_t *number);
 void parse_signed_number (cJSON *object, int *number);
+void parse_number_string (cJSON *object, char **string);
 void parse_bool (cJSON *object, int *number);
 void parse_string (cJSON *object, char **string);
 
-int parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const size_t id,
-                  const char *uuid);
+int parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *id);
 int parse_raw_status (long *code);
-int parse_unauthorized (cJSON *input_json, const size_t id);
-int parse_notfound (cJSON *input_json, const size_t id, const char *uuid);
-int parse_preconditionfailed (cJSON *input_json, const size_t id, const char *uuid);
-int parse_badrequest (cJSON *input_json, const size_t id, const char *uuid);
+int parse_unauthorized (cJSON *input_json, const char *id);
+int parse_notfound (cJSON *input_json, const char *id);
+int parse_preconditionfailed (cJSON *input_json, const char *id);
+int parse_badrequest (cJSON *input_json, const char *id);
 
 /* parse Objects */
 json_login_code_model json_parse_login_code (cJSON *directObject);

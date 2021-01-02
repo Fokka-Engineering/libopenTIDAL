@@ -44,7 +44,7 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
     status = openTIDAL_StructOneTimeAlloc (o, -3);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu", session->userId);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
@@ -65,7 +65,7 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -90,7 +90,7 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
     status = openTIDAL_StructOneTimeAlloc (o, -4);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/subscription", session->userId);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/subscription", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
@@ -113,7 +113,7 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:

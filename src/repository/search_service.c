@@ -32,7 +32,7 @@
 /* Search */
 
 openTIDAL_ContentContainer *
-openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, int limit)
+openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int limit)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -77,7 +77,7 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, int limit)
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, 0, "Search");
+            o->status = parse_status ((cJSON *)o->json, &curl, "Search");
         }
     }
 end:

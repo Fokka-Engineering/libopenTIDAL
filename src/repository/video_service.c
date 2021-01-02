@@ -32,7 +32,7 @@
 #include <string.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetVideo (openTIDAL_SessionContainer *session, size_t videoid)
+openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const char *videoId)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -47,7 +47,7 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, size_t videoid)
     status = openTIDAL_StructAlloc (o, 1);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%zu", videoid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%s", videoId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
@@ -72,7 +72,7 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, size_t videoid)
             status = openTIDAL_StructAddItem (o, video);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, videoid, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, videoId);
         }
     }
 end:
@@ -142,7 +142,7 @@ session->countryCode, limit, offset); curl_model curl = curl_get(buffer, basepar
 }*/
 
 openTIDAL_ContentContainer *
-openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, size_t videoid)
+openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const char *videoId)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -157,7 +157,7 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, size_t videoid)
     status = openTIDAL_StructOneTimeAlloc (o, -5);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%zu/playbackinfopostpaywall", videoid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/videos/%s/playbackinfopostpaywall", videoId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&videoquality=%s&assetpresentation=%s&playbackmode=%s",
                             session->countryCode, session->videoQuality, "FULL", "STREAM");
@@ -213,7 +213,7 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, size_t videoid)
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, videoid, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, videoId);
         }
     }
 end:

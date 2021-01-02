@@ -81,7 +81,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, char *device_code)
+openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, const char *device_code)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -162,7 +162,7 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, char *refresh_token)
+openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, const char *refresh_token)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;

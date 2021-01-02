@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, size_t albumid)
+openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, const char *albumId)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -44,7 +44,7 @@ openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, size_t albumid)
     status = openTIDAL_StructAlloc (o, 0);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%zu", albumid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%s", albumId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
@@ -68,7 +68,7 @@ openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, size_t albumid)
             status = openTIDAL_StructAddAlbum (o, album);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, albumid, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, albumId);
         }
     }
 end:
@@ -78,21 +78,22 @@ end:
 }
 
 openTIDAL_ContentContainer *
-openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, size_t albumid, int limit, int offset)
+openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const char *albumId, const int limit,
+                         const int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
     int status = 0;
 
     openTIDAL_CurlModelInit (&curl);
-    openTIDAL_StructMainAlloc (&o);
+    status = openTIDAL_StructMainAlloc (&o);
     if (status == -1) return NULL;
-    openTIDAL_StructInit (o);
+    status = openTIDAL_StructInit (o);
     if (status == -1) goto end;
-    openTIDAL_StructAlloc (o, 1);
+    status = openTIDAL_StructAlloc (o, 1);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%zu/items", albumid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/albums/%s/items", albumId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s&limit=%d&offset=%d",
                             session->countryCode, limit, offset);
     if (!curl.endpoint || !curl.parameter) {
@@ -140,7 +141,7 @@ openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, size_t albumid, in
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, albumid, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, albumId);
         }
     }
 end:

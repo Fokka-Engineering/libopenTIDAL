@@ -27,18 +27,18 @@
 #include <stdlib.h>
 
 int
-parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const size_t id, const char *uuid)
+parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *uuid)
 {
     int status = 0;
 
     if (Value->responseCode == 400) {
-        status = parse_badrequest (input_json, id, uuid);
+        status = parse_badrequest (input_json, uuid);
     }
     else if (Value->responseCode == 401) {
-        status = parse_unauthorized (input_json, id);
+        status = parse_unauthorized (input_json, uuid);
     }
     else if (Value->responseCode == 404) {
-        status = parse_notfound (input_json, id, uuid);
+        status = parse_notfound (input_json, uuid);
     }
     else {
         status = 0;
@@ -77,7 +77,7 @@ parse_raw_status (long *code)
 }
 
 int
-parse_unauthorized (cJSON *input_json, const size_t id)
+parse_unauthorized (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -85,7 +85,7 @@ parse_unauthorized (cJSON *input_json, const size_t id)
     if (cJSON_IsNumber (subStatus) == 1) {
         if (subStatus->valueint == 4005) {
             status = -3;
-            openTIDAL_VerboseHelper ("Request Error", "401: Asset %zu is not ready for playback", 1,
+            openTIDAL_VerboseHelper ("Request Error", "401: Asset %s is not ready for playback", 1,
                                      id);
         }
         else if (subStatus->valueint == 6001) {
@@ -114,7 +114,7 @@ parse_unauthorized (cJSON *input_json, const size_t id)
 }
 
 int
-parse_notfound (cJSON *input_json, const size_t id, const char *uuid)
+parse_notfound (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -122,12 +122,7 @@ parse_notfound (cJSON *input_json, const size_t id, const char *uuid)
     if (cJSON_IsNumber (subStatus) == 1) {
         if (subStatus->valueint == 2001) {
             status = -2;
-            if (uuid == NULL) {
-                openTIDAL_VerboseHelper ("Request Error", "404: Resource %zu not found", 1, id);
-            }
-            else {
-                openTIDAL_VerboseHelper ("Request Error", "404: Resource %s not found", 1, uuid);
-            }
+            openTIDAL_VerboseHelper ("Request Error", "404: Resource %s not found", 1, id);
         }
         else {
             openTIDAL_VerboseHelper ("Request Error", "404: Not Found", 1);
@@ -137,7 +132,7 @@ parse_notfound (cJSON *input_json, const size_t id, const char *uuid)
 }
 
 int
-parse_preconditionfailed (cJSON *input_json, const size_t id, const char *uuid)
+parse_preconditionfailed (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -145,14 +140,8 @@ parse_preconditionfailed (cJSON *input_json, const size_t id, const char *uuid)
     if (cJSON_IsNumber (subStatus) == 1) {
         if (subStatus->valueint == 7002) {
             status = -4;
-            if (uuid == NULL) {
-                openTIDAL_VerboseHelper (
-                    "Request Error", "412: If-None-Match (eTag) failed for Resource %zu", 1, id);
-            }
-            else {
-                openTIDAL_VerboseHelper (
-                    "Request Error", "412: If-None-Match (eTag) failed for Resource %s", 1, uuid);
-            }
+            openTIDAL_VerboseHelper ("Request Error",
+                                     "412: If-None-Match (eTag) failed for Resource %s", 1, id);
         }
         else {
             openTIDAL_VerboseHelper ("Request Error", "412: Precondition Failed", 1);
@@ -162,7 +151,7 @@ parse_preconditionfailed (cJSON *input_json, const size_t id, const char *uuid)
 }
 
 int
-parse_badrequest (cJSON *input_json, const size_t id, const char *uuid)
+parse_badrequest (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -170,36 +159,16 @@ parse_badrequest (cJSON *input_json, const size_t id, const char *uuid)
     if (cJSON_IsNumber (subStatus) == 1) {
         if (subStatus->valueint == 1002) {
             status = -4;
-            if (uuid == NULL) {
-                openTIDAL_VerboseHelper ("Request Error", "400: Parameter missing for Resource %zu",
-                                         1, id);
-            }
-            else {
-                openTIDAL_VerboseHelper ("Request Error", "400: Parameter missing for Resource %s",
-                                         1, uuid);
-            }
+            openTIDAL_VerboseHelper ("Request Error", "400: Parameter missing for Resource %s", 1,
+                                     id);
         }
         else if (subStatus->valueint == 1005) {
             status = -12;
-            if (uuid == NULL) {
-                openTIDAL_VerboseHelper ("Request Error", "400: User not found for Resource %zu", 1,
-                                         id);
-            }
-            else {
-                openTIDAL_VerboseHelper ("Request Error", "400: User not found for Resource %s", 1,
-                                         uuid);
-            }
+            openTIDAL_VerboseHelper ("Request Error", "400: User not found for Resource %s", 1, id);
         }
         else if (subStatus->valueint == 6003) {
             status = -7;
-            if (!uuid) {
-                openTIDAL_VerboseHelper ("Request Error", "400: Token missing for Resource %zu", 1,
-                                         id);
-            }
-            else {
-                openTIDAL_VerboseHelper ("Request Error", "400: Token missing for Resource %s", 1,
-                                         uuid);
-            }
+            openTIDAL_VerboseHelper ("Request Error", "400: Token missing for Resource %s", 1, id);
         }
         else {
             openTIDAL_VerboseHelper ("Request Error", "400: Bad Request", 1);

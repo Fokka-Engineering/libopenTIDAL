@@ -28,5 +28,6 @@ void *openTIDAL_cJSONParseHelper (char *input);
 void openTIDAL_VerboseHelper (const char *prefix, const char *format, int loglevel, ...)
     __attribute__ ((format (printf, 2, 4)));
 int openTIDAL_StringHelper (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
+int openTIDAL_ArrayToStringHelper (char **str, char **array, int length);
 char *openTIDAL_UrlEncodeHelper (char *str);
 #endif

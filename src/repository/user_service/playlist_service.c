@@ -29,8 +29,8 @@
 #include "../../parse/parse.h"
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, int limit, int offset,
-                                char *order, char *orderDirection)
+openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, const int limit,
+                                const int offset, const char *order, const char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -44,7 +44,7 @@ openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, int limit, 
     status = openTIDAL_StructAlloc (o, 3);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/playlistsAndFavoritePlaylists",
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/playlistsAndFavoritePlaylists",
                             session->userId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
@@ -94,7 +94,7 @@ openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, int limit, 
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -104,13 +104,13 @@ end:
 }
 
 int
-openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, char *playlistid)
+openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, const char *playlistid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
 
     openTIDAL_CurlModelInit (&curl);
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/playlists", session->userId);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/playlists", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     openTIDAL_StringHelper (&curl.postData, "uuids=%s&onArtifactNotFound=FAIL", playlistid);
     if (!curl.endpoint || !curl.parameter || !curl.postData) {
@@ -128,13 +128,13 @@ openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, char *playli
 }
 
 int
-openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session, char *playlistid)
+openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session, const char *playlistid)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
 
     openTIDAL_CurlModelInit (&curl);
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/playlists/%s", session->userId,
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/playlists/%s", session->userId,
                             playlistid);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {

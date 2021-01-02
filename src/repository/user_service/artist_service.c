@@ -29,8 +29,8 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, int limit, int offset,
-                              char *order, char *orderDirection)
+openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, const int limit,
+                              const int offset, const char *order, const char *orderDirection)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -44,7 +44,7 @@ openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, int limit, in
     status = openTIDAL_StructAlloc (o, 2);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/artists", session->userId);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/artists", session->userId);
     openTIDAL_StringHelper (&curl.parameter,
                             "countryCode=%s&limit=%d&offset=%d&order=%s&orderDirection=%s",
                             session->countryCode, limit, offset, order, orderDirection);
@@ -94,7 +94,7 @@ openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, int limit, in
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId, NULL);
+            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -106,15 +106,15 @@ end:
 /* create & delete favourites */
 
 int
-openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, size_t artistid)
+openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, const char *artistId)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
 
     openTIDAL_CurlModelInit (&curl);
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/artists", session->userId);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/artists", session->userId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
-    openTIDAL_StringHelper (&curl.postData, "artistIds=%zu&onArtifactNotFound=FAIL", artistid);
+    openTIDAL_StringHelper (&curl.postData, "artistIds=%s&onArtifactNotFound=FAIL", artistId);
     if (!curl.endpoint || !curl.parameter || !curl.postData) {
         status = -14;
         return status;
@@ -130,14 +130,14 @@ openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, size_t artisti
 }
 
 int
-openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, size_t artistid)
+openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, const char *artistId)
 {
     openTIDAL_CurlContainer curl;
     int status = -1;
 
     openTIDAL_CurlModelInit (&curl);
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%zu/favorites/artists/%zu", session->userId,
-                            artistid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/users/%s/favorites/artists/%s", session->userId,
+                            artistId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
     if (curl.status != -1) {

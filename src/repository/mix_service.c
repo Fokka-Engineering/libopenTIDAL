@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, char *mixid)
+openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -43,7 +43,7 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, char *mixid)
     status = openTIDAL_StructAlloc (o, 1);
     if (status == -1) goto end;
 
-    openTIDAL_StringHelper (&curl.endpoint, "/v1/mixes/%s/items", mixid);
+    openTIDAL_StringHelper (&curl.endpoint, "/v1/mixes/%s/items", mixId);
     openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
@@ -91,7 +91,7 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, char *mixid)
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, 0, mixid);
+            o->status = parse_status ((cJSON *)o->json, &curl, mixId);
         }
     }
 end:

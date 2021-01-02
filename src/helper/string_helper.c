@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int
 openTIDAL_StringHelper (char **str, char *format, ...)
@@ -54,3 +55,30 @@ openTIDAL_StringHelper (char **str, char *format, ...)
     return len;
 }
 
+int
+openTIDAL_ArrayToStringHelper (char **str, char **array, int length)
+{
+    size_t memsize = 0;
+    int i;
+    char *ptr;
+
+    for (i = 0; i < length; i++)
+        /* length of ASCII string + separator ", " */
+        memsize += strlen (array[i]) + 2;
+    memsize += 1;
+
+    ptr = malloc (memsize);
+    if (!ptr) {
+        openTIDAL_VerboseHelper ("ArrayToStringHelper",
+                                 "Couldn't allocate length of string into heap. Return -1", 1);
+        return -1;
+    }
+    strcpy (ptr, "");
+
+    for (i = 0; i < length; i++) {
+        strcat (ptr, array[i]);
+        if (i != length - 1) strcat (ptr, ", ");
+    }
+    *str = ptr;
+    return 0;
+}

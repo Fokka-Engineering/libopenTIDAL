@@ -154,7 +154,7 @@ openTIDAL_SessionCreateFileStream (openTIDAL_SessionContainer *session)
     expires_in_json = cJSON_CreateNumber (session->expiresIn);
     cJSON_AddItemToObject (authorization_json, "expires_in", expires_in_json);
 
-    id_json = cJSON_CreateNumber (session->userId);
+    id_json = cJSON_CreateString (session->userId);
     cJSON_AddItemToObject (user_json, "id", id_json);
     username_json = cJSON_CreateString (session->username);
     cJSON_AddItemToObject (user_json, "username", username_json);
@@ -206,7 +206,7 @@ openTIDAL_SessionReadFileStream (openTIDAL_SessionContainer *session, cJSON *inp
     parse_string (refreshToken, &session->refreshToken);
     parse_string (accessToken, &session->accessToken);
     parse_number (expiresIn, (size_t *)&session->expiresIn);
-    parse_number (id, &session->userId);
+    parse_string (id, &session->userId);
     parse_string (countryCode, &session->countryCode);
     parse_string (audioQuality, &session->audioQuality);
     parse_string (videoQuality, &session->videoQuality);
