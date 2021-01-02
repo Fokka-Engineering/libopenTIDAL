@@ -25,7 +25,6 @@
 #include <stdlib.h>
 
 static int init_capacity = 10;
-
 int
 openTIDAL_ParseModuleAllocHelper (openTIDAL_ContentContainer *o)
 {
@@ -33,14 +32,35 @@ openTIDAL_ParseModuleAllocHelper (openTIDAL_ContentContainer *o)
     o->modules->arraySize = 0;
 
     o->modules->moduleType = malloc (sizeof (char *) * init_capacity);
+    if (!o->modules->moduleType) return -1;
     o->modules->moduleTitle = malloc (sizeof (char *) * init_capacity);
+    if (!o->modules->moduleTitle) return -1;
     o->modules->modulePreTitle = malloc (sizeof (char *) * init_capacity);
+    if (!o->modules->modulePreTitle) return -1;
     o->modules->arrayType = malloc (sizeof (int) * init_capacity);
+    if (!o->modules->arrayType) return -1;
     o->modules->offset = malloc (sizeof (int) * init_capacity);
+    if (!o->modules->offset) return -1;
     o->modules->total = malloc (sizeof (int) * init_capacity);
-    if (!o->modules->moduleType || !o->modules->arrayType || !o->modules->offset
-        || !o->modules->total || !o->modules->moduleTitle || !o->modules->modulePreTitle)
-        return -1;
+    if (!o->modules->total) return -1;
+    return 0;
+}
+
+int
+openTIDAL_ParseModuleAllocMixListHelper (openTIDAL_ContentContainer *o, int arraySize)
+{
+    int i;
+    o->modules->mixedListTypes = malloc (sizeof (int) * arraySize);
+    if (!o->modules->mixedListTypes) return -1;
+    o->modules->mixedListOffset = malloc (sizeof (int) * 5);
+    if (!o->modules->mixedListOffset) return -1;
+    o->modules->mixedListTotal = malloc (sizeof (int) * 5);
+    if (!o->modules->mixedListTotal) return -1;
+
+    for (i = 0; i < 5; i++) {
+        o->modules->mixedListOffset[i] = 0;
+        o->modules->mixedListTotal[i] = 0;
+    }
     return 0;
 }
 

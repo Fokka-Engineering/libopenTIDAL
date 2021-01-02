@@ -26,5 +26,6 @@
 #define ARRAYHELPER__h
 
 int openTIDAL_ParseModuleAllocHelper (openTIDAL_ContentContainer *o);
+int openTIDAL_ParseModuleAllocMixListHelper (openTIDAL_ContentContainer *o, int arraySize);
 int openTIDAL_ParseModuleAdd (openTIDAL_ContentContainer *o, int index, char *str, int number);
 #endif // ARRAYHELPER__h

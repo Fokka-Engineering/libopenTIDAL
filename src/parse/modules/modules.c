@@ -64,9 +64,11 @@ static int openTIDAL_ParseModuleMixList (openTIDAL_ContentContainer *o, struct m
 int
 openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json)
 {
+
     struct moduleStruct m;
     int i;
     int status;
+    int mixedListOccurence = 0;
     m.rows = cJSON_GetObjectItem (input_json, "rows");
     m.row = NULL;
 
@@ -105,6 +107,13 @@ openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json)
                         switch (i) {
                         case 0: // MIXED_TYPES_LIST / ID = -1
                             type = -1;
+                            if (mixedListOccurence == 0) {
+                                status = openTIDAL_ParseModuleAllocMixListHelper (
+                                    o, cJSON_GetArraySize (m.items));
+                                if (status == -1) return -1;
+                                openTIDAL_ParseModuleMixedList (o, &m);
+                            }
+                            mixedListOccurence += 1;
                             break;
                         case 1: // ALBUM_LIST
                             type = 0;
@@ -148,12 +157,16 @@ openTIDAL_ParseModules (openTIDAL_ContentContainer *o, cJSON *input_json)
 static int
 openTIDAL_ParseModuleMixedList (openTIDAL_ContentContainer *o, struct moduleStruct *m)
 {
+    int i;
+    int counter = 0;
+    for (i = 0; i < 5; i++)
+        o->modules->mixedListOffset[i] = o->total[i];
+
     if (cJSON_IsArray (m->items)) cJSON_ArrayForEach (m->item, m->items)
         {
             cJSON *type;
             cJSON *innerItem;
             char *typeString;
-            int i;
             int status = 0;
             /* Can't define variables in switch statement */
             openTIDAL_AlbumContainer album;
@@ -180,31 +193,43 @@ openTIDAL_ParseModuleMixedList (openTIDAL_ContentContainer *o, struct moduleStru
                             processed_album = json_parse_album (innerItem);
                             parse_album_values (&album, &processed_album);
                             status = openTIDAL_StructAddAlbum (o, album);
+                            o->modules->mixedListTotal[0] += 1;
+                            o->modules->mixedListTypes[counter++] = 0;
                             break;
                         case 1: // TRACKS
                             processed_item = json_parse_items (innerItem);
                             parse_items_values (&item, &processed_item);
                             status = openTIDAL_StructAddItem (o, item);
+                            o->modules->mixedListTotal[1] += 1;
+                            o->modules->mixedListTypes[counter++] = 1;
                             break;
                         case 2: // VIDEOS
                             processed_item = json_parse_items (innerItem);
                             parse_items_values (&item, &processed_item);
                             status = openTIDAL_StructAddItem (o, item);
+                            o->modules->mixedListTotal[1] += 1;
+                            o->modules->mixedListTypes[counter++] = 1;
                             break;
                         case 3: // ARTISTS
                             processed_artist = json_parse_artist (innerItem);
                             parse_artist_values (&artist, &processed_artist);
                             status = openTIDAL_StructAddArtist (o, artist);
+                            o->modules->mixedListTotal[2] += 1;
+                            o->modules->mixedListTypes[counter++] = 2;
                             break;
                         case 4: // PLAYLISTS
                             processed_playlist = json_parse_playlist (innerItem);
                             parse_playlist_values (&playlist, &processed_playlist);
                             status = openTIDAL_StructAddPlaylist (o, playlist);
+                            o->modules->mixedListTotal[3] += 1;
+                            o->modules->mixedListTypes[counter++] = 3;
                             break;
                         case 5: // MIX
                             processed_mix = json_parse_mix (innerItem);
                             parse_mix_values (&mix, &processed_mix);
                             status = openTIDAL_StructAddMix (o, mix);
+                            o->modules->mixedListTotal[4] += 1;
+                            o->modules->mixedListTypes[counter++] = 4;
                             break;
                         }
                         if (status == -1) return -1;
@@ -212,6 +237,7 @@ openTIDAL_ParseModuleMixedList (openTIDAL_ContentContainer *o, struct moduleStru
                     }
                 };
         };
+    o->modules->mixedListSize = counter;
     return 0;
 }
 
@@ -230,6 +256,7 @@ openTIDAL_ParseModuleAlbumList (openTIDAL_ContentContainer *o, struct moduleStru
 
             o->modules->total[o->modules->arraySize]++;
         };
+
     return 0;
 }
 

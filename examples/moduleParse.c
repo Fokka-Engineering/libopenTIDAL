@@ -18,6 +18,17 @@ main ()
     for (i = 0; i < resolve->modules->arraySize; i++) {
         printf ("Type : %d\n", resolve->modules->arrayType[i]);
         printf ("TypeString : %s\n", resolve->modules->moduleType[i]);
+        if (resolve->modules->arrayType[i] == -1) {
+            printf ("|| MixedList Size: %d\n", resolve->modules->mixedListSize);
+            printf ("|| MixedList Album Offset: %d\n", resolve->modules->mixedListOffset[0]);
+            printf ("|| MixedList Album Total: %d\n", resolve->modules->mixedListTotal[0]);
+            int i;
+            int offset = resolve->modules->mixedListOffset[0];
+            for (i = 0; i < resolve->modules->mixedListTotal[0]; i++) {
+                printf ("   || Title %s\n", resolve->albums[i + offset].title);
+                printf ("   || Id %s\n", resolve->albums[i + offset].id);
+            }
+        }
         printf ("Title : %s\n", resolve->modules->moduleTitle[i]);
         printf ("PreTitle : %s\n", resolve->modules->modulePreTitle[i]);
         printf ("Start : %d\n", resolve->modules->offset[i]);

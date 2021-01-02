@@ -300,8 +300,6 @@ typedef struct openTIDAL_ModuleContainer {
     int *total;
 
     int mixedListSize;
-    int mixedListCapacity;
-
     int *mixedListTypes;
     int *mixedListOffset;
     int *mixedListTotal;
@@ -470,6 +468,9 @@ const int openTIDAL_MovePlaylistItem (openTIDAL_SessionContainer *session, const
 const int openTIDAL_AddPlaylistItem (openTIDAL_SessionContainer *session, const char *playlistId,
                                      const char *itemId, const char *onArtifactNotFound,
                                      const char *onDupes);
+const int openTIDAL_AddPlaylistItems (openTIDAL_SessionContainer *session, const char *playlistId,
+                                      const char **itemIds, const int size,
+                                      const char *onArtifactNotFound, const char *onDupes);
 
 /* Album Endpoints */
 
