@@ -227,9 +227,6 @@ openTIDAL_ContentContainer *openTIDAL_GetArtistAlbums (openTIDAL_SessionContaine
 /* Track Endpoints  */
 openTIDAL_ContentContainer *openTIDAL_GetTrack (openTIDAL_SessionContainer *session,
                                                 const char *trackid);
-openTIDAL_ContentContainer *openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session,
-                                                            const char *trackid, const int limit,
-                                                            const int offset);
 openTIDAL_ContentContainer *openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session,
                                                    const char *trackid);
 openTIDAL_ContentContainer *openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session,
@@ -239,9 +236,6 @@ openTIDAL_ContentContainer *openTIDAL_GetTrackStream (openTIDAL_SessionContainer
 
 openTIDAL_ContentContainer *openTIDAL_GetVideo (openTIDAL_SessionContainer *session,
                                                 const char *videoid);
-openTIDAL_ContentContainer *openTIDAL_GetVideoContributors (openTIDAL_SessionContainer *session,
-                                                            const char *videoid, const int limit,
-                                                            const int offset);
 openTIDAL_ContentContainer *openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session,
                                                       const char *videoid);
 
@@ -490,15 +484,6 @@ struct openTIDAL_AlbumContainer {
     char *releaseDate;
 };
 
-typedef struct openTIDAL_CreditsContainer {
-    int limit;
-    int offset;
-    char *type;
-    char *name;
-    char *id;
-
-} openTIDAL_CreditsContainer;
-
 struct openTIDAL_ArtistContainer {
     int limit;
     int offset;
@@ -541,8 +526,18 @@ struct openTIDAL_ContributorContainer {
     int limit;
     int offset;
     int totalNumberOfItems;
-    char *name;
-    char *role;
+    int arraySize;
+    char **name;
+    char **id;
+    char **role;
+};
+
+struct openTIDAL_CreditsContainer {
+    int limit;
+    int offset;
+    int arraySize;
+    char **type;
+    struct openTIDAL_ContributorContainer *contributors;
 };
 
 struct openTIDAL_StreamContainer {

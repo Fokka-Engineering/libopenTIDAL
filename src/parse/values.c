@@ -223,8 +223,9 @@ void
 openTIDAL_ParseJsonContributorValues (struct openTIDAL_ContributorContainer *Value,
                                       struct openTIDAL_JsonContributorContainer *json)
 {
-    openTIDAL_ParseJsonString (json->name, &Value->name);
-    openTIDAL_ParseJsonString (json->role, &Value->role);
+    Value->name = malloc (sizeof (char *) + Value->arraySize);
+    Value->id = malloc (sizeof (char *) + Value->arraySize);
+    Value->role = malloc (sizeof (char *) + Value->arraySize);
 }
 
 void

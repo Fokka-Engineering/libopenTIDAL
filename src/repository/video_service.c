@@ -82,68 +82,6 @@ end:
     return o;
 }
 
-/*openTIDAL_ContentContainer *
-openTIDAL_GetVideoContributors( size_t videoid,  int limit,  int offset)
-{
-    openTIDAL_ContentContainer * o;
-    char buffer[100];
-    char baseparams[100];
-
-    openTIDAL_StructInit(&o);
-    openTIDAL_StructAlloc(&o, 5);
-
-    snprintf(buffer, sizeof(buffer), "/v1/videos/%zu/contributors", videoid);
-    snprintf(baseparams, sizeof(baseparams), "countryCode=%s&limit=%d&offset=%d",
-session->countryCode, limit, offset); curl_model curl = curl_get(buffer, baseparams);
-
-    if(curl.status != -1)
-    {
-        cJSON *(cJSON *)o->json = json_parse(curl.body);
-        if (curl.responseCode == 200)
-        {
-            cJSON *limit = cJSON_GetObjectItem((cJSON *)o->json, "limit");
-            cJSON *offset = cJSON_GetObjectItem((cJSON *)o->json, "offset");
-            cJSON *totalNumberOfItems = cJSON_GetObjectItem((cJSON *)o->json, "totalNumberOfItems");
-            cJSON *items = cJSON_GetObjectItem((cJSON *)o->json, "items");
-            cJSON *item = NULL;
-
-            if (cJSON_IsArray(items))
-            {
-                cJSON_ArrayForEach(item, items)
-                {
-                    struct openTIDAL_ContributorContainer contrib;
-                    struct openTIDAL_JsonContributorContainer processed_json =
-openTIDAL_ParseJsonContributor(item);
-
-                    openTIDAL_ParseJsonContributorValues(&contrib, &processed_json);
-                    openTIDAL_ParseJsonSignedNumber(limit, &contrib.limit);
-                    openTIDAL_ParseJsonSignedNumber(offset, &contrib.offset);
-                    openTIDAL_ParseJsonSignedNumber(totalNumberOfItems,
-&contrib.totalNumberOfItems);
-
-                    openTIDAL_StructAddContributor(&o, contrib);
-                }
-            }
-
-            o->status = 1;
-        }
-        else
-        {
-            o->status = openTIDAL_ParseStatus((cJSON *)o->json, curl, videoid, NULL);
-        }
-
-        free(curl.body);
-        o->json = (cJSON *)o->json;
-        return o;
-    }
-    else
-    {
-        o->status = -1;
-        free(curl.body);
-        return o;
-    }
-}*/
-
 openTIDAL_ContentContainer *
 openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const char *videoId)
 {
