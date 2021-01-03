@@ -120,6 +120,9 @@ typedef struct cJSON {
     char *valuestring;
     /* writing to valueint is DEPRECATED, use cJSON_SetNumberValue instead */
     int valueint;
+    /* openTIDAL specific value. The parsed number in the char buffer (see parse_number)
+     * is duplicated and allocated. This pointer points to the memory location of the number
+     * ASCII String. The conversion to an integer is not suppressed. */
     char *valueintstring;
     /* The item's number, if type==cJSON_Number */
     double valuedouble;

@@ -56,6 +56,8 @@
 #pragma GCC visibility pop
 #endif
 
+/* openTIDAL helper functions */
+#include "../helper/helper.h"
 #include "cJSON.h"
 
 /* define our own boolean type */
@@ -246,6 +248,7 @@ cJSON_New_Item (const internal_hooks *const hooks)
 CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
 {
     cJSON *next = NULL;
+    openTIDAL_VerboseHelper ("cJSON", "Begin deallocating cJSON structure from heap..", 2);
     while (item != NULL) {
         next = item->next;
         if (!(item->type & cJSON_IsReference) && (item->child != NULL)) {
@@ -253,9 +256,11 @@ CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
         }
         if (!(item->type & cJSON_IsReference) && (item->valuestring != NULL)) {
             global_hooks.deallocate (item->valuestring);
+            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: string", 3);
         }
         if ((item->type == cJSON_Number) && (item->valueintstring != NULL)) {
             global_hooks.deallocate (item->valueintstring);
+            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: intstring", 3);
         }
         if (!(item->type & cJSON_StringIsConst) && (item->string != NULL)) {
             global_hooks.deallocate (item->string);
@@ -263,6 +268,7 @@ CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
         global_hooks.deallocate (item);
         item = next;
     }
+    openTIDAL_VerboseHelper ("cJSON", "End deallocating cJSON structure from heap", 2);
 }
 
 /* get the decimal point character of the current locale */
@@ -1000,6 +1006,7 @@ CJSON_PUBLIC (cJSON *)
 cJSON_ParseWithOpts (const char *value, const char **return_parse_end,
                      cJSON_bool require_null_terminated)
 {
+    openTIDAL_VerboseHelper ("cJSON", "Parse stream with operators", 2);
     size_t buffer_length;
 
     if (NULL == value) {
