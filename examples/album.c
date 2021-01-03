@@ -12,7 +12,7 @@ main ()
 {
     // openTIDAL_Init(NULL);
 
-    openTIDAL_Verbose (1);
+    openTIDAL_Verbose (3);
     // openTIDAL_SessionInit (&session, NULL);
     openTIDAL_SessionInit (&session, "/Users/hugo/Documents/oT-config");
 

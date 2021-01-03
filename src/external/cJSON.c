@@ -248,7 +248,7 @@ cJSON_New_Item (const internal_hooks *const hooks)
 CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
 {
     cJSON *next = NULL;
-    openTIDAL_VerboseHelper ("cJSON", "Begin deallocating cJSON structure from heap..", 2);
+    openTIDAL_VerboseHelper ("cJSON", "Begin deallocating cJSON structure from heap..", 5);
     while (item != NULL) {
         next = item->next;
         if (!(item->type & cJSON_IsReference) && (item->child != NULL)) {
@@ -256,11 +256,11 @@ CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
         }
         if (!(item->type & cJSON_IsReference) && (item->valuestring != NULL)) {
             global_hooks.deallocate (item->valuestring);
-            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: string", 3);
+            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: string", 5);
         }
         if ((item->type == cJSON_Number) && (item->valueintstring != NULL)) {
             global_hooks.deallocate (item->valueintstring);
-            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: intstring", 3);
+            openTIDAL_VerboseHelper ("cJSON", "Deallocated value: intstring", 5);
         }
         if (!(item->type & cJSON_StringIsConst) && (item->string != NULL)) {
             global_hooks.deallocate (item->string);
@@ -268,7 +268,7 @@ CJSON_PUBLIC (void) cJSON_Delete (cJSON *item)
         global_hooks.deallocate (item);
         item = next;
     }
-    openTIDAL_VerboseHelper ("cJSON", "End deallocating cJSON structure from heap", 2);
+    openTIDAL_VerboseHelper ("cJSON", "End deallocating cJSON structure from heap", 5);
 }
 
 /* get the decimal point character of the current locale */
