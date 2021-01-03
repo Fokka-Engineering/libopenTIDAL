@@ -203,13 +203,13 @@ openTIDAL_SessionReadFileStream (openTIDAL_SessionContainer *session, cJSON *inp
     audioQuality = cJSON_GetObjectItemCaseSensitive (preferences, "audio_quality");
     videoQuality = cJSON_GetObjectItemCaseSensitive (preferences, "video_quality");
 
-    parse_string (refreshToken, &session->refreshToken);
-    parse_string (accessToken, &session->accessToken);
-    parse_number (expiresIn, (size_t *)&session->expiresIn);
-    parse_string (id, &session->userId);
-    parse_string (countryCode, &session->countryCode);
-    parse_string (audioQuality, &session->audioQuality);
-    parse_string (videoQuality, &session->videoQuality);
+    openTIDAL_ParseJsonString (refreshToken, &session->refreshToken);
+    openTIDAL_ParseJsonString (accessToken, &session->accessToken);
+    openTIDAL_ParseJsonNumber (expiresIn, (size_t *)&session->expiresIn);
+    openTIDAL_ParseJsonString (id, &session->userId);
+    openTIDAL_ParseJsonString (countryCode, &session->countryCode);
+    openTIDAL_ParseJsonString (audioQuality, &session->audioQuality);
+    openTIDAL_ParseJsonString (videoQuality, &session->videoQuality);
     openTIDAL_VerboseHelper ("Session", "Read & allocate persistent stream from file", 2);
 }
 

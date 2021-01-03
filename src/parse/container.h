@@ -27,22 +27,16 @@
 
 /* structures used to parse a json response */
 
-typedef struct json_login_code_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* Login Code Values */
+struct openTIDAL_JsonLoginCodeContainer {
     cJSON *deviceCode;
     cJSON *userCode;
     cJSON *verificationUri;
     cJSON *verificationUriComplete;
     cJSON *expiresIn;
     cJSON *interval;
-} json_login_code_model;
+};
 
-typedef struct json_login_token_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* Login Token Values */
+struct openTIDAL_JsonLoginTokenContainer {
     cJSON *access_token;
     cJSON *refresh_token;
     cJSON *token_type;
@@ -56,23 +50,17 @@ typedef struct json_login_token_model {
     cJSON *nickname;
     cJSON *username;
     cJSON *imageId;
-    cJSON *created;
-    cJSON *updated;
     cJSON *facebookUid;
     cJSON *appleUid;
-} json_login_token_model;
+};
 
-typedef struct json_user_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* User Values */
+struct openTIDAL_JsonUserContainer {
     cJSON *id;
     cJSON *username;
     cJSON *firstName;
     cJSON *lastName;
     cJSON *email;
     cJSON *countryCode;
-    cJSON *created;
     cJSON *picture;
     cJSON *newsletter;
     cJSON *acceptedEULA;
@@ -80,12 +68,9 @@ typedef struct json_user_model {
     cJSON *dateOfBirth;
     cJSON *facebookUid;
     cJSON *appleUid;
-} json_user_model;
+};
 
-typedef struct json_user_subscription_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* Subscription Values */
+struct openTIDAL_JsonUserSubscriptionContainer {
     cJSON *validUntil;
     cJSON *status;
     cJSON *type;
@@ -94,11 +79,9 @@ typedef struct json_user_subscription_model {
     cJSON *premiumAccess;
     cJSON *canGetTrial;
     cJSON *paymentType;
-} json_user_subscription_model;
+};
 
-typedef struct json_playlist_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonPlaylistContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -117,11 +100,9 @@ typedef struct json_playlist_model {
     cJSON *image;
     cJSON *squareImage;
     cJSON *type;
-} json_playlist_model;
+};
 
-typedef struct json_items_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonItemsContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -150,11 +131,9 @@ typedef struct json_items_model {
     cJSON *album;
     cJSON *albumId;
     cJSON *albumTitle;
-} json_items_model;
+};
 
-typedef struct json_album_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonAlbumContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -179,11 +158,9 @@ typedef struct json_album_model {
     cJSON *artists;
     cJSON **artistId;
     cJSON **artistName;
-} json_album_model;
+};
 
-typedef struct json_artist_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonArtistContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -193,11 +170,9 @@ typedef struct json_artist_model {
     cJSON *name;
     cJSON *picture;
     cJSON *popularity;
-} json_artist_model;
+};
 
-typedef struct json_link_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonLinkContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -206,11 +181,9 @@ typedef struct json_link_model {
     cJSON *url;
     cJSON *siteName;
     cJSON *source;
-} json_links_model;
+};
 
-typedef struct json_credit_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonCreditContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -219,11 +192,9 @@ typedef struct json_credit_model {
     cJSON *type;
     cJSON *name;
     cJSON *id;
-} json_credit_model;
+};
 
-typedef struct json_contributor_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonContributorContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -231,12 +202,9 @@ typedef struct json_contributor_model {
     /* Contributor Values */
     cJSON *name;
     cJSON *role;
-} json_contributor_model;
+};
 
-typedef struct json_stream_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* Stream Values */
+struct openTIDAL_JsonStreamContainer {
     cJSON *trackId;
     cJSON *videoId;
     cJSON *assetPresentation;
@@ -245,22 +213,17 @@ typedef struct json_stream_model {
     cJSON *videoQuality;
     cJSON *manifestMimeType;
     cJSON *manifest;
-} json_stream_model;
+};
 
-typedef struct json_manifest_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
-    /* Manifest Values */
+struct openTIDAL_JsonManifestContainer {
     cJSON *mimeType;
     cJSON *codec;
     cJSON *encryptionType;
     cJSON *urls;
     cJSON *url;
-} json_manifest_model;
+};
 
-typedef struct json_mix_model {
-    /* Raw JSON Object */
-    cJSON *directObject;
+struct openTIDAL_JsonMixContainer {
     /* Pagination Values */
     cJSON *totalNumberOfItems;
     cJSON *limit;
@@ -279,6 +242,6 @@ typedef struct json_mix_model {
     cJSON *largeImageHeight;
     cJSON *largeImageUrl;
     cJSON *mixType;
-} json_mix_model;
+};
 
 #endif

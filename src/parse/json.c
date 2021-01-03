@@ -25,12 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-json_login_code_model
-json_parse_login_code (cJSON *directObject)
+struct openTIDAL_JsonLoginCodeContainer
+openTIDAL_ParseJsonLoginCode (cJSON *directObject)
 {
-    json_login_code_model Value;
+    struct openTIDAL_JsonLoginCodeContainer Value;
 
-    Value.directObject = NULL;
     Value.deviceCode = NULL;
     Value.userCode = NULL;
     Value.verificationUri = NULL;
@@ -38,7 +37,6 @@ json_parse_login_code (cJSON *directObject)
     Value.expiresIn = NULL;
     Value.interval = NULL;
 
-    Value.directObject = directObject;
     Value.deviceCode = cJSON_GetObjectItemCaseSensitive (directObject, "deviceCode");
     Value.userCode = cJSON_GetObjectItemCaseSensitive (directObject, "userCode");
     Value.verificationUri = cJSON_GetObjectItemCaseSensitive (directObject, "verificationUri");
@@ -50,10 +48,10 @@ json_parse_login_code (cJSON *directObject)
     return Value;
 }
 
-json_login_token_model
-json_parse_login_token (cJSON *directObject)
+struct openTIDAL_JsonLoginTokenContainer
+openTIDAL_ParseJsonLoginToken (cJSON *directObject)
 {
-    json_login_token_model Value;
+    struct openTIDAL_JsonLoginTokenContainer Value;
 
     cJSON *user = NULL;
     Value.access_token = NULL;
@@ -69,8 +67,6 @@ json_parse_login_token (cJSON *directObject)
     Value.nickname = NULL;
     Value.username = NULL;
     Value.imageId = NULL;
-    Value.created = NULL;
-    Value.updated = NULL;
     Value.facebookUid = NULL;
     Value.appleUid = NULL;
 
@@ -88,27 +84,23 @@ json_parse_login_token (cJSON *directObject)
     Value.nickname = cJSON_GetObjectItemCaseSensitive (user, "nickname");
     Value.username = cJSON_GetObjectItemCaseSensitive (user, "username");
     Value.imageId = cJSON_GetObjectItemCaseSensitive (user, "imageId");
-    Value.created = cJSON_GetObjectItem (user, "created");
-    Value.updated = cJSON_GetObjectItem (user, "updated");
     Value.facebookUid = cJSON_GetObjectItem (user, "facebookUid");
     Value.appleUid = cJSON_GetObjectItemCaseSensitive (user, "appleUid");
 
     return Value;
 }
 
-json_user_model
-json_parse_user (cJSON *directObject)
+struct openTIDAL_JsonUserContainer
+openTIDAL_ParseJsonUser (cJSON *directObject)
 {
-    json_user_model Value;
+    struct openTIDAL_JsonUserContainer Value;
 
-    Value.directObject = NULL;
     Value.id = NULL;
     Value.username = NULL;
     Value.firstName = NULL;
     Value.lastName = NULL;
     Value.email = NULL;
     Value.countryCode = NULL;
-    Value.created = NULL;
     Value.picture = NULL;
     Value.newsletter = NULL;
     Value.acceptedEULA = NULL;
@@ -117,14 +109,12 @@ json_parse_user (cJSON *directObject)
     Value.facebookUid = NULL;
     Value.appleUid = NULL;
 
-    Value.directObject = directObject;
     Value.id = cJSON_GetObjectItem (directObject, "id");
     Value.username = cJSON_GetObjectItemCaseSensitive (directObject, "username");
     Value.firstName = cJSON_GetObjectItemCaseSensitive (directObject, "firstName");
     Value.lastName = cJSON_GetObjectItemCaseSensitive (directObject, "lastName");
     Value.email = cJSON_GetObjectItemCaseSensitive (directObject, "email");
     Value.countryCode = cJSON_GetObjectItemCaseSensitive (directObject, "countryCode");
-    Value.created = cJSON_GetObjectItemCaseSensitive (directObject, "created");
     Value.picture = cJSON_GetObjectItemCaseSensitive (directObject, "picture");
     Value.newsletter = cJSON_GetObjectItem (directObject, "newsletter");
     Value.acceptedEULA = cJSON_GetObjectItem (directObject, "acceptedEULA");
@@ -136,13 +126,12 @@ json_parse_user (cJSON *directObject)
     return Value;
 }
 
-json_user_subscription_model
-json_parse_user_subscription (cJSON *directObject)
+struct openTIDAL_JsonUserSubscriptionContainer
+openTIDAL_ParseJsonUserSubscription (cJSON *directObject)
 {
-    json_user_subscription_model Value;
+    struct openTIDAL_JsonUserSubscriptionContainer Value;
 
     cJSON *subscription = NULL;
-    Value.directObject = NULL;
     Value.validUntil = NULL;
     Value.status = NULL;
     Value.type = NULL;
@@ -153,7 +142,6 @@ json_parse_user_subscription (cJSON *directObject)
     Value.paymentType = NULL;
 
     subscription = cJSON_GetObjectItem (directObject, "subscription");
-    Value.directObject = directObject;
     Value.validUntil = cJSON_GetObjectItemCaseSensitive (directObject, "validUntil");
     Value.status = cJSON_GetObjectItemCaseSensitive (directObject, "status");
     Value.type = cJSON_GetObjectItemCaseSensitive (subscription, "type");
@@ -167,12 +155,11 @@ json_parse_user_subscription (cJSON *directObject)
     return Value;
 }
 
-json_playlist_model
-json_parse_playlist (cJSON *directObject)
+struct openTIDAL_JsonPlaylistContainer
+openTIDAL_ParseJsonPlaylist (cJSON *directObject)
 {
-    json_playlist_model Value;
+    struct openTIDAL_JsonPlaylistContainer Value;
 
-    Value.directObject = NULL;
     Value.uuid = NULL;
     Value.title = NULL;
     Value.description = NULL;
@@ -187,7 +174,6 @@ json_parse_playlist (cJSON *directObject)
     Value.squareImage = NULL;
     Value.type = NULL;
 
-    Value.directObject = directObject;
     Value.uuid = cJSON_GetObjectItemCaseSensitive (directObject, "uuid");
     Value.title = cJSON_GetObjectItemCaseSensitive (directObject, "title");
     Value.description = cJSON_GetObjectItemCaseSensitive (directObject, "description");
@@ -205,14 +191,13 @@ json_parse_playlist (cJSON *directObject)
     return Value;
 }
 
-json_items_model
-json_parse_items (cJSON *directObject)
+struct openTIDAL_JsonItemsContainer
+openTIDAL_ParseJsonItems (cJSON *directObject)
 {
-    json_items_model Value;
+    struct openTIDAL_JsonItemsContainer Value;
 
     cJSON *artistsItem = NULL;
     Value.album = NULL;
-    Value.directObject = NULL;
     Value.id = NULL;
     Value.title = NULL;
     Value.duration = NULL;
@@ -237,7 +222,6 @@ json_parse_items (cJSON *directObject)
     Value.artistName = NULL;
 
     Value.album = cJSON_GetObjectItem (directObject, "album");
-    Value.directObject = directObject;
     Value.id = cJSON_GetObjectItem (directObject, "id");
     Value.title = cJSON_GetObjectItemCaseSensitive (directObject, "title");
     Value.duration = cJSON_GetObjectItem (directObject, "duration");
@@ -274,13 +258,12 @@ json_parse_items (cJSON *directObject)
     return Value;
 }
 
-json_album_model
-json_parse_album (cJSON *directObject)
+struct openTIDAL_JsonAlbumContainer
+openTIDAL_ParseJsonAlbum (cJSON *directObject)
 {
-    json_album_model Value;
+    struct openTIDAL_JsonAlbumContainer Value;
 
     cJSON *artistsItem = NULL;
-    Value.directObject = NULL;
     Value.id = NULL;
     Value.title = NULL;
     Value.duration = NULL;
@@ -301,7 +284,6 @@ json_parse_album (cJSON *directObject)
     Value.artistId = NULL;
     Value.artistName = NULL;
 
-    Value.directObject = directObject;
     Value.id = cJSON_GetObjectItem (directObject, "id");
     Value.title = cJSON_GetObjectItemCaseSensitive (directObject, "title");
     Value.duration = cJSON_GetObjectItem (directObject, "duration");
@@ -335,18 +317,16 @@ json_parse_album (cJSON *directObject)
     return Value;
 }
 
-json_artist_model
-json_parse_artist (cJSON *directObject)
+struct openTIDAL_JsonArtistContainer
+openTIDAL_ParseJsonArtist (cJSON *directObject)
 {
-    json_artist_model Value;
+    struct openTIDAL_JsonArtistContainer Value;
 
-    Value.directObject = NULL;
     Value.id = NULL;
     Value.name = NULL;
     Value.picture = NULL;
     Value.popularity = NULL;
 
-    Value.directObject = directObject;
     Value.id = cJSON_GetObjectItem (directObject, "id");
     Value.name = cJSON_GetObjectItemCaseSensitive (directObject, "name");
     Value.picture = cJSON_GetObjectItemCaseSensitive (directObject, "picture");
@@ -355,33 +335,29 @@ json_parse_artist (cJSON *directObject)
     return Value;
 }
 
-json_links_model
-json_parse_links (cJSON *directObject)
+struct openTIDAL_JsonLinkContainer
+openTIDAL_ParseJsonLinks (cJSON *directObject)
 {
-    json_links_model Value;
+    struct openTIDAL_JsonLinkContainer Value;
 
-    Value.directObject = NULL;
     Value.url = NULL;
     Value.siteName = NULL;
 
-    Value.directObject = directObject;
     Value.url = cJSON_GetObjectItemCaseSensitive (directObject, "url");
     Value.siteName = cJSON_GetObjectItemCaseSensitive (directObject, "siteName");
 
     return Value;
 }
 
-json_credit_model
+struct openTIDAL_JsonCreditContainer
 json_parse_credits (cJSON *directObject)
 {
-    json_credit_model Value;
+    struct openTIDAL_JsonCreditContainer Value;
 
-    Value.directObject = NULL;
     Value.type = NULL;
     Value.name = NULL;
     Value.id = NULL;
 
-    Value.directObject = directObject;
     Value.type = cJSON_GetObjectItemCaseSensitive (directObject, "type");
     Value.name = cJSON_GetObjectItemCaseSensitive (directObject, "name");
     Value.id = cJSON_GetObjectItemCaseSensitive (directObject, "id");
@@ -389,33 +365,30 @@ json_parse_credits (cJSON *directObject)
     return Value;
 }
 
-json_contributor_model
-json_parse_contributors (cJSON *directObject)
+struct openTIDAL_JsonContributorContainer
+openTIDAL_ParseJsonContributor (cJSON *directObject)
 {
-    json_contributor_model Value;
+    struct openTIDAL_JsonContributorContainer Value;
 
-    Value.directObject = NULL;
     Value.name = NULL;
     Value.role = NULL;
 
-    Value.directObject = directObject;
     Value.name = cJSON_GetObjectItemCaseSensitive (directObject, "name");
     Value.role = cJSON_GetObjectItemCaseSensitive (directObject, "role");
 
     return Value;
 }
 
-json_mix_model
-json_parse_mix (cJSON *directObject)
+struct openTIDAL_JsonMixContainer
+openTIDAL_ParseJsonMix (cJSON *directObject)
 {
-    json_mix_model Value;
+    struct openTIDAL_JsonMixContainer Value;
 
     cJSON *images = NULL;
     cJSON *SMALL = NULL;
     cJSON *MEDIUM = NULL;
     cJSON *LARGE = NULL;
 
-    Value.directObject = NULL;
     Value.id = NULL;
     Value.title = NULL;
     Value.subTitle = NULL;
@@ -435,7 +408,6 @@ json_parse_mix (cJSON *directObject)
     MEDIUM = cJSON_GetObjectItem (images, "MEDIUM");
     LARGE = cJSON_GetObjectItem (images, "LARGE");
 
-    Value.directObject = directObject;
     Value.id = cJSON_GetObjectItemCaseSensitive (directObject, "id");
     Value.title = cJSON_GetObjectItemCaseSensitive (directObject, "title");
     Value.subTitle = cJSON_GetObjectItemCaseSensitive (directObject, "subTitle");
@@ -453,12 +425,11 @@ json_parse_mix (cJSON *directObject)
     return Value;
 }
 
-json_stream_model
-json_parse_stream (cJSON *directObject)
+struct openTIDAL_JsonStreamContainer
+openTIDAL_ParseJsonStream (cJSON *directObject)
 {
-    json_stream_model Value;
+    struct openTIDAL_JsonStreamContainer Value;
 
-    Value.directObject = NULL;
     Value.trackId = NULL;
     Value.videoId = NULL;
     Value.assetPresentation = NULL;
@@ -468,7 +439,6 @@ json_parse_stream (cJSON *directObject)
     Value.manifestMimeType = NULL;
     Value.manifest = NULL;
 
-    Value.directObject = directObject;
     Value.trackId = cJSON_GetObjectItem (directObject, "trackId");
     Value.videoId = cJSON_GetObjectItem (directObject, "videoId");
     Value.assetPresentation = cJSON_GetObjectItemCaseSensitive (directObject, "assetPresentation");
@@ -481,19 +451,17 @@ json_parse_stream (cJSON *directObject)
     return Value;
 }
 
-json_manifest_model
-json_parse_manifest (cJSON *directObject)
+struct openTIDAL_JsonManifestContainer
+openTIDAL_ParseJsonManifest (cJSON *directObject)
 {
-    json_manifest_model Value;
+    struct openTIDAL_JsonManifestContainer Value;
 
-    Value.directObject = NULL;
     Value.mimeType = NULL;
     Value.codec = NULL;
     Value.encryptionType = NULL;
     Value.urls = NULL;
     Value.url = NULL;
 
-    Value.directObject = directObject;
     Value.mimeType = cJSON_GetObjectItemCaseSensitive (directObject, "mimeType");
     Value.codec = cJSON_GetObjectItemCaseSensitive (directObject, "codecs");
     Value.encryptionType = cJSON_GetObjectItemCaseSensitive (directObject, "encryptionType");

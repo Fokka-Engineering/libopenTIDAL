@@ -63,16 +63,17 @@ openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const char *trackId)
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_ItemsContainer track;
+            struct openTIDAL_ItemsContainer track;
 
-            json_items_model processed_json = json_parse_items ((cJSON *)o->json);
-            parse_items_values (&track, &processed_json);
+            struct openTIDAL_JsonItemsContainer processed_json
+                = openTIDAL_ParseJsonItems ((cJSON *)o->json);
+            openTIDAL_ParseJsonItemsValues (&track, &processed_json);
 
             o->status = 1;
             status = openTIDAL_StructAddItem (o, track);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, trackId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, trackId);
         }
     }
 end:
@@ -125,13 +126,15 @@ openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const char 
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ContributorContainer contrib;
-                    json_contributor_model processed_json = json_parse_contributors (item);
+                    struct openTIDAL_ContributorContainer contrib;
+                    struct openTIDAL_JsonContributorContainer processed_json
+                        = openTIDAL_ParseJsonContributor (item);
 
-                    parse_contributor_values (&contrib, &processed_json);
-                    parse_signed_number (limit, &contrib.limit);
-                    parse_signed_number (offset, &contrib.offset);
-                    parse_signed_number (totalNumberOfItems, &contrib.totalNumberOfItems);
+                    openTIDAL_ParseJsonContributorValues (&contrib, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &contrib.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &contrib.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems,
+                                                     &contrib.totalNumberOfItems);
 
                     status = openTIDAL_StructAddContributor (o, contrib);
                     if (status == -1) goto end;
@@ -140,7 +143,7 @@ openTIDAL_GetTrackContributors (openTIDAL_SessionContainer *session, const char 
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, trackId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, trackId);
         }
     }
 end:
@@ -181,16 +184,17 @@ openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, const char *trackId)
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_MixContainer mix;
+            struct openTIDAL_MixContainer mix;
 
-            json_mix_model processed_json = json_parse_mix ((cJSON *)o->json);
-            parse_mix_values (&mix, &processed_json);
+            struct openTIDAL_JsonMixContainer processed_json
+                = openTIDAL_ParseJsonMix ((cJSON *)o->json);
+            openTIDAL_ParseJsonMixValues (&mix, &processed_json);
 
             o->status = 1;
             status = openTIDAL_StructAddMix (o, mix);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, trackId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, trackId);
         }
     }
 end:
@@ -233,12 +237,13 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const char *track
         }
 
         if (curl.responseCode == 200) {
-            json_stream_model processed_json = json_parse_stream ((cJSON *)o->json);
-            parse_stream_values (o->stream, &processed_json);
+            struct openTIDAL_JsonStreamContainer processed_json
+                = openTIDAL_ParseJsonStream ((cJSON *)o->json);
+            openTIDAL_ParseJsonStreamValues (o->stream, &processed_json);
             o->status = 0;
 
             if (strcmp (o->stream->manifestMimeType, "application/vnd.tidal.bts") == 0) {
-                json_manifest_model processed_manifest;
+                struct openTIDAL_JsonManifestContainer processed_manifest;
                 char *manifest_decoded = NULL;
 
                 openTIDAL_VerboseHelper ("Base64", "Allocated decoded data in heap", 2);
@@ -255,11 +260,12 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const char *track
                     goto end;
                 }
 
-                processed_manifest = json_parse_manifest ((cJSON *)o->jsonManifest);
-                parse_string (processed_manifest.mimeType, &o->stream->mimeType);
-                parse_string (processed_manifest.codec, &o->stream->codec);
-                parse_string (processed_manifest.encryptionType, &o->stream->encryptionType);
-                parse_string (processed_manifest.url, &o->stream->url);
+                processed_manifest = openTIDAL_ParseJsonManifest ((cJSON *)o->jsonManifest);
+                openTIDAL_ParseJsonString (processed_manifest.mimeType, &o->stream->mimeType);
+                openTIDAL_ParseJsonString (processed_manifest.codec, &o->stream->codec);
+                openTIDAL_ParseJsonString (processed_manifest.encryptionType,
+                                           &o->stream->encryptionType);
+                openTIDAL_ParseJsonString (processed_manifest.url, &o->stream->url);
                 o->status = 1;
                 free (manifest_decoded);
             }
@@ -271,7 +277,7 @@ openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const char *track
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, trackId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, trackId);
         }
     }
 end:

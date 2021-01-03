@@ -296,7 +296,7 @@ typedef struct {
 
 /* Parse the input text to generate a number, and populate the result into item. */
 static cJSON_bool
-parse_number (cJSON *const item, parse_buffer *const input_buffer)
+openTIDAL_ParseJsonNumber (cJSON *const item, parse_buffer *const input_buffer)
 {
     double number = 0;
     unsigned char *after_end = NULL;
@@ -715,7 +715,7 @@ fail:
 
 /* Parse the input text into an unescaped cinput, and populate item. */
 static cJSON_bool
-parse_string (cJSON *const item, parse_buffer *const input_buffer)
+openTIDAL_ParseJsonString (cJSON *const item, parse_buffer *const input_buffer)
 {
     const unsigned char *input_pointer = buffer_at_offset (input_buffer) + 1;
     const unsigned char *input_end = buffer_at_offset (input_buffer) + 1;
@@ -1245,14 +1245,14 @@ parse_value (cJSON *const item, parse_buffer *const input_buffer)
     }
     /* string */
     if (can_access_at_index (input_buffer, 0) && (buffer_at_offset (input_buffer)[0] == '\"')) {
-        return parse_string (item, input_buffer);
+        return openTIDAL_ParseJsonString (item, input_buffer);
     }
     /* number */
     if (can_access_at_index (input_buffer, 0)
         && ((buffer_at_offset (input_buffer)[0] == '-')
             || ((buffer_at_offset (input_buffer)[0] >= '0')
                 && (buffer_at_offset (input_buffer)[0] <= '9')))) {
-        return parse_number (item, input_buffer);
+        return openTIDAL_ParseJsonNumber (item, input_buffer);
     }
     /* array */
     if (can_access_at_index (input_buffer, 0) && (buffer_at_offset (input_buffer)[0] == '[')) {
@@ -1528,7 +1528,7 @@ parse_object (cJSON *const item, parse_buffer *const input_buffer)
         /* parse the name of the child */
         input_buffer->offset++;
         buffer_skip_whitespace (input_buffer);
-        if (!parse_string (current_item, input_buffer)) {
+        if (!openTIDAL_ParseJsonString (current_item, input_buffer)) {
             goto fail; /* failed to parse name */
         }
         buffer_skip_whitespace (input_buffer);

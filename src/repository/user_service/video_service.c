@@ -77,15 +77,16 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ItemsContainer video;
+                    struct openTIDAL_ItemsContainer video;
                     cJSON *innerItem = cJSON_GetObjectItem (item, "item");
 
-                    json_items_model processed_json = json_parse_items (innerItem);
+                    struct openTIDAL_JsonItemsContainer processed_json
+                        = openTIDAL_ParseJsonItems (innerItem);
 
-                    parse_items_values (&video, &processed_json);
-                    parse_signed_number (limit, &video.limit);
-                    parse_signed_number (offset, &video.offset);
-                    parse_signed_number (totalNumberOfItems, &video.totalNumberOfItems);
+                    openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &video.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &video.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &video.totalNumberOfItems);
 
                     status = openTIDAL_StructAddItem (o, video);
                     if (status == -1) goto end;
@@ -94,7 +95,7 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -123,7 +124,7 @@ openTIDAL_AddFavoriteVideo (openTIDAL_SessionContainer *session, const char *vid
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;
@@ -156,7 +157,7 @@ openTIDAL_AddFavoriteVideos (openTIDAL_SessionContainer *session, const char **v
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     free (ptr);
     openTIDAL_CurlRequestCleanup (&curl);
@@ -180,7 +181,7 @@ openTIDAL_DeleteFavoriteVideo (openTIDAL_SessionContainer *session, const char *
 
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;

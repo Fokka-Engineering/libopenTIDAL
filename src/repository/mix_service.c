@@ -73,16 +73,17 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ItemsContainer Value;
+                    struct openTIDAL_ItemsContainer Value;
                     cJSON *innerItem = NULL;
 
                     innerItem = cJSON_GetObjectItem (item, "item");
 
-                    json_items_model processed_json = json_parse_items (innerItem);
-                    parse_items_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
+                    struct openTIDAL_JsonItemsContainer processed_json
+                        = openTIDAL_ParseJsonItems (innerItem);
+                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
 
                     status = openTIDAL_StructAddItem (o, Value);
                     if (status == -1) goto end;
@@ -91,7 +92,7 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, mixId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, mixId);
         }
     }
 end:

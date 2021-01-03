@@ -77,15 +77,17 @@ openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, const int l
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_PlaylistContainer playlist;
+                    struct openTIDAL_PlaylistContainer playlist;
                     cJSON *innerItem = cJSON_GetObjectItem (item, "playlist");
 
-                    json_playlist_model processed_json = json_parse_playlist (innerItem);
+                    struct openTIDAL_JsonPlaylistContainer processed_json
+                        = openTIDAL_ParseJsonPlaylist (innerItem);
 
-                    parse_playlist_values (&playlist, &processed_json);
-                    parse_signed_number (limit, &playlist.limit);
-                    parse_signed_number (offset, &playlist.offset);
-                    parse_signed_number (totalNumberOfItems, &playlist.totalNumberOfItems);
+                    openTIDAL_ParseJsonPlaylistValues (&playlist, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &playlist.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &playlist.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems,
+                                                     &playlist.totalNumberOfItems);
 
                     status = openTIDAL_StructAddPlaylist (o, playlist);
                     if (status == -1) goto end;
@@ -94,7 +96,7 @@ openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, const int l
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -123,7 +125,7 @@ openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, const char *
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;
@@ -156,7 +158,7 @@ openTIDAL_AddFavoritePlaylists (openTIDAL_SessionContainer *session, const char 
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     free (ptr);
     openTIDAL_CurlRequestCleanup (&curl);
@@ -180,7 +182,7 @@ openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session, const cha
 
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;

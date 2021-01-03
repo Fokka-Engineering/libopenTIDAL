@@ -37,15 +37,17 @@ int openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index);
 int openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index);
 
 /* Add model to array (Allocate the correct array before adding!) */
-int openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album);
-int openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item);
-int openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist);
+int openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, struct openTIDAL_AlbumContainer album);
+int openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, struct openTIDAL_ItemsContainer item);
+int openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o,
+                               struct openTIDAL_ArtistContainer artist);
 int openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o,
-                                 openTIDAL_PlaylistContainer playlist);
-int openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix);
+                                 struct openTIDAL_PlaylistContainer playlist);
+int openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, struct openTIDAL_MixContainer mix);
 int openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
-                                    openTIDAL_ContributorContainer contributor);
-int openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit);
-int openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link);
+                                    struct openTIDAL_ContributorContainer contributor);
+int openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o,
+                               struct openTIDAL_CreditsContainer credit);
+int openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, struct openTIDAL_LinkContainer link);
 
 #endif // STRUCT__h

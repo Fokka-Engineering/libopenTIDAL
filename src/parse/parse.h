@@ -23,69 +23,70 @@
 #include "../external/cJSON.h"
 #include "../http_connector.h"
 #include "../openTIDAL.h"
-#include "models.h"
+#include "container.h"
 
 #ifndef PARSE__h
 #define PARSE__h
 
-void parse_double (cJSON *object, double *number);
-void parse_number (cJSON *object, size_t *number);
-void parse_signed_number (cJSON *object, int *number);
-void parse_number_string (cJSON *object, char **string);
-void parse_bool (cJSON *object, int *number);
-void parse_string (cJSON *object, char **string);
+void openTIDAL_ParseJsonDouble (cJSON *object, double *number);
+void openTIDAL_ParseJsonNumber (cJSON *object, size_t *number);
+void openTIDAL_ParseJsonSignedNumber (cJSON *object, int *number);
+void openTIDAL_ParseJsonNumberString (cJSON *object, char **string);
+void openTIDAL_ParseJsonBool (cJSON *object, int *number);
+void openTIDAL_ParseJsonString (cJSON *object, char **string);
 
-int parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *id);
-int parse_raw_status (long *code);
-int parse_unauthorized (cJSON *input_json, const char *id);
-int parse_notfound (cJSON *input_json, const char *id);
-int parse_preconditionfailed (cJSON *input_json, const char *id);
-int parse_badrequest (cJSON *input_json, const char *id);
+int openTIDAL_ParseStatus (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *id);
+int openTIDAL_ParseResponseCodeStatus (long *code);
+int openTIDAL_ParseUnauthorized (cJSON *input_json, const char *id);
+int openTIDAL_ParseNotFound (cJSON *input_json, const char *id);
+int openTIDAL_ParsePreconditionFailed (cJSON *input_json, const char *id);
+int openTIDAL_ParseBadRequest (cJSON *input_json, const char *id);
 
 /* parse Objects */
-json_login_code_model json_parse_login_code (cJSON *directObject);
-json_login_token_model json_parse_login_token (cJSON *directObject);
-json_user_model json_parse_user (cJSON *directObject);
-json_user_subscription_model json_parse_user_subscription (cJSON *directObject);
-json_playlist_model json_parse_playlist (cJSON *directObject);
-json_items_model json_parse_items (cJSON *directObject);
-json_album_model json_parse_album (cJSON *directObject);
-json_artist_model json_parse_artist (cJSON *directObject);
-json_links_model json_parse_links (cJSON *directObject);
-json_credit_model json_parse_credits (cJSON *directObject);
-json_contributor_model json_parse_contributors (cJSON *directObject);
-json_mix_model json_parse_mix (cJSON *directObject);
-json_stream_model json_parse_stream (cJSON *directObject);
-json_manifest_model json_parse_manifest (cJSON *directObject);
+struct openTIDAL_JsonLoginCodeContainer openTIDAL_ParseJsonLoginCode (cJSON *directObject);
+struct openTIDAL_JsonLoginTokenContainer openTIDAL_ParseJsonLoginToken (cJSON *directObject);
+struct openTIDAL_JsonUserContainer openTIDAL_ParseJsonUser (cJSON *directObject);
+struct openTIDAL_JsonUserSubscriptionContainer
+openTIDAL_ParseJsonUserSubscription (cJSON *directObject);
+struct openTIDAL_JsonPlaylistContainer openTIDAL_ParseJsonPlaylist (cJSON *directObject);
+struct openTIDAL_JsonItemsContainer openTIDAL_ParseJsonItems (cJSON *directObject);
+struct openTIDAL_JsonAlbumContainer openTIDAL_ParseJsonAlbum (cJSON *directObject);
+struct openTIDAL_JsonArtistContainer openTIDAL_ParseJsonArtist (cJSON *directObject);
+struct openTIDAL_JsonLinkContainer openTIDAL_ParseJsonLinks (cJSON *directObject);
+struct openTIDAL_JsonCreditContainer json_parse_credits (cJSON *directObject);
+struct openTIDAL_JsonContributorContainer openTIDAL_ParseJsonContributor (cJSON *directObject);
+struct openTIDAL_JsonMixContainer openTIDAL_ParseJsonMix (cJSON *directObject);
+struct openTIDAL_JsonStreamContainer openTIDAL_ParseJsonStream (cJSON *directObject);
+struct openTIDAL_JsonManifestContainer openTIDAL_ParseJsonManifest (cJSON *directObject);
 
 /* parse Values */
-void parse_login_code_values (openTIDAL_LoginCodeContainer *code, json_login_code_model *json);
-
-void parse_login_token_values (openTIDAL_LoginTokenContainer *token, json_login_token_model *json);
-
-void parse_user_values (openTIDAL_UserContainer *user, json_user_model *json);
-
-void parse_user_subscription_values (openTIDAL_UserSubscriptionContainer *sub,
-                                     json_user_subscription_model *json);
-
-void parse_playlist_values (openTIDAL_PlaylistContainer *playlist, json_playlist_model *json);
-
-void parse_items_values (openTIDAL_ItemsContainer *items, json_items_model *json);
-
-void parse_album_values (openTIDAL_AlbumContainer *album, json_album_model *json);
-
-void parse_artist_values (openTIDAL_ArtistContainer *artist, json_artist_model *json);
-
-void parse_link_values (openTIDAL_LinkContainer *link, json_links_model *json);
-
-void parse_contributor_values (openTIDAL_ContributorContainer *contrib,
-                               json_contributor_model *json);
-
-void parse_mix_values (openTIDAL_MixContainer *mix, json_mix_model *json);
-
-void parse_stream_values (openTIDAL_StreamContainer *stream, json_stream_model *json);
+void openTIDAL_ParseJsonLoginCodeValues (struct openTIDAL_LoginCodeContainer *code,
+                                         struct openTIDAL_JsonLoginCodeContainer *json);
+void openTIDAL_ParseJsonLoginTokenValues (struct openTIDAL_LoginTokenContainer *token,
+                                          struct openTIDAL_JsonLoginTokenContainer *json);
+void openTIDAL_ParseJsonUserValues (struct openTIDAL_UserContainer *user,
+                                    struct openTIDAL_JsonUserContainer *json);
+void
+openTIDAL_ParseJsonUserSubscriptionValues (struct openTIDAL_UserSubscriptionContainer *sub,
+                                           struct openTIDAL_JsonUserSubscriptionContainer *json);
+void openTIDAL_ParseJsonPlaylistValues (struct openTIDAL_PlaylistContainer *playlist,
+                                        struct openTIDAL_JsonPlaylistContainer *json);
+void openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *items,
+                                     struct openTIDAL_JsonItemsContainer *json);
+void openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *album,
+                                     struct openTIDAL_JsonAlbumContainer *json);
+void openTIDAL_ParseJsonArtistValues (struct openTIDAL_ArtistContainer *artist,
+                                      struct openTIDAL_JsonArtistContainer *json);
+void openTIDAL_ParseJsonLinkValues (struct openTIDAL_LinkContainer *link,
+                                    struct openTIDAL_JsonLinkContainer *json);
+void openTIDAL_ParseJsonContributorValues (struct openTIDAL_ContributorContainer *contrib,
+                                           struct openTIDAL_JsonContributorContainer *json);
+void openTIDAL_ParseJsonMixValues (struct openTIDAL_MixContainer *mix,
+                                   struct openTIDAL_JsonMixContainer *json);
+void openTIDAL_ParseJsonStreamValues (struct openTIDAL_StreamContainer *stream,
+                                      struct openTIDAL_JsonStreamContainer *json);
 
 /* extra */
-void parse_search (openTIDAL_ContentContainer *o, cJSON *input_json);
+void openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json);
 
 #endif

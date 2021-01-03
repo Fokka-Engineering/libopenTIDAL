@@ -26,7 +26,7 @@
 #include <string.h>
 
 void
-parse_string (cJSON *object, char **string)
+openTIDAL_ParseJsonString (cJSON *object, char **string)
 {
     *string = NULL;
 
@@ -36,7 +36,7 @@ parse_string (cJSON *object, char **string)
 }
 
 void
-parse_number (cJSON *object, size_t *number)
+openTIDAL_ParseJsonNumber (cJSON *object, size_t *number)
 {
     *number = 0;
 
@@ -46,7 +46,7 @@ parse_number (cJSON *object, size_t *number)
 }
 
 void
-parse_signed_number (cJSON *object, int *number)
+openTIDAL_ParseJsonSignedNumber (cJSON *object, int *number)
 {
     *number = 0;
 
@@ -56,7 +56,7 @@ parse_signed_number (cJSON *object, int *number)
 }
 
 void
-parse_number_string (cJSON *object, char **string)
+openTIDAL_ParseJsonNumberString (cJSON *object, char **string)
 {
     *string = NULL;
 
@@ -66,7 +66,7 @@ parse_number_string (cJSON *object, char **string)
 }
 
 void
-parse_double (cJSON *object, double *number)
+openTIDAL_ParseJsonDouble (cJSON *object, double *number)
 {
     *number = 0;
 
@@ -76,7 +76,7 @@ parse_double (cJSON *object, double *number)
 }
 
 void
-parse_bool (cJSON *object, int *number)
+openTIDAL_ParseJsonBool (cJSON *object, int *number)
 {
     *number = 0;
 

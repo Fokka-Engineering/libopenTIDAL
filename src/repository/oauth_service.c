@@ -64,8 +64,9 @@ openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session)
         }
 
         if (curl.responseCode == 200) {
-            json_login_code_model processed_json = json_parse_login_code ((cJSON *)o->json);
-            parse_login_code_values (o->code, &processed_json);
+            struct openTIDAL_JsonLoginCodeContainer processed_json
+                = openTIDAL_ParseJsonLoginCode ((cJSON *)o->json);
+            openTIDAL_ParseJsonLoginCodeValues (o->code, &processed_json);
             o->status = 1;
             o->code->expires_in = time (NULL) + o->code->timeFrame;
         }
@@ -119,8 +120,9 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, const char
         check_error = cJSON_GetObjectItemCaseSensitive ((cJSON *)o->json, "error");
 
         if (cJSON_IsNumber (check_status) != 1) {
-            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
-            parse_login_token_values (o->token, &processed_json);
+            struct openTIDAL_JsonLoginTokenContainer processed_json
+                = openTIDAL_ParseJsonLoginToken ((cJSON *)o->json);
+            openTIDAL_ParseJsonLoginTokenValues (o->token, &processed_json);
             o->status = 1;
 
             o->token->expires_in = o->token->timeFrame + time (NULL);
@@ -194,8 +196,9 @@ openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, const cha
         }
 
         if (curl.responseCode == 200) {
-            json_login_token_model processed_json = json_parse_login_token ((cJSON *)o->json);
-            parse_login_token_values (o->token, &processed_json);
+            struct openTIDAL_JsonLoginTokenContainer processed_json
+                = openTIDAL_ParseJsonLoginToken ((cJSON *)o->json);
+            openTIDAL_ParseJsonLoginTokenValues (o->token, &processed_json);
 
             o->status = 1;
         }

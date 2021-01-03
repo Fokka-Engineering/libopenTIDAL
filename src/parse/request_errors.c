@@ -27,18 +27,18 @@
 #include <stdlib.h>
 
 int
-parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *uuid)
+openTIDAL_ParseStatus (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *uuid)
 {
     int status = 0;
 
     if (Value->responseCode == 400) {
-        status = parse_badrequest (input_json, uuid);
+        status = openTIDAL_ParseBadRequest (input_json, uuid);
     }
     else if (Value->responseCode == 401) {
-        status = parse_unauthorized (input_json, uuid);
+        status = openTIDAL_ParseUnauthorized (input_json, uuid);
     }
     else if (Value->responseCode == 404) {
-        status = parse_notfound (input_json, uuid);
+        status = openTIDAL_ParseNotFound (input_json, uuid);
     }
     else {
         status = 0;
@@ -48,7 +48,7 @@ parse_status (cJSON *input_json, openTIDAL_CurlContainer *Value, const char *uui
 }
 
 int
-parse_raw_status (long *code)
+openTIDAL_ParseResponseCodeStatus (long *code)
 {
     int status;
     if (*code == 200 || *code == 204 || *code == 201) {
@@ -77,7 +77,7 @@ parse_raw_status (long *code)
 }
 
 int
-parse_unauthorized (cJSON *input_json, const char *id)
+openTIDAL_ParseUnauthorized (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -114,7 +114,7 @@ parse_unauthorized (cJSON *input_json, const char *id)
 }
 
 int
-parse_notfound (cJSON *input_json, const char *id)
+openTIDAL_ParseNotFound (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -132,7 +132,7 @@ parse_notfound (cJSON *input_json, const char *id)
 }
 
 int
-parse_preconditionfailed (cJSON *input_json, const char *id)
+openTIDAL_ParsePreconditionFailed (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;
@@ -151,7 +151,7 @@ parse_preconditionfailed (cJSON *input_json, const char *id)
 }
 
 int
-parse_badrequest (cJSON *input_json, const char *id)
+openTIDAL_ParseBadRequest (cJSON *input_json, const char *id)
 {
     int status = 0;
     const cJSON *subStatus = NULL;

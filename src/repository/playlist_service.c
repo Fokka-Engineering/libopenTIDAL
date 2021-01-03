@@ -61,16 +61,17 @@ openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session, const char *playlist
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_PlaylistContainer Value;
+            struct openTIDAL_PlaylistContainer Value;
 
-            json_playlist_model processed_json = json_parse_playlist ((cJSON *)o->json);
-            parse_playlist_values (&Value, &processed_json);
+            struct openTIDAL_JsonPlaylistContainer processed_json
+                = openTIDAL_ParseJsonPlaylist ((cJSON *)o->json);
+            openTIDAL_ParseJsonPlaylistValues (&Value, &processed_json);
 
             o->status = 1;
             status = openTIDAL_StructAddPlaylist (o, Value);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, playlistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, playlistId);
         }
     }
 end:
@@ -126,14 +127,15 @@ openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session, const char *pla
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ItemsContainer Value;
+                    struct openTIDAL_ItemsContainer Value;
                     cJSON *innerItem = cJSON_GetObjectItem (item, "item");
 
-                    json_items_model processed_json = json_parse_items (innerItem);
-                    parse_items_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
+                    struct openTIDAL_JsonItemsContainer processed_json
+                        = openTIDAL_ParseJsonItems (innerItem);
+                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
 
                     status = openTIDAL_StructAddItem (o, Value);
                     if (status == -1) goto end;
@@ -142,7 +144,7 @@ openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session, const char *pla
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, playlistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, playlistId);
         }
     }
 end:
@@ -188,18 +190,18 @@ openTIDAL_CreatePlaylist (openTIDAL_SessionContainer *session, char *title, char
                            0);
     if (curl.status != -1) {
         if (curl.responseCode == 201) {
-            openTIDAL_PlaylistContainer playlist;
-            json_playlist_model processed_json;
+            struct openTIDAL_PlaylistContainer playlist;
+            struct openTIDAL_JsonPlaylistContainer processed_json;
 
-            processed_json = json_parse_playlist ((cJSON *)o->json);
-            parse_playlist_values (&playlist, &processed_json);
+            processed_json = openTIDAL_ParseJsonPlaylist ((cJSON *)o->json);
+            openTIDAL_ParseJsonPlaylistValues (&playlist, &processed_json);
 
             o->status = 1;
             openTIDAL_StructAddPlaylist (o, playlist);
         }
     }
     else {
-        o->status = parse_status ((cJSON *)o->json, &curl, "Playlist");
+        o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, "Playlist");
     }
 end:
     if (status == -1) o->status = -14;
@@ -256,7 +258,7 @@ openTIDAL_DeletePlaylist (openTIDAL_SessionContainer *session, const char *playl
 
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;
@@ -287,7 +289,7 @@ openTIDAL_DeletePlaylistItem (openTIDAL_SessionContainer *session, const char *p
 
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 0);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
 end:
     free (value);
@@ -322,7 +324,7 @@ openTIDAL_MovePlaylistItem (openTIDAL_SessionContainer *session, const char *pla
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
 end:
     free (value);
@@ -357,7 +359,7 @@ openTIDAL_AddPlaylistItem (openTIDAL_SessionContainer *session, const char *play
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
 end:
     free (value);
@@ -400,7 +402,7 @@ openTIDAL_AddPlaylistItems (openTIDAL_SessionContainer *session, const char *pla
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
 end:
     free (string);

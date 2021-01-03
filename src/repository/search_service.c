@@ -73,11 +73,11 @@ openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term, const int 
         }
 
         if (curl.responseCode == 200) {
-            parse_search (o, (cJSON *)o->json);
+            openTIDAL_ParseSearch (o, (cJSON *)o->json);
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, "Search");
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, "Search");
         }
     }
 end:

@@ -76,15 +76,17 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_AlbumContainer album;
+                    struct openTIDAL_AlbumContainer album;
                     cJSON *innerItem = NULL;
 
                     innerItem = cJSON_GetObjectItem (item, "item");
-                    json_album_model processed_json = json_parse_album (innerItem);
-                    parse_album_values (&album, &processed_json);
-                    parse_number (limit, (size_t *)&album.limit);
-                    parse_number (offset, (size_t *)&album.offset);
-                    parse_number (totalNumberOfItems, (size_t *)&album.totalNumberOfItems);
+                    struct openTIDAL_JsonAlbumContainer processed_json
+                        = openTIDAL_ParseJsonAlbum (innerItem);
+                    openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+                    openTIDAL_ParseJsonNumber (limit, (size_t *)&album.limit);
+                    openTIDAL_ParseJsonNumber (offset, (size_t *)&album.offset);
+                    openTIDAL_ParseJsonNumber (totalNumberOfItems,
+                                               (size_t *)&album.totalNumberOfItems);
 
                     status = openTIDAL_StructAddAlbum (o, album);
                     if (status == -1) goto end;
@@ -93,7 +95,7 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -123,7 +125,7 @@ openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const char *alb
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;
@@ -156,7 +158,7 @@ openTIDAL_AddFavoriteAlbums (openTIDAL_SessionContainer *session, const char **a
     openTIDAL_CurlRequest (session, &curl, "POST", curl.endpoint, curl.parameter, curl.postData, 0,
                            1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     free (ptr);
     openTIDAL_CurlRequestCleanup (&curl);
@@ -180,7 +182,7 @@ openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, const char *
 
     openTIDAL_CurlRequest (session, &curl, "DELETE", curl.endpoint, curl.parameter, NULL, 0, 1);
     if (curl.status != -1) {
-        status = parse_raw_status (&curl.responseCode);
+        status = openTIDAL_ParseResponseCodeStatus (&curl.responseCode);
     }
     openTIDAL_CurlRequestCleanup (&curl);
     return status;

@@ -71,11 +71,11 @@ openTIDAL_StructInit (openTIDAL_ContentContainer *o)
 /* Allocate a structure in heap. Point the pointer in openTIDAL_ContentContainer to
  * the memory location
  * Index:
- * -1 = openTIDAL_LoginCodeContainer
- * -2 = openTIDAL_LoginTokenContainer
- * -3 = openTIDAL_UserContainer
- * -4 = openTIDAL_UserSubscriptionContainer
- * -5 = openTIDAL_StreamContainer
+ * -1 = struct openTIDAL_LoginCodeContainer
+ * -2 = struct openTIDAL_LoginTokenContainer
+ * -3 = struct openTIDAL_UserContainer
+ * -4 = struct openTIDAL_UserSubscriptionContainer
+ * -5 = struct openTIDAL_StreamContainer
  * -6 = openTIDAL_ModuleContainer
  * These identifiers are only used by this helper function. */
 int
@@ -83,7 +83,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
 {
     switch (index) {
     case -1:
-        o->code = malloc (sizeof (openTIDAL_LoginCodeContainer));
+        o->code = malloc (sizeof (struct openTIDAL_LoginCodeContainer));
         if (!o->code) {
             openTIDAL_VerboseHelper ("Struct",
                                      "Allocation of CodeContainer failed. Malloc returned NULL", 1);
@@ -91,7 +91,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
         }
         break;
     case -2:
-        o->token = malloc (sizeof (openTIDAL_LoginTokenContainer));
+        o->token = malloc (sizeof (struct openTIDAL_LoginTokenContainer));
         if (!o->token) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of TokenContainer failed. Malloc returned NULL", 1);
@@ -99,7 +99,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
         }
         break;
     case -3:
-        o->user = malloc (sizeof (openTIDAL_UserContainer));
+        o->user = malloc (sizeof (struct openTIDAL_UserContainer));
         if (!o->user) {
             openTIDAL_VerboseHelper ("Struct",
                                      "Allocation of UserContainer failed. Malloc returned NULL", 1);
@@ -107,7 +107,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
         }
         break;
     case -4:
-        o->subscription = malloc (sizeof (openTIDAL_UserSubscriptionContainer));
+        o->subscription = malloc (sizeof (struct openTIDAL_UserSubscriptionContainer));
         if (!o->subscription) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of UserSubscriptionContainer failed. Malloc returned NULL",
@@ -116,7 +116,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
         }
         break;
     case -5:
-        o->stream = malloc (sizeof (openTIDAL_StreamContainer));
+        o->stream = malloc (sizeof (struct openTIDAL_StreamContainer));
         if (!o->stream) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of StreamContainer failed. Malloc returned NULL", 1);
@@ -124,7 +124,7 @@ openTIDAL_StructOneTimeAlloc (openTIDAL_ContentContainer *o, int index)
         }
         break;
     case -6:
-        o->modules = malloc (sizeof (openTIDAL_ModuleContainer));
+        o->modules = malloc (sizeof (struct openTIDAL_ModuleContainer));
         if (!o->modules) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of ModuleContainer failed. Malloc returned NULL", 1);
@@ -157,7 +157,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 0:
         o->capacity[0] = STRUCT_INIT_CAPACITY;
         o->total[0] = 0;
-        o->albums = malloc (sizeof (openTIDAL_AlbumContainer) * o->capacity[0]);
+        o->albums = malloc (sizeof (struct openTIDAL_AlbumContainer) * o->capacity[0]);
         if (!o->albums) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of AlbumContainer array failed. Malloc returned NULL", 1);
@@ -168,7 +168,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 1:
         o->capacity[1] = STRUCT_INIT_CAPACITY;
         o->total[1] = 0;
-        o->items = malloc (sizeof (openTIDAL_ItemsContainer) * o->capacity[1]);
+        o->items = malloc (sizeof (struct openTIDAL_ItemsContainer) * o->capacity[1]);
         if (!o->items) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of ItemContainer array failed. Malloc returned NULL", 1);
@@ -179,7 +179,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 2:
         o->capacity[2] = STRUCT_INIT_CAPACITY;
         o->total[2] = 0;
-        o->artists = malloc (sizeof (openTIDAL_ArtistContainer) * o->capacity[2]);
+        o->artists = malloc (sizeof (struct openTIDAL_ArtistContainer) * o->capacity[2]);
         if (!o->artists) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of ArtistContainer array failed. Malloc returned NULL", 1);
@@ -190,7 +190,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 3:
         o->capacity[3] = STRUCT_INIT_CAPACITY;
         o->total[3] = 0;
-        o->playlists = malloc (sizeof (openTIDAL_PlaylistContainer) * o->capacity[3]);
+        o->playlists = malloc (sizeof (struct openTIDAL_PlaylistContainer) * o->capacity[3]);
         if (!o->playlists) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of PlaylistContainer array failed. Malloc returned NULL", 1);
@@ -201,7 +201,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 4:
         o->capacity[4] = STRUCT_INIT_CAPACITY;
         o->total[4] = 0;
-        o->mixes = malloc (sizeof (openTIDAL_MixContainer) * o->capacity[4]);
+        o->mixes = malloc (sizeof (struct openTIDAL_MixContainer) * o->capacity[4]);
         if (!o->mixes) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of MixesContainer array failed. Malloc returned NULL", 1);
@@ -212,7 +212,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 5:
         o->capacity[5] = STRUCT_INIT_CAPACITY;
         o->total[5] = 0;
-        o->contributors = malloc (sizeof (openTIDAL_ContributorContainer) * o->capacity[5]);
+        o->contributors = malloc (sizeof (struct openTIDAL_ContributorContainer) * o->capacity[5]);
         if (!o->contributors) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of ContributorContainer array failed. Malloc returned NULL",
@@ -235,7 +235,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 7:
         o->capacity[7] = STRUCT_INIT_CAPACITY;
         o->total[7] = 0;
-        o->links = malloc (sizeof (openTIDAL_LinkContainer) * o->capacity[7]);
+        o->links = malloc (sizeof (struct openTIDAL_LinkContainer) * o->capacity[7]);
         if (!o->links) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of LinksContainer array failed. Malloc returned NULL", 1);
@@ -310,18 +310,18 @@ openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
 static int
 openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
 {
-    openTIDAL_AlbumContainer *albums;
-    openTIDAL_ItemsContainer *items;
-    openTIDAL_ArtistContainer *artists;
-    openTIDAL_PlaylistContainer *playlists;
-    openTIDAL_MixContainer *mixes;
-    openTIDAL_ContributorContainer *contributors;
+    struct openTIDAL_AlbumContainer *albums;
+    struct openTIDAL_ItemsContainer *items;
+    struct openTIDAL_ArtistContainer *artists;
+    struct openTIDAL_PlaylistContainer *playlists;
+    struct openTIDAL_MixContainer *mixes;
+    struct openTIDAL_ContributorContainer *contributors;
     openTIDAL_CreditsContainer *credits;
-    openTIDAL_LinkContainer *links;
+    struct openTIDAL_LinkContainer *links;
 
     switch (index) {
     case 0:
-        albums = realloc (o->albums, sizeof (openTIDAL_AlbumContainer) * capacity);
+        albums = realloc (o->albums, sizeof (struct openTIDAL_AlbumContainer) * capacity);
         if (!albums) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating AlbumContainer-Array failed. Realloc returned NULL.", 1);
@@ -332,7 +332,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 1:
-        items = realloc (o->items, sizeof (openTIDAL_ItemsContainer) * capacity);
+        items = realloc (o->items, sizeof (struct openTIDAL_ItemsContainer) * capacity);
         if (!items) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating ItemContainer-Array failed. Realloc returned NULL.", 1);
@@ -343,7 +343,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 2:
-        artists = realloc (o->artists, sizeof (openTIDAL_ArtistContainer) * capacity);
+        artists = realloc (o->artists, sizeof (struct openTIDAL_ArtistContainer) * capacity);
         if (!artists) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating ArtistContainer-Array failed. Realloc returned NULL.", 1);
@@ -354,7 +354,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 3:
-        playlists = realloc (o->playlists, sizeof (openTIDAL_PlaylistContainer) * capacity);
+        playlists = realloc (o->playlists, sizeof (struct openTIDAL_PlaylistContainer) * capacity);
         if (!playlists) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating PlaylistContainer-Array failed. Realloc returned NULL.", 1);
@@ -365,7 +365,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 4:
-        mixes = realloc (o->mixes, sizeof (openTIDAL_MixContainer) * capacity);
+        mixes = realloc (o->mixes, sizeof (struct openTIDAL_MixContainer) * capacity);
         if (!mixes) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating MixesContainer-Array failed. Realloc returned NULL.", 1);
@@ -377,7 +377,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
 
     case 5:
         contributors
-            = realloc (o->contributors, sizeof (openTIDAL_ContributorContainer) * capacity);
+            = realloc (o->contributors, sizeof (struct openTIDAL_ContributorContainer) * capacity);
         if (!contributors) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating ContributorsContainer-Array failed. Realloc returned NULL.",
@@ -400,7 +400,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 7:
-        links = realloc (o->links, sizeof (openTIDAL_LinkContainer) * capacity);
+        links = realloc (o->links, sizeof (struct openTIDAL_LinkContainer) * capacity);
         if (!links) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating LinkContainer-Array failed. Realloc returned NULL.", 1);
@@ -418,7 +418,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
 
 /* Add items to the dynamic arrays in the ContentContainer */
 int
-openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContainer album)
+openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, struct openTIDAL_AlbumContainer album)
 {
     int index = 0;
     if (o->capacity[index] == o->total[index]) {
@@ -435,7 +435,7 @@ openTIDAL_StructAddAlbum (openTIDAL_ContentContainer *o, openTIDAL_AlbumContaine
 }
 
 int
-openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer item)
+openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, struct openTIDAL_ItemsContainer item)
 {
     int index = 1;
     if (o->capacity[index] == o->total[index]) {
@@ -451,7 +451,7 @@ openTIDAL_StructAddItem (openTIDAL_ContentContainer *o, openTIDAL_ItemsContainer
 }
 
 int
-openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContainer artist)
+openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, struct openTIDAL_ArtistContainer artist)
 {
     int index = 2;
     if (o->capacity[index] == o->total[index]) {
@@ -468,7 +468,8 @@ openTIDAL_StructAddArtist (openTIDAL_ContentContainer *o, openTIDAL_ArtistContai
 }
 
 int
-openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o, openTIDAL_PlaylistContainer playlist)
+openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o,
+                             struct openTIDAL_PlaylistContainer playlist)
 {
     int index = 3;
     if (o->capacity[index] == o->total[index]) {
@@ -485,7 +486,7 @@ openTIDAL_StructAddPlaylist (openTIDAL_ContentContainer *o, openTIDAL_PlaylistCo
 }
 
 int
-openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mix)
+openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, struct openTIDAL_MixContainer mix)
 {
     int index = 4;
     if (o->capacity[index] == o->total[index]) {
@@ -503,7 +504,7 @@ openTIDAL_StructAddMix (openTIDAL_ContentContainer *o, openTIDAL_MixContainer mi
 
 int
 openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
-                                openTIDAL_ContributorContainer contributor)
+                                struct openTIDAL_ContributorContainer contributor)
 {
     int index = 5;
     if (o->capacity[index] == o->total[index]) {
@@ -533,7 +534,7 @@ openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsConta
 }
 
 int
-openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, openTIDAL_LinkContainer link)
+openTIDAL_StructAddLink (openTIDAL_ContentContainer *o, struct openTIDAL_LinkContainer link)
 {
     int index = 7;
     if (o->capacity[index] == o->total[index]) {

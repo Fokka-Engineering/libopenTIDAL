@@ -60,12 +60,13 @@ openTIDAL_GetUser (openTIDAL_SessionContainer *session)
         }
 
         if (curl.responseCode == 200) {
-            json_user_model processed_json = json_parse_user ((cJSON *)o->json);
-            parse_user_values (o->user, &processed_json);
+            struct openTIDAL_JsonUserContainer processed_json
+                = openTIDAL_ParseJsonUser ((cJSON *)o->json);
+            openTIDAL_ParseJsonUserValues (o->user, &processed_json);
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:
@@ -106,14 +107,14 @@ openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session)
         }
 
         if (curl.responseCode == 200) {
-            json_user_subscription_model processed_json;
-            processed_json = json_parse_user_subscription ((cJSON *)o->json);
-            parse_user_subscription_values (o->subscription, &processed_json);
+            struct openTIDAL_JsonUserSubscriptionContainer processed_json;
+            processed_json = openTIDAL_ParseJsonUserSubscription ((cJSON *)o->json);
+            openTIDAL_ParseJsonUserSubscriptionValues (o->subscription, &processed_json);
 
             o->status = 1;
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, session->userId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, session->userId);
         }
     }
 end:

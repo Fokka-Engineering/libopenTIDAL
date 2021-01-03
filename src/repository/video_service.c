@@ -63,16 +63,17 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const char *videoId)
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_ItemsContainer video;
+            struct openTIDAL_ItemsContainer video;
 
-            json_items_model processed_json = json_parse_items ((cJSON *)o->json);
-            parse_items_values (&video, &processed_json);
+            struct openTIDAL_JsonItemsContainer processed_json
+                = openTIDAL_ParseJsonItems ((cJSON *)o->json);
+            openTIDAL_ParseJsonItemsValues (&video, &processed_json);
 
             o->status = 1;
             status = openTIDAL_StructAddItem (o, video);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, videoId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, videoId);
         }
     }
 end:
@@ -110,13 +111,15 @@ session->countryCode, limit, offset); curl_model curl = curl_get(buffer, basepar
             {
                 cJSON_ArrayForEach(item, items)
                 {
-                    openTIDAL_ContributorContainer contrib;
-                    json_contributor_model processed_json = json_parse_contributors(item);
+                    struct openTIDAL_ContributorContainer contrib;
+                    struct openTIDAL_JsonContributorContainer processed_json =
+openTIDAL_ParseJsonContributor(item);
 
-                    parse_contributor_values(&contrib, &processed_json);
-                    parse_signed_number(limit, &contrib.limit);
-                    parse_signed_number(offset, &contrib.offset);
-                    parse_signed_number(totalNumberOfItems, &contrib.totalNumberOfItems);
+                    openTIDAL_ParseJsonContributorValues(&contrib, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber(limit, &contrib.limit);
+                    openTIDAL_ParseJsonSignedNumber(offset, &contrib.offset);
+                    openTIDAL_ParseJsonSignedNumber(totalNumberOfItems,
+&contrib.totalNumberOfItems);
 
                     openTIDAL_StructAddContributor(&o, contrib);
                 }
@@ -126,7 +129,7 @@ session->countryCode, limit, offset); curl_model curl = curl_get(buffer, basepar
         }
         else
         {
-            o->status = parse_status((cJSON *)o->json, curl, videoid, NULL);
+            o->status = openTIDAL_ParseStatus((cJSON *)o->json, curl, videoid, NULL);
         }
 
         free(curl.body);
@@ -175,12 +178,13 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const char *video
         }
 
         if (curl.responseCode == 200) {
-            json_stream_model processed_json = json_parse_stream ((cJSON *)o->json);
-            parse_stream_values (o->stream, &processed_json);
+            struct openTIDAL_JsonStreamContainer processed_json
+                = openTIDAL_ParseJsonStream ((cJSON *)o->json);
+            openTIDAL_ParseJsonStreamValues (o->stream, &processed_json);
             o->status = 0;
 
             if (strcmp (o->stream->manifestMimeType, "application/vnd.tidal.emu") == 0) {
-                json_manifest_model processed_manifest;
+                struct openTIDAL_JsonManifestContainer processed_manifest;
                 char *manifest_decoded = NULL;
 
                 openTIDAL_VerboseHelper ("Base64", "Allocated decoded data in heap", 2);
@@ -199,9 +203,9 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const char *video
                 o->stream->audioMode = NULL;
                 o->stream->audioQuality = NULL;
 
-                processed_manifest = json_parse_manifest ((cJSON *)o->jsonManifest);
-                parse_string (processed_manifest.mimeType, &o->stream->mimeType);
-                parse_string (processed_manifest.url, &o->stream->url);
+                processed_manifest = openTIDAL_ParseJsonManifest ((cJSON *)o->jsonManifest);
+                openTIDAL_ParseJsonString (processed_manifest.mimeType, &o->stream->mimeType);
+                openTIDAL_ParseJsonString (processed_manifest.url, &o->stream->url);
 
                 free (manifest_decoded);
             }
@@ -213,7 +217,7 @@ openTIDAL_GetVideoStream (openTIDAL_SessionContainer *session, const char *video
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, videoId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, videoId);
         }
     }
 end:

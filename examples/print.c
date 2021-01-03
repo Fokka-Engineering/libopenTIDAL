@@ -3,7 +3,7 @@
 #include "../src/openTIDAL.h"
 
 void
-print_album (openTIDAL_AlbumContainer *album)
+print_album (struct openTIDAL_AlbumContainer *album)
 {
     int i = 0;
 
@@ -31,7 +31,7 @@ print_album (openTIDAL_AlbumContainer *album)
 }
 
 void
-print_item (openTIDAL_ItemsContainer *item)
+print_item (struct openTIDAL_ItemsContainer *item)
 {
     int i = 0;
 
@@ -63,7 +63,7 @@ print_item (openTIDAL_ItemsContainer *item)
 }
 
 void
-print_playlist (openTIDAL_PlaylistContainer *playlist)
+print_playlist (struct openTIDAL_PlaylistContainer *playlist)
 {
     printf ("Title: %s\n", playlist->title);
     printf ("Uuid: %s\n", playlist->uuid);
@@ -81,7 +81,7 @@ print_playlist (openTIDAL_PlaylistContainer *playlist)
 }
 
 void
-print_mix (openTIDAL_MixContainer *mix)
+print_mix (struct openTIDAL_MixContainer *mix)
 {
     printf ("Title: %s\n", mix->title);
     printf ("SubTitle: %s\n", mix->subTitle);

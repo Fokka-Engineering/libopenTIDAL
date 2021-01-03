@@ -28,109 +28,113 @@
 /* TODO: Add Credit Parser */
 
 void
-parse_login_code_values (openTIDAL_LoginCodeContainer *code, json_login_code_model *json)
+openTIDAL_ParseJsonLoginCodeValues (struct openTIDAL_LoginCodeContainer *code,
+                                    struct openTIDAL_JsonLoginCodeContainer *json)
 {
-    parse_string (json->deviceCode, &code->deviceCode);
-    parse_string (json->userCode, &code->userCode);
-    parse_string (json->verificationUri, &code->verificationUri);
-    parse_string (json->verificationUriComplete, &code->verificationUriComplete);
-    parse_number (json->expiresIn, &code->timeFrame);
-    parse_signed_number (json->interval, &code->interval);
+    openTIDAL_ParseJsonString (json->deviceCode, &code->deviceCode);
+    openTIDAL_ParseJsonString (json->userCode, &code->userCode);
+    openTIDAL_ParseJsonString (json->verificationUri, &code->verificationUri);
+    openTIDAL_ParseJsonString (json->verificationUriComplete, &code->verificationUriComplete);
+    openTIDAL_ParseJsonNumber (json->expiresIn, &code->timeFrame);
+    openTIDAL_ParseJsonSignedNumber (json->interval, &code->interval);
 }
 
 void
-parse_login_token_values (openTIDAL_LoginTokenContainer *Value, json_login_token_model *json)
+openTIDAL_ParseJsonLoginTokenValues (struct openTIDAL_LoginTokenContainer *Value,
+                                     struct openTIDAL_JsonLoginTokenContainer *json)
 {
-    parse_string (json->access_token, &Value->access_token);
-    parse_string (json->refresh_token, &Value->refresh_token);
-    parse_string (json->token_type, &Value->token_type);
-    parse_number (json->expires_in, &Value->timeFrame);
-    parse_number_string (json->userId, &Value->userId);
-    parse_string (json->email, &Value->email);
-    parse_string (json->countryCode, &Value->countryCode);
-    parse_string (json->fullName, &Value->fullName);
-    parse_string (json->firstName, &Value->firstName);
-    parse_string (json->lastName, &Value->lastName);
-    parse_string (json->nickname, &Value->nickname);
-    parse_string (json->username, &Value->username);
-    parse_string (json->imageId, &Value->imageId);
-    parse_number_string (json->facebookUid, &Value->facebookUid);
-    parse_string (json->appleUid, &Value->appleUid);
+    openTIDAL_ParseJsonString (json->access_token, &Value->access_token);
+    openTIDAL_ParseJsonString (json->refresh_token, &Value->refresh_token);
+    openTIDAL_ParseJsonString (json->token_type, &Value->token_type);
+    openTIDAL_ParseJsonNumber (json->expires_in, &Value->timeFrame);
+    openTIDAL_ParseJsonNumberString (json->userId, &Value->userId);
+    openTIDAL_ParseJsonString (json->email, &Value->email);
+    openTIDAL_ParseJsonString (json->countryCode, &Value->countryCode);
+    openTIDAL_ParseJsonString (json->fullName, &Value->fullName);
+    openTIDAL_ParseJsonString (json->firstName, &Value->firstName);
+    openTIDAL_ParseJsonString (json->lastName, &Value->lastName);
+    openTIDAL_ParseJsonString (json->nickname, &Value->nickname);
+    openTIDAL_ParseJsonString (json->username, &Value->username);
+    openTIDAL_ParseJsonString (json->imageId, &Value->imageId);
+    openTIDAL_ParseJsonNumberString (json->facebookUid, &Value->facebookUid);
+    openTIDAL_ParseJsonString (json->appleUid, &Value->appleUid);
 }
 
 void
-parse_user_values (openTIDAL_UserContainer *Value, json_user_model *json)
+openTIDAL_ParseJsonUserValues (struct openTIDAL_UserContainer *Value,
+                               struct openTIDAL_JsonUserContainer *json)
 {
-    parse_number_string (json->id, &Value->id);
-    parse_string (json->username, &Value->username);
-    parse_string (json->firstName, &Value->firstName);
-    parse_string (json->lastName, &Value->lastName);
-    parse_string (json->email, &Value->email);
-    parse_string (json->countryCode, &Value->countryCode);
-    parse_string (json->created, &Value->created);
-    parse_string (json->picture, &Value->picture);
-    parse_bool (json->newsletter, &Value->newsletter);
-    parse_bool (json->acceptedEULA, &Value->acceptedEULA);
-    parse_string (json->gender, &Value->gender);
-    parse_string (json->dateOfBirth, &Value->dateOfBirth);
-    parse_number_string (json->facebookUid, &Value->facebookUid);
-    parse_string (json->appleUid, &Value->appleUid);
+    openTIDAL_ParseJsonNumberString (json->id, &Value->id);
+    openTIDAL_ParseJsonString (json->username, &Value->username);
+    openTIDAL_ParseJsonString (json->firstName, &Value->firstName);
+    openTIDAL_ParseJsonString (json->lastName, &Value->lastName);
+    openTIDAL_ParseJsonString (json->email, &Value->email);
+    openTIDAL_ParseJsonString (json->countryCode, &Value->countryCode);
+    openTIDAL_ParseJsonString (json->picture, &Value->picture);
+    openTIDAL_ParseJsonBool (json->newsletter, &Value->newsletter);
+    openTIDAL_ParseJsonBool (json->acceptedEULA, &Value->acceptedEULA);
+    openTIDAL_ParseJsonString (json->gender, &Value->gender);
+    openTIDAL_ParseJsonString (json->dateOfBirth, &Value->dateOfBirth);
+    openTIDAL_ParseJsonNumberString (json->facebookUid, &Value->facebookUid);
+    openTIDAL_ParseJsonString (json->appleUid, &Value->appleUid);
 }
 
 void
-parse_user_subscription_values (openTIDAL_UserSubscriptionContainer *Value,
-                                json_user_subscription_model *json)
+openTIDAL_ParseJsonUserSubscriptionValues (struct openTIDAL_UserSubscriptionContainer *Value,
+                                           struct openTIDAL_JsonUserSubscriptionContainer *json)
 {
-    parse_string (json->validUntil, &Value->validUntil);
-    parse_string (json->status, &Value->accountStatus);
-    parse_string (json->type, &Value->type);
-    parse_signed_number (json->offlineGracePeriod, &Value->offlineGracePeriod);
-    parse_string (json->highestSoundQuality, &Value->highestSoundQuality);
-    parse_bool (json->premiumAccess, &Value->premiumAccess);
-    parse_bool (json->canGetTrial, &Value->canGetTrial);
-    parse_string (json->paymentType, &Value->paymentType);
+    openTIDAL_ParseJsonString (json->validUntil, &Value->validUntil);
+    openTIDAL_ParseJsonString (json->status, &Value->accountStatus);
+    openTIDAL_ParseJsonString (json->type, &Value->type);
+    openTIDAL_ParseJsonSignedNumber (json->offlineGracePeriod, &Value->offlineGracePeriod);
+    openTIDAL_ParseJsonString (json->highestSoundQuality, &Value->highestSoundQuality);
+    openTIDAL_ParseJsonBool (json->premiumAccess, &Value->premiumAccess);
+    openTIDAL_ParseJsonBool (json->canGetTrial, &Value->canGetTrial);
+    openTIDAL_ParseJsonString (json->paymentType, &Value->paymentType);
 }
 
 void
-parse_playlist_values (openTIDAL_PlaylistContainer *playlist, json_playlist_model *json)
+openTIDAL_ParseJsonPlaylistValues (struct openTIDAL_PlaylistContainer *playlist,
+                                   struct openTIDAL_JsonPlaylistContainer *json)
 {
-    parse_string (json->uuid, &playlist->uuid);
-    parse_string (json->title, &playlist->title);
-    parse_string (json->description, &playlist->description);
-    parse_signed_number (json->popularity, &playlist->popularity);
-    parse_signed_number (json->duration, &playlist->duration);
-    parse_string (json->created, &playlist->created);
-    parse_string (json->lastUpdated, &playlist->lastUpdated);
-    parse_signed_number (json->numberOfTracks, &playlist->numberOfTracks);
-    parse_signed_number (json->numberOfVideos, &playlist->numberOfVideos);
-    parse_bool (json->publicPlaylist, &playlist->publicPlaylist);
-    parse_string (json->image, &playlist->image);
-    parse_string (json->squareImage, &playlist->squareImage);
-    parse_string (json->type, &playlist->type);
+    openTIDAL_ParseJsonString (json->uuid, &playlist->uuid);
+    openTIDAL_ParseJsonString (json->title, &playlist->title);
+    openTIDAL_ParseJsonString (json->description, &playlist->description);
+    openTIDAL_ParseJsonSignedNumber (json->popularity, &playlist->popularity);
+    openTIDAL_ParseJsonSignedNumber (json->duration, &playlist->duration);
+    openTIDAL_ParseJsonString (json->created, &playlist->created);
+    openTIDAL_ParseJsonString (json->lastUpdated, &playlist->lastUpdated);
+    openTIDAL_ParseJsonSignedNumber (json->numberOfTracks, &playlist->numberOfTracks);
+    openTIDAL_ParseJsonSignedNumber (json->numberOfVideos, &playlist->numberOfVideos);
+    openTIDAL_ParseJsonBool (json->publicPlaylist, &playlist->publicPlaylist);
+    openTIDAL_ParseJsonString (json->image, &playlist->image);
+    openTIDAL_ParseJsonString (json->squareImage, &playlist->squareImage);
+    openTIDAL_ParseJsonString (json->type, &playlist->type);
 }
 
 void
-parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
+openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *Value,
+                                struct openTIDAL_JsonItemsContainer *json)
 {
-    parse_number_string (json->id, &Value->id);
-    parse_string (json->title, &Value->title);
-    parse_signed_number (json->duration, &Value->duration);
-    parse_signed_number (json->popularity, &Value->popularity);
-    parse_signed_number (json->trackNumber, &Value->trackNumber);
-    parse_signed_number (json->volumeNumber, &Value->volumeNumber);
-    parse_string (json->version, &Value->version);
-    parse_string (json->cover, &Value->cover);
-    parse_string (json->videoCover, &Value->videoCover);
-    parse_string (json->imageId, &Value->imageId);
-    parse_string (json->audioQuality, &Value->audioQuality);
-    parse_string (json->quality, &Value->quality);
-    parse_bool (json->explicitItem, &Value->explicitItem);
-    parse_bool (json->allowStreaming, &Value->allowStreaming);
-    parse_bool (json->streamReady, &Value->streamReady);
-    parse_double (json->replayGain, &Value->replayGain);
-    parse_double (json->peak, &Value->peak);
-    parse_number_string (json->albumId, &Value->albumId);
-    parse_string (json->albumTitle, &Value->albumTitle);
+    openTIDAL_ParseJsonNumberString (json->id, &Value->id);
+    openTIDAL_ParseJsonString (json->title, &Value->title);
+    openTIDAL_ParseJsonSignedNumber (json->duration, &Value->duration);
+    openTIDAL_ParseJsonSignedNumber (json->popularity, &Value->popularity);
+    openTIDAL_ParseJsonSignedNumber (json->trackNumber, &Value->trackNumber);
+    openTIDAL_ParseJsonSignedNumber (json->volumeNumber, &Value->volumeNumber);
+    openTIDAL_ParseJsonString (json->version, &Value->version);
+    openTIDAL_ParseJsonString (json->cover, &Value->cover);
+    openTIDAL_ParseJsonString (json->videoCover, &Value->videoCover);
+    openTIDAL_ParseJsonString (json->imageId, &Value->imageId);
+    openTIDAL_ParseJsonString (json->audioQuality, &Value->audioQuality);
+    openTIDAL_ParseJsonString (json->quality, &Value->quality);
+    openTIDAL_ParseJsonBool (json->explicitItem, &Value->explicitItem);
+    openTIDAL_ParseJsonBool (json->allowStreaming, &Value->allowStreaming);
+    openTIDAL_ParseJsonBool (json->streamReady, &Value->streamReady);
+    openTIDAL_ParseJsonDouble (json->replayGain, &Value->replayGain);
+    openTIDAL_ParseJsonDouble (json->peak, &Value->peak);
+    openTIDAL_ParseJsonNumberString (json->albumId, &Value->albumId);
+    openTIDAL_ParseJsonString (json->albumTitle, &Value->albumTitle);
 
     if (cJSON_IsObject (json->quality)) {
         Value->isVideo = 1;
@@ -145,8 +149,8 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {
-            parse_number_string (json->artistId[i], &Value->artistId[i]);
-            parse_string (json->artistName[i], &Value->artistName[i]);
+            openTIDAL_ParseJsonNumberString (json->artistId[i], &Value->artistId[i]);
+            openTIDAL_ParseJsonString (json->artistName[i], &Value->artistName[i]);
         }
 
         free (json->artistId);
@@ -158,24 +162,25 @@ parse_items_values (openTIDAL_ItemsContainer *Value, json_items_model *json)
 }
 
 void
-parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
+openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *Value,
+                                struct openTIDAL_JsonAlbumContainer *json)
 {
-    parse_number_string (json->id, &Value->id);
-    parse_string (json->title, &Value->title);
-    parse_signed_number (json->duration, &Value->duration);
-    parse_signed_number (json->popularity, &Value->popularity);
-    parse_string (json->copyright, &Value->copyright);
-    parse_string (json->quality, &Value->quality);
-    parse_string (json->cover, &Value->cover);
-    parse_string (json->videoCover, &Value->videoCover);
-    parse_string (json->releaseDate, &Value->releaseDate);
-    parse_string (json->version, &Value->version);
-    parse_bool (json->explicitItem, &Value->explicitItem);
-    parse_bool (json->allowStreaming, &Value->allowStreaming);
-    parse_bool (json->streamReady, &Value->streamReady);
-    parse_signed_number (json->numberOfTracks, &Value->numberOfTracks);
-    parse_signed_number (json->numberOfVideos, &Value->numberOfVideos);
-    parse_signed_number (json->numberOfVolumes, &Value->numberOfVolumes);
+    openTIDAL_ParseJsonNumberString (json->id, &Value->id);
+    openTIDAL_ParseJsonString (json->title, &Value->title);
+    openTIDAL_ParseJsonSignedNumber (json->duration, &Value->duration);
+    openTIDAL_ParseJsonSignedNumber (json->popularity, &Value->popularity);
+    openTIDAL_ParseJsonString (json->copyright, &Value->copyright);
+    openTIDAL_ParseJsonString (json->quality, &Value->quality);
+    openTIDAL_ParseJsonString (json->cover, &Value->cover);
+    openTIDAL_ParseJsonString (json->videoCover, &Value->videoCover);
+    openTIDAL_ParseJsonString (json->releaseDate, &Value->releaseDate);
+    openTIDAL_ParseJsonString (json->version, &Value->version);
+    openTIDAL_ParseJsonBool (json->explicitItem, &Value->explicitItem);
+    openTIDAL_ParseJsonBool (json->allowStreaming, &Value->allowStreaming);
+    openTIDAL_ParseJsonBool (json->streamReady, &Value->streamReady);
+    openTIDAL_ParseJsonSignedNumber (json->numberOfTracks, &Value->numberOfTracks);
+    openTIDAL_ParseJsonSignedNumber (json->numberOfVideos, &Value->numberOfVideos);
+    openTIDAL_ParseJsonSignedNumber (json->numberOfVolumes, &Value->numberOfVolumes);
 
     if (cJSON_IsArray (json->artists)) {
         int i;
@@ -184,8 +189,8 @@ parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
 
         for (i = 0; i < Value->subArraySize; ++i) {
-            parse_number_string (json->artistId[i], &Value->artistId[i]);
-            parse_string (json->artistName[i], &Value->artistName[i]);
+            openTIDAL_ParseJsonNumberString (json->artistId[i], &Value->artistId[i]);
+            openTIDAL_ParseJsonString (json->artistName[i], &Value->artistName[i]);
         }
 
         free (json->artistId);
@@ -197,55 +202,60 @@ parse_album_values (openTIDAL_AlbumContainer *Value, json_album_model *json)
 }
 
 void
-parse_artist_values (openTIDAL_ArtistContainer *Value, json_artist_model *json)
+openTIDAL_ParseJsonArtistValues (struct openTIDAL_ArtistContainer *Value,
+                                 struct openTIDAL_JsonArtistContainer *json)
 {
-    parse_number_string (json->id, &Value->id);
-    parse_string (json->name, &Value->name);
-    parse_string (json->picture, &Value->picture);
-    parse_signed_number (json->popularity, &Value->popularity);
+    openTIDAL_ParseJsonNumberString (json->id, &Value->id);
+    openTIDAL_ParseJsonString (json->name, &Value->name);
+    openTIDAL_ParseJsonString (json->picture, &Value->picture);
+    openTIDAL_ParseJsonSignedNumber (json->popularity, &Value->popularity);
 }
 
 void
-parse_link_values (openTIDAL_LinkContainer *Value, json_links_model *json)
+openTIDAL_ParseJsonLinkValues (struct openTIDAL_LinkContainer *Value,
+                               struct openTIDAL_JsonLinkContainer *json)
 {
-    parse_string (json->url, &Value->url);
-    parse_string (json->siteName, &Value->siteName);
+    openTIDAL_ParseJsonString (json->url, &Value->url);
+    openTIDAL_ParseJsonString (json->siteName, &Value->siteName);
 }
 
 void
-parse_contributor_values (openTIDAL_ContributorContainer *Value, json_contributor_model *json)
+openTIDAL_ParseJsonContributorValues (struct openTIDAL_ContributorContainer *Value,
+                                      struct openTIDAL_JsonContributorContainer *json)
 {
-    parse_string (json->name, &Value->name);
-    parse_string (json->role, &Value->role);
+    openTIDAL_ParseJsonString (json->name, &Value->name);
+    openTIDAL_ParseJsonString (json->role, &Value->role);
 }
 
 void
-parse_mix_values (openTIDAL_MixContainer *Value, json_mix_model *json)
+openTIDAL_ParseJsonMixValues (struct openTIDAL_MixContainer *Value,
+                              struct openTIDAL_JsonMixContainer *json)
 {
-    parse_string (json->id, &Value->id);
-    parse_string (json->title, &Value->title);
-    parse_string (json->subTitle, &Value->subTitle);
-    parse_signed_number (json->smallImageWidth, &Value->smallImageWidth);
-    parse_signed_number (json->smallImageHeight, &Value->smallImageHeight);
-    parse_string (json->smallImageUrl, &Value->smallImageUrl);
-    parse_signed_number (json->mediumImageWidth, &Value->mediumImageWidth);
-    parse_signed_number (json->mediumImageHeight, &Value->mediumImageHeight);
-    parse_string (json->mediumImageUrl, &Value->mediumImageUrl);
-    parse_signed_number (json->largeImageWidth, &Value->largeImageWidth);
-    parse_signed_number (json->largeImageHeight, &Value->largeImageHeight);
-    parse_string (json->largeImageUrl, &Value->largeImageUrl);
-    parse_string (json->mixType, &Value->mixType);
+    openTIDAL_ParseJsonString (json->id, &Value->id);
+    openTIDAL_ParseJsonString (json->title, &Value->title);
+    openTIDAL_ParseJsonString (json->subTitle, &Value->subTitle);
+    openTIDAL_ParseJsonSignedNumber (json->smallImageWidth, &Value->smallImageWidth);
+    openTIDAL_ParseJsonSignedNumber (json->smallImageHeight, &Value->smallImageHeight);
+    openTIDAL_ParseJsonString (json->smallImageUrl, &Value->smallImageUrl);
+    openTIDAL_ParseJsonSignedNumber (json->mediumImageWidth, &Value->mediumImageWidth);
+    openTIDAL_ParseJsonSignedNumber (json->mediumImageHeight, &Value->mediumImageHeight);
+    openTIDAL_ParseJsonString (json->mediumImageUrl, &Value->mediumImageUrl);
+    openTIDAL_ParseJsonSignedNumber (json->largeImageWidth, &Value->largeImageWidth);
+    openTIDAL_ParseJsonSignedNumber (json->largeImageHeight, &Value->largeImageHeight);
+    openTIDAL_ParseJsonString (json->largeImageUrl, &Value->largeImageUrl);
+    openTIDAL_ParseJsonString (json->mixType, &Value->mixType);
 }
 
 void
-parse_stream_values (openTIDAL_StreamContainer *Value, json_stream_model *json)
+openTIDAL_ParseJsonStreamValues (struct openTIDAL_StreamContainer *Value,
+                                 struct openTIDAL_JsonStreamContainer *json)
 {
-    parse_number_string (json->trackId, &Value->trackId);
-    parse_number_string (json->videoId, &Value->videoId);
-    parse_string (json->assetPresentation, &Value->assetPresentation);
-    parse_string (json->audioQuality, &Value->audioQuality);
-    parse_string (json->audioMode, &Value->audioMode);
-    parse_string (json->videoQuality, &Value->videoQuality);
-    parse_string (json->manifestMimeType, &Value->manifestMimeType);
-    parse_string (json->manifest, &Value->manifest);
+    openTIDAL_ParseJsonNumberString (json->trackId, &Value->trackId);
+    openTIDAL_ParseJsonNumberString (json->videoId, &Value->videoId);
+    openTIDAL_ParseJsonString (json->assetPresentation, &Value->assetPresentation);
+    openTIDAL_ParseJsonString (json->audioQuality, &Value->audioQuality);
+    openTIDAL_ParseJsonString (json->audioMode, &Value->audioMode);
+    openTIDAL_ParseJsonString (json->videoQuality, &Value->videoQuality);
+    openTIDAL_ParseJsonString (json->manifestMimeType, &Value->manifestMimeType);
+    openTIDAL_ParseJsonString (json->manifest, &Value->manifest);
 }

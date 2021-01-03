@@ -59,15 +59,16 @@ openTIDAL_GetArtist (openTIDAL_SessionContainer *session, const char *artistId)
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_ArtistContainer artist;
-            json_artist_model processed_json = json_parse_artist ((cJSON *)o->json);
-            parse_artist_values (&artist, &processed_json);
+            struct openTIDAL_ArtistContainer artist;
+            struct openTIDAL_JsonArtistContainer processed_json
+                = openTIDAL_ParseJsonArtist ((cJSON *)o->json);
+            openTIDAL_ParseJsonArtistValues (&artist, &processed_json);
 
             o->status = 1;
             status = openTIDAL_StructAddArtist (o, artist);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
     }
 end:
@@ -125,14 +126,15 @@ openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session, const char *artist
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_LinkContainer Value;
+                    struct openTIDAL_LinkContainer Value;
 
-                    json_links_model processed_json = json_parse_links (item);
-                    parse_link_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
-                    parse_string (source, &Value.source);
+                    struct openTIDAL_JsonLinkContainer processed_json
+                        = openTIDAL_ParseJsonLinks (item);
+                    openTIDAL_ParseJsonLinkValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
+                    openTIDAL_ParseJsonString (source, &Value.source);
 
                     status = openTIDAL_StructAddLink (o, Value);
                     if (status == -1) goto end;
@@ -141,7 +143,7 @@ openTIDAL_GetArtistLink (openTIDAL_SessionContainer *session, const char *artist
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
     }
 end:
@@ -181,15 +183,16 @@ openTIDAL_GetArtistMix (openTIDAL_SessionContainer *session, const char *artistI
         }
 
         if (curl.responseCode == 200) {
-            openTIDAL_MixContainer Value;
+            struct openTIDAL_MixContainer Value;
 
-            json_mix_model processed_json = json_parse_mix ((cJSON *)o->json);
-            parse_mix_values (&Value, &processed_json);
+            struct openTIDAL_JsonMixContainer processed_json
+                = openTIDAL_ParseJsonMix ((cJSON *)o->json);
+            openTIDAL_ParseJsonMixValues (&Value, &processed_json);
             o->status = 1;
             status = openTIDAL_StructAddMix (o, Value);
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
     }
 end:
@@ -247,13 +250,14 @@ openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session, const char *a
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ItemsContainer Value;
-                    json_items_model processed_json = json_parse_items (item);
+                    struct openTIDAL_ItemsContainer Value;
+                    struct openTIDAL_JsonItemsContainer processed_json
+                        = openTIDAL_ParseJsonItems (item);
 
-                    parse_items_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
+                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
 
                     status = openTIDAL_StructAddItem (o, Value);
                     if (status == -1) goto end;
@@ -262,7 +266,7 @@ openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session, const char *a
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
     }
 end:
@@ -318,13 +322,14 @@ openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session, const char *arti
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_ItemsContainer Value;
+                    struct openTIDAL_ItemsContainer Value;
 
-                    json_items_model processed_json = json_parse_items (item);
-                    parse_items_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
+                    struct openTIDAL_JsonItemsContainer processed_json
+                        = openTIDAL_ParseJsonItems (item);
+                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
 
                     status = openTIDAL_StructAddItem (o, Value);
                     if (status == -1) goto end;
@@ -333,7 +338,7 @@ openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session, const char *arti
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
     }
 end:
@@ -389,13 +394,14 @@ openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session, const char *arti
             if (cJSON_IsArray (items)) {
                 cJSON_ArrayForEach (item, items)
                 {
-                    openTIDAL_AlbumContainer Value;
+                    struct openTIDAL_AlbumContainer Value;
 
-                    json_album_model processed_json = json_parse_album (item);
-                    parse_album_values (&Value, &processed_json);
-                    parse_signed_number (limit, &Value.limit);
-                    parse_signed_number (offset, &Value.offset);
-                    parse_signed_number (totalNumberOfItems, &Value.totalNumberOfItems);
+                    struct openTIDAL_JsonAlbumContainer processed_json
+                        = openTIDAL_ParseJsonAlbum (item);
+                    openTIDAL_ParseJsonAlbumValues (&Value, &processed_json);
+                    openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
+                    openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
+                    openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
 
                     status = openTIDAL_StructAddAlbum (o, Value);
                     if (status == -1) goto end;
@@ -404,7 +410,7 @@ openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session, const char *arti
             }
         }
         else {
-            o->status = parse_status ((cJSON *)o->json, &curl, artistId);
+            o->status = openTIDAL_ParseStatus ((cJSON *)o->json, &curl, artistId);
         }
 
         o->json = (cJSON *)o->json;

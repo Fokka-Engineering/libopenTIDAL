@@ -30,7 +30,7 @@
 #include <string.h>
 
 void
-parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
+openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
 {
     cJSON *artists = cJSON_GetObjectItem (input_json, "artists");
     cJSON *artistsLimit = cJSON_GetObjectItem (artists, "limit");
@@ -70,13 +70,14 @@ parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
     if (cJSON_IsArray (artistsItems)) {
         cJSON_ArrayForEach (artistsItem, artistsItems)
         {
-            openTIDAL_ArtistContainer artist;
-            json_artist_model processed_json = json_parse_artist (artistsItem);
+            struct openTIDAL_ArtistContainer artist;
+            struct openTIDAL_JsonArtistContainer processed_json
+                = openTIDAL_ParseJsonArtist (artistsItem);
 
-            parse_artist_values (&artist, &processed_json);
-            parse_signed_number (artistsLimit, &artist.limit);
-            parse_signed_number (artistsOffset, &artist.offset);
-            parse_signed_number (artistsTotalNumberOfItems, &artist.totalNumberOfItems);
+            openTIDAL_ParseJsonArtistValues (&artist, &processed_json);
+            openTIDAL_ParseJsonSignedNumber (artistsLimit, &artist.limit);
+            openTIDAL_ParseJsonSignedNumber (artistsOffset, &artist.offset);
+            openTIDAL_ParseJsonSignedNumber (artistsTotalNumberOfItems, &artist.totalNumberOfItems);
 
             openTIDAL_StructAddArtist (o, artist);
         }
@@ -85,13 +86,14 @@ parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
     if (cJSON_IsArray (albumsItems)) {
         cJSON_ArrayForEach (albumsItem, albumsItems)
         {
-            openTIDAL_AlbumContainer album;
-            json_album_model processed_json = json_parse_album (albumsItem);
+            struct openTIDAL_AlbumContainer album;
+            struct openTIDAL_JsonAlbumContainer processed_json
+                = openTIDAL_ParseJsonAlbum (albumsItem);
 
-            parse_signed_number (albumsLimit, &album.limit);
-            parse_signed_number (albumsOffset, &album.offset);
-            parse_signed_number (albumsTotalNumberOfItems, &album.totalNumberOfItems);
-            parse_album_values (&album, &processed_json);
+            openTIDAL_ParseJsonSignedNumber (albumsLimit, &album.limit);
+            openTIDAL_ParseJsonSignedNumber (albumsOffset, &album.offset);
+            openTIDAL_ParseJsonSignedNumber (albumsTotalNumberOfItems, &album.totalNumberOfItems);
+            openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
 
             openTIDAL_StructAddAlbum (o, album);
         }
@@ -100,13 +102,15 @@ parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
     if (cJSON_IsArray (playlistsItems)) {
         cJSON_ArrayForEach (playlistsItem, playlistsItems)
         {
-            openTIDAL_PlaylistContainer playlist;
-            json_playlist_model processed_json = json_parse_playlist (playlistsItem);
+            struct openTIDAL_PlaylistContainer playlist;
+            struct openTIDAL_JsonPlaylistContainer processed_json
+                = openTIDAL_ParseJsonPlaylist (playlistsItem);
 
-            parse_playlist_values (&playlist, &processed_json);
-            parse_signed_number (playlistsLimit, &playlist.limit);
-            parse_signed_number (playlistsOffset, &playlist.offset);
-            parse_signed_number (playlistsTotalNumberOfItems, &playlist.totalNumberOfItems);
+            openTIDAL_ParseJsonPlaylistValues (&playlist, &processed_json);
+            openTIDAL_ParseJsonSignedNumber (playlistsLimit, &playlist.limit);
+            openTIDAL_ParseJsonSignedNumber (playlistsOffset, &playlist.offset);
+            openTIDAL_ParseJsonSignedNumber (playlistsTotalNumberOfItems,
+                                             &playlist.totalNumberOfItems);
 
             openTIDAL_StructAddPlaylist (o, playlist);
         }
@@ -115,13 +119,14 @@ parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
     if (cJSON_IsArray (tracksItems)) {
         cJSON_ArrayForEach (tracksItem, tracksItems)
         {
-            openTIDAL_ItemsContainer track;
-            json_items_model processed_json = json_parse_items (tracksItem);
+            struct openTIDAL_ItemsContainer track;
+            struct openTIDAL_JsonItemsContainer processed_json
+                = openTIDAL_ParseJsonItems (tracksItem);
 
-            parse_items_values (&track, &processed_json);
-            parse_signed_number (tracksLimit, &track.limit);
-            parse_signed_number (tracksOffset, &track.offset);
-            parse_signed_number (tracksTotalNumberOfItems, &track.totalNumberOfItems);
+            openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+            openTIDAL_ParseJsonSignedNumber (tracksLimit, &track.limit);
+            openTIDAL_ParseJsonSignedNumber (tracksOffset, &track.offset);
+            openTIDAL_ParseJsonSignedNumber (tracksTotalNumberOfItems, &track.totalNumberOfItems);
 
             openTIDAL_StructAddItem (o, track);
         }
@@ -130,13 +135,14 @@ parse_search (openTIDAL_ContentContainer *o, cJSON *input_json)
     if (cJSON_IsArray (videosItems)) {
         cJSON_ArrayForEach (videosItem, videosItems)
         {
-            openTIDAL_ItemsContainer video;
-            json_items_model processed_json = json_parse_items (videosItem);
+            struct openTIDAL_ItemsContainer video;
+            struct openTIDAL_JsonItemsContainer processed_json
+                = openTIDAL_ParseJsonItems (videosItem);
 
-            parse_items_values (&video, &processed_json);
-            parse_signed_number (videosLimit, &video.limit);
-            parse_signed_number (videosOffset, &video.offset);
-            parse_signed_number (videosTotalNumberOfItems, &video.totalNumberOfItems);
+            openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+            openTIDAL_ParseJsonSignedNumber (videosLimit, &video.limit);
+            openTIDAL_ParseJsonSignedNumber (videosOffset, &video.offset);
+            openTIDAL_ParseJsonSignedNumber (videosTotalNumberOfItems, &video.totalNumberOfItems);
 
             openTIDAL_StructAddItem (o, video);
         }

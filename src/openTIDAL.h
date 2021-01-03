@@ -30,281 +30,6 @@
 extern "C" {
 #endif
 
-typedef struct openTIDAL_LoginCodeContainer {
-    /* The Device Code is a 128bit uuid used to verify the session between
-     * openTIDAL and the authorization server. OpenTIDAL uses the uuid
-     * to request the access token from the authorization server.
-     * OAuth2 Grant Type: urn:ietf:params:oauth:grant-type:device_code */
-    char *deviceCode;
-    /* The User Code is a 5 character string linked to the Device Code.
-     * It's shown to the user and used to identify the session in a
-     * web browser. */
-    char *userCode;
-
-    /* The URI the user should go to with the User Code in order to
-     * sign in. */
-    char *verificationUri;
-    char *verificationUriComplete;
-
-    /* The number of seconds before the Device Code and User Code expire. */
-    size_t timeFrame;
-    /* Calculated Unix timestamp */
-    time_t expires_in;
-    /* The number of seconds the client should wait between polling
-     * requests. */
-    int interval;
-} openTIDAL_LoginCodeContainer;
-
-typedef struct openTIDAL_LoginTokenContainer {
-    /* Access Token issued by Authorization Server with a limited
-     * lifespan. See timeFrame and expires_in. */
-    char *access_token;
-    /* After the Access Token expired the Refresh Token is used
-     * to renew the Access Token. It has no expiry date.  */
-    char *refresh_token;
-    /* Always "Bearer" */
-    char *token_type;
-
-    /* The number of seconds before the Access Token expires. */
-    size_t timeFrame;
-    /* Calculated Unix timestamp */
-    time_t expires_in;
-    /* Internal error handling of token request */
-    char *error;
-    char *email;
-    char *countryCode;
-    char *fullName;
-    char *firstName;
-    char *lastName;
-    char *nickname;
-    char *username;
-    char *imageId;
-    char *userId;
-    /* Only present if third-party oauth authentication is being
-     * used or the TIDAL account is linked to a facebook account. */
-    char *facebookUid;
-    char *appleUid;
-} openTIDAL_LoginTokenContainer;
-
-typedef struct openTIDAL_UserContainer {
-    char *id;
-    char *username;
-    char *firstName;
-    char *lastName;
-    char *email;
-    char *countryCode;
-    char *created;
-    char *picture;
-    int newsletter;
-    int acceptedEULA;
-    char *gender;
-    char *dateOfBirth;
-    /* Only present if third-party oauth authentication is being
-     * used or the TIDAL account is linked to a facebook account. */
-    char *facebookUid;
-    char *appleUid;
-} openTIDAL_UserContainer;
-
-typedef struct openTIDAL_UserSubscriptionContainer {
-    /* Subscription timeframe until next bill  */
-    char *validUntil;
-    char *accountStatus;
-    /* TIDAL subscription type */
-    char *type;
-    /* The Offline Grace Period defines the time a
-     * client with offline capabilities can be offline without
-     * reauthenticating. This prevents the user from playing
-     * offline content with an inactive subscription. OpenTIDAL
-     * does not uses TIDALs offline functionalities. */
-    int offlineGracePeriod;
-    char *highestSoundQuality;
-    int premiumAccess;
-    int canGetTrial;
-    /* Family (Parent) or direct. */
-    char *paymentType;
-} openTIDAL_UserSubscriptionContainer;
-
-typedef struct openTIDAL_PlaylistContainer {
-    /* Applied limit by the api. */
-    int limit;
-    /* Applied offset by the api. */
-    int offset;
-    int totalNumberOfItems;
-    int numberOfTracks;
-    int numberOfVideos;
-    char *uuid;
-    char *title;
-    char *description;
-    int duration;
-    char *lastUpdated;
-    char *created;
-    int publicPlaylist;
-    char *image;
-    char *squareImage;
-    char *type;
-    int popularity;
-} openTIDAL_PlaylistContainer;
-
-typedef struct openTIDAL_ItemsContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    /* Arraysize of artist arrays (artistId & artistName). */
-    int subArraySize;
-    char *id;
-    char *title;
-    int explicitItem;
-    int duration;
-    int allowStreaming;
-    int streamReady;
-    int popularity;
-    int trackNumber;
-    int volumeNumber;
-    char **artistId;
-    char **artistName;
-
-    /* Only available if item is a track.
-     * (isVideo: FALSE) */
-    double replayGain;
-    double peak;
-    char *audioQuality;
-    char *version;
-    char *albumId;
-    char *albumTitle;
-    /* Album cover 128bit uuid.
-     * 80x80, 160x160, 320x320, 640x640, 1280x1280 */
-    char *cover;
-    /* An animated album cover is a new TIDAL feature.
-     * 80x80, 160x160, 320x320, 640x640, 1280x1280  */
-    char *videoCover;
-
-    /* Only available if item is a music video.
-     * (isVideo: TRUE) */
-    char *imageId;
-    char *quality;
-
-    int isVideo;
-} openTIDAL_ItemsContainer;
-
-typedef struct openTIDAL_AlbumContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    /* Arraysize of artist arrays (artistId & artistName). */
-    int subArraySize;
-    int explicitItem;
-    int duration;
-    int allowStreaming;
-    int streamReady;
-    char *copyright;
-    int numberOfTracks;
-    int numberOfVideos;
-    int numberOfVolumes;
-    int popularity;
-    char **artistId;
-    char **artistName;
-    char *quality;
-    char *version;
-    char *id;
-    char *title;
-    char *cover;
-    /* An animated album cover is a new TIDAL feature. */
-    char *videoCover;
-    char *releaseDate;
-} openTIDAL_AlbumContainer;
-
-typedef struct openTIDAL_CreditsContainer {
-    int limit;
-    int offset;
-    char *type;
-    char *name;
-    char *id;
-
-} openTIDAL_CreditsContainer;
-
-typedef struct openTIDAL_ArtistContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    char *id;
-    char *name;
-    char *picture;
-    int popularity;
-} openTIDAL_ArtistContainer;
-
-typedef struct openTIDAL_LinkContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    char *url;
-    char *siteName;
-    char *source;
-} openTIDAL_LinkContainer;
-
-typedef struct openTIDAL_ETagContainer {
-    int status;
-    char *id;
-} openTIDAL_ETagContainer;
-
-typedef struct openTIDAL_MixContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    char *id;
-    char *title;
-    char *subTitle;
-    int smallImageWidth;
-    int smallImageHeight;
-    char *smallImageUrl;
-    int mediumImageWidth;
-    int mediumImageHeight;
-    char *mediumImageUrl;
-    int largeImageWidth;
-    int largeImageHeight;
-    char *largeImageUrl;
-    char *mixType;
-} openTIDAL_MixContainer;
-
-typedef struct openTIDAL_ContributorContainer {
-    int limit;
-    int offset;
-    int totalNumberOfItems;
-    char *name;
-    char *role;
-} openTIDAL_ContributorContainer;
-
-typedef struct openTIDAL_StreamContainer {
-    char *url;
-    char *trackId;
-    char *videoId;
-    char *assetPresentation;
-    char *audioQuality;
-    char *audioMode;
-    char *videoQuality;
-    char *manifestMimeType;
-    char *manifest;
-    char *mimeType;
-    char *codec;
-    char *encryptionType;
-} openTIDAL_StreamContainer;
-
-typedef struct openTIDAL_ModuleContainer {
-    int arraySize;
-    int arrayCapacity;
-
-    char **moduleType;
-    char **moduleTitle;
-    char **modulePreTitle;
-    int *arrayType;
-    int *offset;
-    int *total;
-
-    int mixedListSize;
-    int *mixedListTypes;
-    int *mixedListOffset;
-    int *mixedListTotal;
-} openTIDAL_ModuleContainer;
-
 typedef struct openTIDAL_SessionContainer {
     /* File location of persistent session config.
      * If the pointer is NULL restricted authorization
@@ -370,14 +95,14 @@ typedef struct openTIDAL_SessionContainer {
 /* Initialised with openTIDAL_StructInit({pointer to container}).
  * See structCtrl.c for more detailed documentation. */
 typedef struct openTIDAL_ContentContainer {
-    openTIDAL_LoginCodeContainer *code;
-    openTIDAL_LoginTokenContainer *token;
+    struct openTIDAL_LoginCodeContainer *code;
+    struct openTIDAL_LoginTokenContainer *token;
 
-    openTIDAL_UserContainer *user;
-    openTIDAL_UserSubscriptionContainer *subscription;
+    struct openTIDAL_UserContainer *user;
+    struct openTIDAL_UserSubscriptionContainer *subscription;
 
-    openTIDAL_StreamContainer *stream;
-    openTIDAL_ModuleContainer *modules;
+    struct openTIDAL_StreamContainer *stream;
+    struct openTIDAL_ModuleContainer *modules;
     /* Pointer to dynamic arrays. Allocated one by one only if
      * needed. The arrays can also function as content pools in
      * case of module based endpoints (home endpoint). In this case
@@ -390,14 +115,14 @@ typedef struct openTIDAL_ContentContainer {
      * The initial capacity is 10.
      * To deallocate all arrays inside the ContentContainer call
      * openTIDAL_StructDelete({pointer to container}). */
-    openTIDAL_AlbumContainer *albums;             /* Index (Capacity & Total): 0 */
-    openTIDAL_ItemsContainer *items;              /* Index (Capacity & Total): 1 */
-    openTIDAL_ArtistContainer *artists;           /* Index (Capacity & Total): 2 */
-    openTIDAL_PlaylistContainer *playlists;       /* Index (Capacity & Total): 3 */
-    openTIDAL_MixContainer *mixes;                /* Index (Capacity & Total): 4 */
-    openTIDAL_ContributorContainer *contributors; /* Index (Capacity & Total): 5 */
-    openTIDAL_CreditsContainer *credits;          /* Index (Capacity & Total): 6 */
-    openTIDAL_LinkContainer *links;               /* Index (Capacity & Total): 7 */
+    struct openTIDAL_AlbumContainer *albums;             /* Index (Capacity & Total): 0 */
+    struct openTIDAL_ItemsContainer *items;              /* Index (Capacity & Total): 1 */
+    struct openTIDAL_ArtistContainer *artists;           /* Index (Capacity & Total): 2 */
+    struct openTIDAL_PlaylistContainer *playlists;       /* Index (Capacity & Total): 3 */
+    struct openTIDAL_MixContainer *mixes;                /* Index (Capacity & Total): 4 */
+    struct openTIDAL_ContributorContainer *contributors; /* Index (Capacity & Total): 5 */
+    struct openTIDAL_CreditsContainer *credits;          /* Index (Capacity & Total): 6 */
+    struct openTIDAL_LinkContainer *links;               /* Index (Capacity & Total): 7 */
 
     /* Custom status of performed request. Error handling of the tidalapi and
      * primitive http response codes are parsed to provide detailed information
@@ -581,6 +306,283 @@ openTIDAL_ContentContainer *openTIDAL_SearchAll (openTIDAL_SessionContainer *ses
 /* Page Service */
 openTIDAL_ContentContainer *openTIDAL_GetPageHome (openTIDAL_SessionContainer *session);
 openTIDAL_ContentContainer *openTIDAL_GetPageMixes (openTIDAL_SessionContainer *session);
+
+struct openTIDAL_LoginCodeContainer {
+    /* The Device Code is a 128bit uuid used to verify the session between
+     * openTIDAL and the authorization server. OpenTIDAL uses the uuid
+     * to request the access token from the authorization server.
+     * OAuth2 Grant Type: urn:ietf:params:oauth:grant-type:device_code */
+    char *deviceCode;
+    /* The User Code is a 5 character string linked to the Device Code.
+     * It's shown to the user and used to identify the session in a
+     * web browser. */
+    char *userCode;
+
+    /* The URI the user should go to with the User Code in order to
+     * sign in. */
+    char *verificationUri;
+    char *verificationUriComplete;
+
+    /* The number of seconds before the Device Code and User Code expire. */
+    size_t timeFrame;
+    /* Calculated Unix timestamp */
+    time_t expires_in;
+    /* The number of seconds the client should wait between polling
+     * requests. */
+    int interval;
+};
+
+struct openTIDAL_LoginTokenContainer {
+    /* Access Token issued by Authorization Server with a limited
+     * lifespan. See timeFrame and expires_in. */
+    char *access_token;
+    /* After the Access Token expired the Refresh Token is used
+     * to renew the Access Token. It has no expiry date.  */
+    char *refresh_token;
+    /* Always "Bearer" */
+    char *token_type;
+
+    /* The number of seconds before the Access Token expires. */
+    size_t timeFrame;
+    /* Calculated Unix timestamp */
+    time_t expires_in;
+    /* Internal error handling of token request */
+    char *error;
+    char *email;
+    char *countryCode;
+    char *fullName;
+    char *firstName;
+    char *lastName;
+    char *nickname;
+    char *username;
+    char *imageId;
+    char *userId;
+    /* Only present if third-party oauth authentication is being
+     * used or the TIDAL account is linked to a facebook account. */
+    char *facebookUid;
+    char *appleUid;
+};
+
+struct openTIDAL_UserContainer {
+    char *id;
+    char *username;
+    char *firstName;
+    char *lastName;
+    char *email;
+    char *countryCode;
+    char *created;
+    char *picture;
+    int newsletter;
+    int acceptedEULA;
+    char *gender;
+    char *dateOfBirth;
+    /* Only present if third-party oauth authentication is being
+     * used or the TIDAL account is linked to a facebook account. */
+    char *facebookUid;
+    char *appleUid;
+};
+
+struct openTIDAL_UserSubscriptionContainer {
+    /* Subscription timeframe until next bill  */
+    char *validUntil;
+    char *accountStatus;
+    /* TIDAL subscription type */
+    char *type;
+    /* The Offline Grace Period defines the time a
+     * client with offline capabilities can be offline without
+     * reauthenticating. This prevents the user from playing
+     * offline content with an inactive subscription. OpenTIDAL
+     * does not uses TIDALs offline functionalities. */
+    int offlineGracePeriod;
+    char *highestSoundQuality;
+    int premiumAccess;
+    int canGetTrial;
+    /* Family (Parent) or direct. */
+    char *paymentType;
+};
+
+struct openTIDAL_PlaylistContainer {
+    /* Applied limit by the api. */
+    int limit;
+    /* Applied offset by the api. */
+    int offset;
+    int totalNumberOfItems;
+    int numberOfTracks;
+    int numberOfVideos;
+    char *uuid;
+    char *title;
+    char *description;
+    int duration;
+    char *lastUpdated;
+    char *created;
+    int publicPlaylist;
+    char *image;
+    char *squareImage;
+    char *type;
+    int popularity;
+};
+
+struct openTIDAL_ItemsContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    /* Arraysize of artist arrays (artistId & artistName). */
+    int subArraySize;
+    char *id;
+    char *title;
+    int explicitItem;
+    int duration;
+    int allowStreaming;
+    int streamReady;
+    int popularity;
+    int trackNumber;
+    int volumeNumber;
+    char **artistId;
+    char **artistName;
+
+    /* Only available if item is a track.
+     * (isVideo: FALSE) */
+    double replayGain;
+    double peak;
+    char *audioQuality;
+    char *version;
+    char *albumId;
+    char *albumTitle;
+    /* Album cover 128bit uuid.
+     * 80x80, 160x160, 320x320, 640x640, 1280x1280 */
+    char *cover;
+    /* An animated album cover is a new TIDAL feature.
+     * 80x80, 160x160, 320x320, 640x640, 1280x1280  */
+    char *videoCover;
+
+    /* Only available if item is a music video.
+     * (isVideo: TRUE) */
+    char *imageId;
+    char *quality;
+
+    int isVideo;
+};
+
+struct openTIDAL_AlbumContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    /* Arraysize of artist arrays (artistId & artistName). */
+    int subArraySize;
+    int explicitItem;
+    int duration;
+    int allowStreaming;
+    int streamReady;
+    char *copyright;
+    int numberOfTracks;
+    int numberOfVideos;
+    int numberOfVolumes;
+    int popularity;
+    char **artistId;
+    char **artistName;
+    char *quality;
+    char *version;
+    char *id;
+    char *title;
+    char *cover;
+    /* An animated album cover is a new TIDAL feature. */
+    char *videoCover;
+    char *releaseDate;
+};
+
+typedef struct openTIDAL_CreditsContainer {
+    int limit;
+    int offset;
+    char *type;
+    char *name;
+    char *id;
+
+} openTIDAL_CreditsContainer;
+
+struct openTIDAL_ArtistContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *id;
+    char *name;
+    char *picture;
+    int popularity;
+};
+
+struct openTIDAL_LinkContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *url;
+    char *siteName;
+    char *source;
+};
+
+struct openTIDAL_MixContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *id;
+    char *title;
+    char *subTitle;
+    int smallImageWidth;
+    int smallImageHeight;
+    char *smallImageUrl;
+    int mediumImageWidth;
+    int mediumImageHeight;
+    char *mediumImageUrl;
+    int largeImageWidth;
+    int largeImageHeight;
+    char *largeImageUrl;
+    char *mixType;
+};
+
+struct openTIDAL_ContributorContainer {
+    int limit;
+    int offset;
+    int totalNumberOfItems;
+    char *name;
+    char *role;
+};
+
+struct openTIDAL_StreamContainer {
+    char *url;
+    char *trackId;
+    char *videoId;
+    char *assetPresentation;
+    char *audioQuality;
+    char *audioMode;
+    char *videoQuality;
+    char *manifestMimeType;
+    char *manifest;
+    char *mimeType;
+    char *codec;
+    char *encryptionType;
+};
+
+struct openTIDAL_ModuleContainer {
+    int arraySize;
+    int arrayCapacity;
+
+    char **moduleType;
+    char **moduleTitle;
+    char **modulePreTitle;
+    int *arrayType;
+    int *offset;
+    int *total;
+
+    int mixedListSize;
+    int *mixedListTypes;
+    int *mixedListOffset;
+    int *mixedListTotal;
+};
+
+struct openTIDAL_IdContainer {
+    char **albumIds;
+    char **trackIds;
+    char **videoIds;
+    char **playlistIds;
+};
 
 #ifdef __cplusplus
 }
