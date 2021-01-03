@@ -224,7 +224,7 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
     case 6:
         o->capacity[6] = STRUCT_INIT_CAPACITY;
         o->total[6] = 0;
-        o->credits = malloc (sizeof (openTIDAL_CreditsContainer) * o->capacity[6]);
+        o->credits = malloc (sizeof (struct openTIDAL_CreditsContainer) * o->capacity[6]);
         if (!o->credits) {
             openTIDAL_VerboseHelper (
                 "Struct", "Allocation of CreditsContainer array failed. Malloc returned NULL", 1);
@@ -316,7 +316,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
     struct openTIDAL_PlaylistContainer *playlists;
     struct openTIDAL_MixContainer *mixes;
     struct openTIDAL_ContributorContainer *contributors;
-    openTIDAL_CreditsContainer *credits;
+    struct openTIDAL_CreditsContainer *credits;
     struct openTIDAL_LinkContainer *links;
 
     switch (index) {
@@ -389,7 +389,7 @@ openTIDAL_StructResize (openTIDAL_ContentContainer *o, int capacity, int index)
         break;
 
     case 6:
-        credits = realloc (o->credits, sizeof (openTIDAL_CreditsContainer) * capacity);
+        credits = realloc (o->credits, sizeof (struct openTIDAL_CreditsContainer) * capacity);
         if (!credits) {
             openTIDAL_VerboseHelper (
                 "Struct", "Reallocating CreditContainer-Array failed. Realloc returned NULL.", 1);
@@ -519,7 +519,7 @@ openTIDAL_StructAddContributor (openTIDAL_ContentContainer *o,
 }
 
 int
-openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, openTIDAL_CreditsContainer credit)
+openTIDAL_StructAddCredit (openTIDAL_ContentContainer *o, struct openTIDAL_CreditsContainer credit)
 {
     int index = 6;
     if (o->capacity[index] == o->total[index]) {
