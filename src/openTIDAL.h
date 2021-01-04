@@ -386,7 +386,7 @@ struct openTIDAL_UserSubscriptionContainer {
      * client with offline capabilities can be offline without
      * reauthenticating. This prevents the user from playing
      * offline content with an inactive subscription. OpenTIDAL
-     * does not uses TIDALs offline functionalities. */
+     * does not use TIDALs offline functionalities. */
     int offlineGracePeriod;
     char *highestSoundQuality;
     int premiumAccess;
@@ -433,6 +433,8 @@ struct openTIDAL_ItemsContainer {
     int volumeNumber;
     char **artistId;
     char **artistName;
+    char *albumId;
+    char *albumTitle;
 
     /* Only available if item is a track.
      * (isVideo: FALSE) */
@@ -440,8 +442,6 @@ struct openTIDAL_ItemsContainer {
     double peak;
     char *audioQuality;
     char *version;
-    char *albumId;
-    char *albumTitle;
     /* Album cover 128bit uuid.
      * 80x80, 160x160, 320x320, 640x640, 1280x1280 */
     char *cover;
@@ -573,9 +573,13 @@ struct openTIDAL_ModuleContainer {
 };
 
 struct openTIDAL_IdContainer {
+    int albumSize;
     char **albumIds;
+    int trackSize;
     char **trackIds;
+    int videoSize;
     char **videoIds;
+    int playlistSize;
     char **playlistIds;
 };
 

@@ -1,0 +1,82 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2576
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww15540\viewh8640\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 NAME\
+	openTIDAL_AuthCreateUserCode - Request a user- and device-code pair\
+\
+SYNOPSIS\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 	include <openTIDAL/openTIDAL.h>\
+\
+	openTIDAL_ContentContainer *openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session);\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+DESCRIPTION\
+	This service function requests a userCode and a deviceCode from the TIDAL auth server. \
+	OpenTIDAL uses the oAuth2.0 device authorisation grant (RFC 8628) to authenticate with\
+	the TIDAL API. This grant is primarily useful for restricted input devices such as TVs or\
+	browser-less applications. TIDALs oAuth2.0 web-flow (RFC 6749) is reCaptcha v3 secured\
+	and thus can\'92t be used outside a web browser. \
+\
+	Device Authorisation Grant\
+	Call the openTIDAL_AuthCreateCode service function to request a userCode and a deviceCode.\
+	If successful instruct the user to authorise the session with the userCode and the URI. While doing\
+	that poll the authorisation server with the openTIDAL_AuthCreateBearerToken service function.\
+	The polling cycle has a specified minimum interval between each request.\
+	The userCode and deviceCode pair has a specified lifetime. If the user was not able to authenticate\
+	in this timeframe request a new code pair.\
+	The authorisation server returns the access- and refresh-token and other user values after\
+	successful authentication by the user.\
+	\
+	By automating the URI opening in the web browser the steps done by the user can be reduced.\
+	The user essentially only needs to enter the five character long userCode.\
+	The authorisation type in the browser is the web-flow (RFC 6749).\
+	The username/password and third-party oAuth2.0 authorisation methods are supported.\
+\
+STRUCTURE\
+	See openTIDAL_LoginCodeContainer.\
+\
+RETURN VALUE\
+	If no memory allocation error occurred in allocating the ContentContainer a pointer to\
+	a openTIDAL_ContentContainer will be returned.\
+	With this function the code structure inside the ContentContainer is allocated and\
+	populated.\
+	Otherwise it returns a NULL pointer.\
+	The request status is stored inside the ContentContainer (See StatusCodes and 	openTIDAL_ContentContainer).\
+\
+EXAMPLE\
+	openTIDAL_SessionContainer session;\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 	int status;\
+	\
+	status = openTIDAL_SessionInit (&session, \'93/tmp/config\'94);\
+	if (!status) \{\
+        		openTIDAL_ContentContainer *resolve;\
+		resolve = openTIDAL_AuthCreateUserCode (&session);\
+		if (resolve)\
+			if (resolve->status == 1) \{\
+				printf (\'93UserCode: %s\\n\'94, resolve->code->userCode);\
+				printf (\'93Uri: %s\\n\'94, resolve->code->verificationUri);\
+				\
+				while (time (NULL) <= resolve->code->expires_in) \{\
+					sleep (resolve->code->interval);\
+					openTIDAL_ContentContainer *resolveTwo;\
+					resolveTwo = openTIDAL_AuthCreateBearerToken (&session, resolve->code->deviceCode);\
+					if (resolveTwo) \{\
+						if (resolveTwo->status == 2) printf (\'93Authorisation Pending\\n\'94);\
+						if (resolveTwo->status == 1) \{\
+							printf (\'93Authorisation Successful\'94);\
+							openTIDAL_SessionCreateFile (&session);\
+						\}\
+					\}\
+					\
+				\}\
+			\};\
+		openTIDAL_StructDelete (resolve);\
+	\}\
+	openTIDAL_SessionCleanup (&session);\
+}

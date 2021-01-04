@@ -25,7 +25,7 @@ login_polling (openTIDAL_SessionContainer *session)
                 printf ("Timestamp: %zu\n", token->token->expires_in);
                 printf ("Username: %s\n", token->token->username);
                 printf ("CountryCode: %s\n", token->token->countryCode);
-                printf ("UserId: %zu\n", token->token->userId);
+                printf ("UserId: %s\n", token->token->userId);
                 break;
             }
             else {
