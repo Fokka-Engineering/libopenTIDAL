@@ -1,0 +1,30 @@
+.TH openTIDAL_LoginCodeContainer 7 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_LoginCodeContainer \- Structure for authorisation content
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct openTIDAL_LoginCodeContainer *code;"
+.SH STRUCTURE
+.B The Device Code is a 128bit uuid used to verify the session between openTIDAL and 
+.B the authorisation server. OpenTIDAL uses the uuid to request the access token from the
+.B authorisation server (openTIDAL_AuthCreateBearerToken).
+.nf
+char *deviceCode;
+.fi
+.B The User Code is a 5 character string linked to the Device Code. It's shown to the user
+.B and used to identify the session in a web browser.
+.nf	
+char *userCode;
+.fi
+.B	The URI the user should go to with the User Code in order to sign in.
+.nf
+char *verificationUri;
+char *verificationUriComplete;
+.B The number of seconds before the Device Code and User Code expire.
+size_t timeFrame;
+.B Calculated Unix timestamp.
+time_t expires_in;
+.B The number of seconds the client should wait between polling requests.
+int interval;
+.fi

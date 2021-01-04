@@ -1,0 +1,19 @@
+.TH openTIDAL_LinkContainer 7 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_LinkContainer \- Structure for link content
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct openTIDAL_LinkContainer *link;"
+.SH STRUCTURE
+.nf
+.B Applied limit by the api.
+int limit;
+.B Applied offset by the api.
+int offset;
+int totalNumberOfItems;
+    	
+char *url;
+char *siteName;
+char *source;
+.fi

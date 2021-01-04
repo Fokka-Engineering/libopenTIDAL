@@ -1,0 +1,39 @@
+.TH openTIDAL_LoginTokenContainer 7 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_LoginTokenContainer \- Structure for authorisation content
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct openTIDAL_LoginTokenContainer *token;"
+.SH STRUCTURE
+.nf
+.B Access Token issued by authorisation server with a limited lifespan.
+char *access_token;
+.B After the Access Token expired the Refresh Token is used to renew the Access Token. 
+.B It has no expiry date.
+char *refresh_token;
+.B Always "Bearer"
+char *token_type;
+.B The number of seconds before the Access Token expires.
+size_t timeFrame;
+.B Calculated unix timestamp.
+time_t expires_in;
+.B User message of token request (Not really user friendly).
+char *error;
+User values.
+char *email;
+char *countryCode;
+char *fullName;
+char *firstName;
+char *lastName;
+char *nickname;
+char *username;
+char *imageId;
+char *userId;
+.fi
+.B Only present if third-party oAuth authentication is being used or the TIDAL account
+.B is linked to a facebook account.
+.nf
+char *facebookUid;
+char *appleUid;
+.fi

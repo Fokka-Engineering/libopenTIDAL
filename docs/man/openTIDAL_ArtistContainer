@@ -1,0 +1,21 @@
+.TH openTIDAL_ArtistContainer 7 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_ArtistContainer \- Structure for artist content
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct openTIDAL_ArtistContainer *artist;"
+.SH STRUCTURE
+.nf
+.B Applied limit by the api.
+int limit;
+.B Applied offset by the api.
+int offset;
+int totalNumberOfItems;
+    
+char *id;
+char *name;
+int popularity;
+.B Picture 128bit UUID. This UUID has to be concatenated into a URL.
+char *picture;
+.fi

@@ -1,0 +1,70 @@
+.TH openTIDAL_AuthCreateUserCode 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_AuthCreateUserCode \- Request a user- and device-code pair
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "openTIDAL_ContentContainer *openTIDAL_AuthCreateUserCode (openTIDAL_SessionContainer *session);"
+.SH DESCRIPTION
+This service function requests a userCode and a deviceCode from the TIDAL auth server.
+\fBlibopenTIDAL\fP(3) uses the oAuth2.0 device authorisation grant (RFC 8628) to authenticate with
+the TIDAL API. This grant is primarily useful for restricted input devices such as TVs or
+browser-less applications. TIDALs oAuth2.0 web-flow (RFC 6749) is reCaptcha v3 secured
+and thus can’t be used outside a web browser. 
+
+.nf
+.B Device Authorisation Grant
+.fi
+Call the \fIopenTIDAL_AuthCreateCode(3)\fP service function to request a userCode and a deviceCode.
+If successful instruct the user to authorise the session with the userCode and the URI. While doing
+that poll the authorisation server with the \fIopenTIDAL_AuthCreateBearerToken(3)\fP service function.
+The polling cycle has a specified minimum interval between each request.
+The userCode and deviceCode pair has a specified lifetime. If the user was not able to authenticate
+in this timeframe request a new code pair.
+The authorisation server returns the access- and refresh-token and other user values after
+successful authentication by the user.
+
+By automating the URI opening in the web browser the steps done by the user can be reduced.
+The user essentially only needs to enter the five character long userCode.
+The authorisation type in the browser is the web-flow (RFC 6749).
+The username/password and third-party oAuth2.0 authorisation methods are supported.
+
+.SH STRUCTURE
+\fIopenTIDAL_LoginCodeContainer(7)\fP
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP a
+pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
+With this function the code structure inside the \fIopenTIDAL_ContentContainer(7)\fP is allocated and
+populated.
+Otherwise it returns a NULL pointer.
+(See \fIopenTIDAL_StatusCodes(7)\fP and \fIopenTIDAL_ContentContainer(7)\fP).
+.SH EXAMPLE
+.nf
+openTIDAL_SessionContainer session;
+int status;
+
+status = openTIDAL_SessionInit (&session, "/tmp/config");
+if (!status) {
+    openTIDAL_ContentContainer *resolve;
+    resolve = openTIDAL_AuthCreateUserCode (&session);
+    if (resolve)
+        if (resolve->status == 1) {
+            printf ("UserCode: %s\n", resolve->code->userCode);
+            printf ("Uri: %s\n", resolve->code->verificationUri);
+        
+            while (time (NULL) <= resolve->code->expires_in) {
+                sleep (resolve->code->interval);
+                openTIDAL_ContentContainer *resolveTwo;
+                resolveTwo = openTIDAL_AuthCreateBearerToken (&session, resolve->code->deviceCode);
+                if (resolveTwo) {
+                    if (resolveTwo->status == 2) printf ("Authorisation Pending\n");
+                    if (resolveTwo->status == 1) {
+                        openTIDAL_SessionCreateFile (&session);
+                    }
+                }
+        }
+    };
+    openTIDAL_StructDelete (resolve);
+}
+openTIDAL_SessionCleanup (&session);
+.fi

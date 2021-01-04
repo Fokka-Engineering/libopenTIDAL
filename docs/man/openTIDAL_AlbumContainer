@@ -1,0 +1,40 @@
+.TH openTIDAL_AlbumContainer 7 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_AlbumContainer \- Structure for album content
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct openTIDAL_AlbumContainer *album;"
+.SH STRUCTURE
+.nf
+.B Applied limit by the api.
+int limit;
+.B Applied offset by the api.
+int offset;
+int totalNumberOfItems;
+
+.B Arraysize of artist arrays (artistId & artistName).
+int subArraySize;
+char **artistId;
+char **artistName;
+
+char *id;
+char *title;
+.B Version of album i.e remix or remastered 
+char *version;
+int explicitItem;
+int duration;
+int allowStreaming;
+int streamReady;
+char *copyright;
+int numberOfTracks;
+int numberOfVideos;
+int numberOfVolumes;
+int popularity;
+char *quality;
+char *releaseDate;
+.B Album cover 128bit UUID. This UUID has to be concatenated into a URL.
+char *cover;
+.B An animated album cover is a new TIDAL feature.
+char *videoCover;
+.fi
