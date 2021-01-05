@@ -1,0 +1,41 @@
+.TH openTIDAL_GetTrack 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_GetTrack, openTIDAL_GetTrackMix, openTIDAL_GetTrackStream \- Request track metadata and streams
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const char *trackid);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session, const char *trackid);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session, const char *trackid);"
+.SH DESCRIPTION
+The openTIDAL_GetTrack family of service functions requests track metadata and http content streams from the TIDAL API.
+These service calls \fBmust\fP have a corresponding call to \fIopenTIDAL_StructDelete(3)\fP when the operation is complete. 
+
+The \fBopenTIDAL_GetTrack\fP() function (GET /v1/tracks/{id}) requests track metadata.
+
+The \fBopenTIDAL_GetTrackMix\fP() function (GET /v1/tracks/{id}/mix) requests the track mix radio.
+Only the mix-id is populated. You need to call \fIopenTIDAL_GetMix(3)\fP for mix metadata.
+
+The \fBopenTIDAL_GetTrackStream\fP() function (GET /v1/tracks/{id}/playbackinfopostpaywall) requests a http content stream.
+The audio-quality is specified in the session configuration file but can be changed. Depending on the subscription type four
+different audio-quality presets are available. With the \fB"LOW"\fP preset, tracks are encoded in 96kbps AAC. \fB"HIGH"\fP
+preset tracks are encoded in 320kbps AAC. If the user has an active hifi subscription two additional modes are available.
+\fB"LOSSLESS"\fP preset tracks are encoded in 1411kbps 16bit/44.1kHz FLAC. \fB"HI_RES"\fP preset tracks are encoded in 24bit/96kHz
+MQA FLAC.
+.SH STRUCTURE
+\fIopenTIDAL_ItemsContainer(7)\fP
+
+\fIopenTIDAL_MixContainer(7)\fP
+
+\fIopenTIDAL_StreamContainer(7)\fP
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP, a
+pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
+With this function the structures inside the \fIopenTIDAL_ContentContainer(7)\fP are allocated and
+populated.
+Otherwise it returns a NULL pointer.
+(See \fIopenTIDAL_StatusCodes(7)\fP and \fIopenTIDAL_ContentContainer(7)\fP).
+.SH EXAMPLE
+\fIopenTIDAL_ServiceRequestExample(7)\fP

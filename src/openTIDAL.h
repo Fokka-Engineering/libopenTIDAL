@@ -174,7 +174,7 @@ const int openTIDAL_AuthLogout (openTIDAL_SessionContainer *session);
 openTIDAL_ContentContainer *openTIDAL_GetUser (openTIDAL_SessionContainer *session);
 openTIDAL_ContentContainer *openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session);
 
-/* Playlist Endpoints */
+/* Playlist Service */
 
 openTIDAL_ContentContainer *openTIDAL_GetPlaylist (openTIDAL_SessionContainer *session,
                                                    const char *playlistid);
@@ -197,7 +197,7 @@ const int openTIDAL_AddPlaylistItems (openTIDAL_SessionContainer *session, const
                                       const char **itemIds, const int size,
                                       const char *onArtifactNotFound, const char *onDupes);
 
-/* Album Endpoints */
+/* Album Service */
 
 openTIDAL_ContentContainer *openTIDAL_GetAlbum (openTIDAL_SessionContainer *session,
                                                 const char *albumid);
@@ -205,7 +205,7 @@ openTIDAL_ContentContainer *openTIDAL_GetAlbumItems (openTIDAL_SessionContainer 
                                                      const char *albumid, const int limit,
                                                      const int offset);
 
-/* Artist Endpoints */
+/* Artist Service */
 
 openTIDAL_ContentContainer *openTIDAL_GetArtist (openTIDAL_SessionContainer *session,
                                                  const char *artistid);
@@ -224,7 +224,7 @@ openTIDAL_ContentContainer *openTIDAL_GetArtistAlbums (openTIDAL_SessionContaine
                                                        const char *artistid, const int limit,
                                                        const int offset);
 
-/* Track Endpoints  */
+/* Track Service */
 openTIDAL_ContentContainer *openTIDAL_GetTrack (openTIDAL_SessionContainer *session,
                                                 const char *trackid);
 openTIDAL_ContentContainer *openTIDAL_GetTrackMix (openTIDAL_SessionContainer *session,
@@ -232,7 +232,7 @@ openTIDAL_ContentContainer *openTIDAL_GetTrackMix (openTIDAL_SessionContainer *s
 openTIDAL_ContentContainer *openTIDAL_GetTrackStream (openTIDAL_SessionContainer *session,
                                                       const char *trackid);
 
-/* Video Endpoints  */
+/* Video Service */
 
 openTIDAL_ContentContainer *openTIDAL_GetVideo (openTIDAL_SessionContainer *session,
                                                 const char *videoid);
