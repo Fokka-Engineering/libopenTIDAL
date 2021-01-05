@@ -1,0 +1,28 @@
+.TH openTIDAL_AuthRefreshBearerToken 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_AuthRefreshBearerToken \- Request a new access-token from the refresh-token
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "openTIDAL_ContentContainer *openTIDAL_AuthRefreshBearerToken (openTIDAL_SessionContainer *session, const char *refresh_token);"
+.SH DESCRIPTION
+The Refresh Token is used by \fBlibopenTIDAL\fP(3) to exchange a refresh token for
+an access token when the access token has expired. This allows \fBlibopenTIDAL\fP(3) to continue
+to have a valid access token without further interaction with the user.
+
+The service can generate an access token and respond. The server does not issue a new refresh token
+in the response, \fBlibopenTIDAL\fP(3) will use the existing refresh token for subsequent requests.
+
+This service function should not be called by the application since it is integrated in
+the http-connector. A timestamp check is performed. If the timestamp of the access-token is
+within a five minutes difference the refresh service function is called.
+
+.SH STRUCTURE
+\fIopenTIDAL_LoginTokenContainer(7)\fP
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP, a
+pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
+With this function the token structure inside the \fIopenTIDAL_ContentContainer(7)\fP is allocated and
+populated.
+Otherwise it returns a NULL pointer.
+(See \fIopenTIDAL_StatusCodes(7)\fP and \fIopenTIDAL_ContentContainer(7)\fP).

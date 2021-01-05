@@ -1,0 +1,37 @@
+.TH openTIDAL_GetUser 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_GetUser, openTIDAL_GetUserSubscription \- Request user data
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetUser (openTIDAL_SessionContainer *session);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetUserSubscription (openTIDAL_SessionContainer *session);"
+.SH DESCRIPTION
+The openTIDAL_GetUser family of service functions requests user data from the TIDAL API.
+These functions are not available in the restricted client-id authorisation mode
+(\fIopenTIDAL_SessionInit(3)\fP).
+Primarly used to personalise the UI and adapt to subscription specific settings. These service calls
+\fBmust\fP have a corresponding call to \fIopenTIDAL_StructDelete(3)\fP when the operation is complete.
+
+The \fBopenTIDAL_GetUser\fP() function (GET /v1/users) requests profile data including the profile picture.
+\fBopenTIDAL_GetUser\fP() allocates the nested user container inside \fIopenTIDAL_ContentContainer(7)\fP.
+
+The \fBopenTIDAL_GetUserSubscription\fP() function (GET /v1/users/{id}/subscription) requests subscription data.
+Boolean values like "canGetTrial" and "premiumAccess" can be used to customize the UI according to the users
+subscription. The subscription type is represented in an ASCII String "type". The highest soundquality the
+subscription provides is also represented in an ASCII String "highestSoundQuality".
+\fBopenTIDAL_GetUserSubscription\fP() allocates the nested subscription container inside \fIopenTIDAL_ContentContainer(7)\fP.
+.SH STRUCTURE
+\fIopenTIDAL_UserContainer(7)\fP
+
+\fIopenTIDAL_UserSubscriptionContainer(7)\fP
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP, a
+pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
+With this function the user structure inside the \fIopenTIDAL_ContentContainer(7)\fP is allocated and
+populated.
+Otherwise it returns a NULL pointer.
+(See \fIopenTIDAL_StatusCodes(7)\fP and \fIopenTIDAL_ContentContainer(7)\fP).
+.SH EXAMPLE
+\fIopenTIDAL_ServiceRequestExample(7)\fP

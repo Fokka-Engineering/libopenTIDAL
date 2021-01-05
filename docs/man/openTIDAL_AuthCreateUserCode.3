@@ -32,7 +32,7 @@ The username/password and third-party oAuth2.0 authorisation methods are support
 .SH STRUCTURE
 \fIopenTIDAL_LoginCodeContainer(7)\fP
 .SH RETURN VALUE
-If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP a
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP, a
 pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
 With this function the code structure inside the \fIopenTIDAL_ContentContainer(7)\fP is allocated and
 populated.
@@ -41,30 +41,29 @@ Otherwise it returns a NULL pointer.
 .SH EXAMPLE
 .nf
 openTIDAL_SessionContainer session;
-int status;
+openTIDAL_Verbose (1);
+openTIDAL_SessionInit (&session, "/Users/hugo/Desktop/config.json");
+openTIDAL_ContentContainer *resolve = openTIDAL_AuthCreateUserCode (&session);
+if (resolve)
+    if (resolve->status == 1) {
+        printf ("UserCode: %s\n", resolve->code->userCode);
+        while (time (NULL) <= resolve->code->expires_in) {
+            sleep (resolve->code->interval);
+            openTIDAL_ContentContainer *token;
 
-status = openTIDAL_SessionInit (&session, "/tmp/config");
-if (!status) {
-    openTIDAL_ContentContainer *resolve;
-    resolve = openTIDAL_AuthCreateUserCode (&session);
-    if (resolve)
-        if (resolve->status == 1) {
-            printf ("UserCode: %s\n", resolve->code->userCode);
-            printf ("Uri: %s\n", resolve->code->verificationUri);
-        
-            while (time (NULL) <= resolve->code->expires_in) {
-                sleep (resolve->code->interval);
-                openTIDAL_ContentContainer *resolveTwo;
-                resolveTwo = openTIDAL_AuthCreateBearerToken (&session, resolve->code->deviceCode);
-                if (resolveTwo) {
-                    if (resolveTwo->status == 2) printf ("Authorisation Pending\n");
-                    if (resolveTwo->status == 1) {
-                        openTIDAL_SessionCreateFile (&session);
-                    }
+            token = openTIDAL_AuthCreateBearerToken (&session, resolve->code->deviceCode);
+            if (token) {
+                if (token->status == 2)
+                    printf ("%s\n", "Authorization Pending...");
+                else if (token->status == 1) {
+                    printf ("%s\n", "Authorization Successfull!");
+                    openTIDAL_SessionCreateFile (&session);
+                    break;
                 }
+                openTIDAL_StructDelete (token);
+            }
         }
     };
-    openTIDAL_StructDelete (resolve);
-}
+openTIDAL_StructDelete (resolve);
 openTIDAL_SessionCleanup (&session);
 .fi

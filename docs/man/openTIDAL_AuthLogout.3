@@ -1,0 +1,21 @@
+.TH openTIDAL_AuthLogout 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_AuthLogout \- Logout from active TIDAL session
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "const int openTIDAL_AuthLogout (openTIDAL_SessionContainer *session);"
+.SH DESCRIPTION
+Call the \fIopenTIDAL_AuthLogout(3)\fP service function to log the user out of a oAuth2.0 
+session. \fBlibopenTIDAL\fP(3) requested access to the protected resources on behalf of the
+Resource Owner (User) prior with the device authorization grant (RFC 8628).
+
+This call requests a logout from TIDALs session layer. If successful The tokens issued by the
+authorization server get invalidated.
+Further interaction with the API is not possible without reinitialising \fBlibopenTIDAL\fP(3) 
+(\fIopenTIDAL_SessionInit(3)\fP) and reauthenticating with the TIDAL authorisation server.
+
+The restricted client-id based authorisation method will not be effected by this call.
+
+.SH RETURN VALUE
+\fIopenTIDAL_StatusCodes(7)\fP
