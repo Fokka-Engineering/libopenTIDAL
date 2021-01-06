@@ -1,0 +1,49 @@
+.TH openTIDAL_AddFavorite 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_AddFavoriteAlbum, openTIDAL_AddFavoriteAlbums, openTIDAL_AddFavoriteTrack, openTIDAL_AddFavoriteTracks,
+openTIDAL_AddFavoriteVideo, openTIDAL_AddFavoriteVideos, openTIDAL_AddFavoriteArtist, openTIDAL_AddFavoriteArtists,
+openTIDAL_AddFavoritePlaylist, openTIDAL_AddFavoritePlaylists \- Manipulate favorites
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "const int openTIDAL_AddFavoriteAlbum (openTIDAL_SessionContainer *session, const char *albumId, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteAlbums (openTIDAL_SessionContainer *session, const char **albumIds, const int size, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteTrack (openTIDAL_SessionContainer *session, const char *trackId, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteTracks (openTIDAL_SessionContainer *session, const char **trackIds, const int size, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteVideo (openTIDAL_SessionContainer *session, const char *videoId, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteVideos (openTIDAL_SessionContainer *session, const char **videoIds, const int size, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteArtist (openTIDAL_SessionContainer *session, const char *artistId, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoriteArtists (openTIDAL_SessionContainer *session, const char **artistIds, const int size, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoritePlaylist (openTIDAL_SessionContainer *session, const char *playlistid, const char *onArtifactNotFound);"
+
+.BI "const int openTIDAL_AddFavoritePlaylists (openTIDAL_SessionContainer *session, const char **playlistIds, const int size, const char *onArtifactNotFound);"
+.SH DESCRIPTION
+The openTIDAL_AddFavorite family of service functions adds artefacts to the users content collection.
+Different from the openTIDAL_Get* service functions, only the parsed status gets returned.
+These functions are not available in the restricted client-id authorisation mode
+(\fIopenTIDAL_SessionInit(3)\fP).
+
+A unique feature of \fBlibopenTIDAL\fP(3) is the ability to add multiple artefacts of the same type.
+This is done by creating an array of artefacts and parsing it to the correct parameter.
+One \fBmust\fP specify the correct size of the array. C doesn't know the size of a referenced
+object.
+
+The ArtifactNotFound parameter alters the behaviour of the TIDAL API, not finding the artefact.
+When adding an array of artefacts, one might choose to skip the missing artefact (Enum: "SKIP")
+instead of giving up (ENUM: "FAIL").
+
+Instead of creating an array and only populating the first element, \fBlibopenTIDAL\fP(3) has
+a separate service function for adding artefacts.
+.SH RETURN VALUE
+\fBlibopenTIDAL\fP(3) has a global set of specified returned values implemented.
+Not only are the HTTP response-codes part of the parsing but also TIDALs own
+API status and sub-status codes. An accurate status of the http request/response
+gets returned.
