@@ -1,0 +1,29 @@
+.TH openTIDAL_DeleteFavorite 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_DeleteFavoriteAlbum, openTIDAL_DeleteFavoriteTrack, openTIDAL_DeleteFavoriteVideo,
+openTIDAL_DeleteFavoriteArtist, openTIDAL_DeleteFavoritePlaylist \- Manipulate favorites
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "const int openTIDAL_DeleteFavoriteAlbum (openTIDAL_SessionContainer *session, const char *albumId);"
+
+.BI "const int openTIDAL_DeleteFavoriteTrack (openTIDAL_SessionContainer *session, const char *trackId);"
+
+.BI "const int openTIDAL_DeleteFavoriteVideo (openTIDAL_SessionContainer *session, const char *videoId);"
+
+.BI "const int openTIDAL_DeleteFavoriteArtist (openTIDAL_SessionContainer *session, const char *artistId);"
+
+.BI "const int openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session, const char *playlistid);"
+.SH DESCRIPTION
+The openTIDAL_DeleteFavorite family of service functions deletes artefacts from the users content collection.
+Different from the openTIDAL_Get* service functions, only the parsed status gets returned.
+These functions are not available in the restricted client-id authorisation mode
+(\fIopenTIDAL_SessionInit(3)\fP).
+
+To delete an artefact from the collection, call the correct service function that represents the type of the
+artefact.
+.SH RETURN VALUE
+\fBlibopenTIDAL\fP(3) has a global set of specified returned values implemented.
+Not only are the HTTP response-codes part of the parsing but also TIDALs own
+API status and sub-status codes. An accurate status of the http request/response
+gets returned.
