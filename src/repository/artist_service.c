@@ -254,7 +254,8 @@ openTIDAL_GetArtistTopTracks (openTIDAL_SessionContainer *session, const char *a
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (item);
 
-                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
@@ -326,7 +327,8 @@ openTIDAL_GetArtistVideos (openTIDAL_SessionContainer *session, const char *arti
 
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (item);
-                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);
@@ -398,7 +400,8 @@ openTIDAL_GetArtistAlbums (openTIDAL_SessionContainer *session, const char *arti
 
                     struct openTIDAL_JsonAlbumContainer processed_json
                         = openTIDAL_ParseJsonAlbum (item);
-                    openTIDAL_ParseJsonAlbumValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonAlbumValues (&Value, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);

@@ -132,22 +132,15 @@ openTIDAL_AuthCreateBearerToken (openTIDAL_SessionContainer *session, const char
             session->accessToken = o->token->access_token;
             session->username = o->token->username;
             session->refreshToken = o->token->refresh_token;
-            session->tokenRequest = o->json;
+            session->tokenRequest = o;
 
             /* get subscription info */
             openTIDAL_ContentContainer *sub = openTIDAL_GetUserSubscription (session);
-            if (sub->status == 1) {
-                if (strcmp (sub->subscription->highestSoundQuality, "HIGH") == 0) {
-                    session->audioQuality = "HIGH";
-                }
-                else if (strcmp (sub->subscription->highestSoundQuality, "LOSSLESS") == 0) {
-                    session->audioQuality = "LOSSLESS";
-                }
-                else if (strcmp (sub->subscription->highestSoundQuality, "HI_RES") == 0) {
-                    session->audioQuality = "HI_RES";
-                }
-            }
-            openTIDAL_StructDelete (sub);
+            if (sub)
+                if (sub->status == 1) {
+                    session->audioQuality = sub->subscription->highestSoundQuality;
+                    session->subscriptionRequest = sub;
+                };
         }
         else {
             if (!cJSON_IsNull (check_error)) {

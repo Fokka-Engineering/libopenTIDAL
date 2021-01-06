@@ -71,10 +71,10 @@ openTIDAL_ParseJsonUserSubscriptionValues (struct openTIDAL_UserSubscriptionCont
                                            struct openTIDAL_JsonUserSubscriptionContainer *json);
 void openTIDAL_ParseJsonPlaylistValues (struct openTIDAL_PlaylistContainer *playlist,
                                         struct openTIDAL_JsonPlaylistContainer *json);
-void openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *items,
-                                     struct openTIDAL_JsonItemsContainer *json);
-void openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *album,
-                                     struct openTIDAL_JsonAlbumContainer *json);
+const int openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *items,
+                                          struct openTIDAL_JsonItemsContainer *json);
+const int openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *album,
+                                          struct openTIDAL_JsonAlbumContainer *json);
 void openTIDAL_ParseJsonArtistValues (struct openTIDAL_ArtistContainer *artist,
                                       struct openTIDAL_JsonArtistContainer *json);
 void openTIDAL_ParseJsonLinkValues (struct openTIDAL_LinkContainer *link,

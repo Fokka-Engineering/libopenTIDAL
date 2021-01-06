@@ -112,7 +112,7 @@ openTIDAL_ParseJsonPlaylistValues (struct openTIDAL_PlaylistContainer *playlist,
     openTIDAL_ParseJsonString (json->type, &playlist->type);
 }
 
-void
+const int
 openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *Value,
                                 struct openTIDAL_JsonItemsContainer *json)
 {
@@ -147,7 +147,7 @@ openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *Value,
         Value->subArraySize = cJSON_GetArraySize (json->artists);
         Value->artistId = malloc (sizeof (char *) * Value->subArraySize);
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
-
+        if (!Value->artistId || !Value->artistName) return -1;
         for (i = 0; i < Value->subArraySize; ++i) {
             openTIDAL_ParseJsonNumberString (json->artistId[i], &Value->artistId[i]);
             openTIDAL_ParseJsonString (json->artistName[i], &Value->artistName[i]);
@@ -159,9 +159,11 @@ openTIDAL_ParseJsonItemsValues (struct openTIDAL_ItemsContainer *Value,
     else {
         Value->subArraySize = 0;
     }
+
+    return 0;
 }
 
-void
+const int
 openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *Value,
                                 struct openTIDAL_JsonAlbumContainer *json)
 {
@@ -187,7 +189,7 @@ openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *Value,
         Value->subArraySize = cJSON_GetArraySize (json->artists);
         Value->artistId = malloc (sizeof (char *) * Value->subArraySize);
         Value->artistName = malloc (sizeof (char *) * Value->subArraySize);
-
+        if (!Value->artistId || !Value->artistName) return -1;
         for (i = 0; i < Value->subArraySize; ++i) {
             openTIDAL_ParseJsonNumberString (json->artistId[i], &Value->artistId[i]);
             openTIDAL_ParseJsonString (json->artistName[i], &Value->artistName[i]);
@@ -199,6 +201,7 @@ openTIDAL_ParseJsonAlbumValues (struct openTIDAL_AlbumContainer *Value,
     else {
         Value->subArraySize = 0;
     }
+    return 0;
 }
 
 void

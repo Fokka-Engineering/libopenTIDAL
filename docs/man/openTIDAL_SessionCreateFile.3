@@ -4,7 +4,7 @@ openTIDAL_SessionCreateFile \- Create a persistent session configuration file
 .SH SYNOPSIS
 .B #include <openTIDAL/openTIDAL.h>
 
-.BI "void openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session);"
+.BI "const int openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session);"
 .SH DESCRIPTION
 After a successful authentication with the oAuth device authorisation grant
 (RFC 8628), call this function to create the persistent configuration file.
@@ -21,4 +21,6 @@ oAuth access token renewal.
 
 This function is only available if a file location was specified prior.
 .SH RETURN VALUE
-None
+If successful \fIopenTIDAL_SessionCreateFile(3)\fP returns 0.
+
+If an fopen error occurred (Could not write to file location) \fIopenTIDAL_SessionCreateFile(3)\fP returns -1.

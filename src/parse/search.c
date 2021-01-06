@@ -32,6 +32,7 @@
 void
 openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
 {
+    int status = 0;
     cJSON *artists = cJSON_GetObjectItem (input_json, "artists");
     cJSON *artistsLimit = cJSON_GetObjectItem (artists, "limit");
     cJSON *artistsOffset = cJSON_GetObjectItem (artists, "offset");
@@ -79,7 +80,8 @@ openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
             openTIDAL_ParseJsonSignedNumber (artistsOffset, &artist.offset);
             openTIDAL_ParseJsonSignedNumber (artistsTotalNumberOfItems, &artist.totalNumberOfItems);
 
-            openTIDAL_StructAddArtist (o, artist);
+            status = openTIDAL_StructAddArtist (o, artist);
+            if (status == -1) goto end;
         }
     }
 
@@ -93,9 +95,11 @@ openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
             openTIDAL_ParseJsonSignedNumber (albumsLimit, &album.limit);
             openTIDAL_ParseJsonSignedNumber (albumsOffset, &album.offset);
             openTIDAL_ParseJsonSignedNumber (albumsTotalNumberOfItems, &album.totalNumberOfItems);
-            openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+            status = openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+            if (status == -1) goto end;
 
-            openTIDAL_StructAddAlbum (o, album);
+            status = openTIDAL_StructAddAlbum (o, album);
+            if (status == -1) goto end;
         }
     }
 
@@ -112,7 +116,8 @@ openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
             openTIDAL_ParseJsonSignedNumber (playlistsTotalNumberOfItems,
                                              &playlist.totalNumberOfItems);
 
-            openTIDAL_StructAddPlaylist (o, playlist);
+            status = openTIDAL_StructAddPlaylist (o, playlist);
+            if (status == -1) goto end;
         }
     }
 
@@ -123,12 +128,14 @@ openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
             struct openTIDAL_JsonItemsContainer processed_json
                 = openTIDAL_ParseJsonItems (tracksItem);
 
-            openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+            if (status == -1) goto end;
             openTIDAL_ParseJsonSignedNumber (tracksLimit, &track.limit);
             openTIDAL_ParseJsonSignedNumber (tracksOffset, &track.offset);
             openTIDAL_ParseJsonSignedNumber (tracksTotalNumberOfItems, &track.totalNumberOfItems);
 
-            openTIDAL_StructAddItem (o, track);
+            status = openTIDAL_StructAddItem (o, track);
+            if (status == -1) goto end;
         }
     }
 
@@ -139,14 +146,17 @@ openTIDAL_ParseSearch (openTIDAL_ContentContainer *o, cJSON *input_json)
             struct openTIDAL_JsonItemsContainer processed_json
                 = openTIDAL_ParseJsonItems (videosItem);
 
-            openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+            if (status == -1) goto end;
             openTIDAL_ParseJsonSignedNumber (videosLimit, &video.limit);
             openTIDAL_ParseJsonSignedNumber (videosOffset, &video.offset);
             openTIDAL_ParseJsonSignedNumber (videosTotalNumberOfItems, &video.totalNumberOfItems);
 
-            openTIDAL_StructAddItem (o, video);
+            status = openTIDAL_StructAddItem (o, video);
+            if (status == -1) goto end;
         }
     }
-
+end:
     o->status = 1;
+    if (status == -1) o->status = -14;
 }

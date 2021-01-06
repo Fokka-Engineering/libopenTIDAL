@@ -83,7 +83,8 @@ openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limi
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (innerItem);
 
-                    openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &video.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &video.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &video.totalNumberOfItems);

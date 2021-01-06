@@ -191,21 +191,21 @@ openTIDAL_ParseModuleMixedList (openTIDAL_ContentContainer *o, struct moduleStru
                         switch (i) {
                         case 0: // ALBUMS
                             processed_album = openTIDAL_ParseJsonAlbum (innerItem);
-                            openTIDAL_ParseJsonAlbumValues (&album, &processed_album);
+                            status = openTIDAL_ParseJsonAlbumValues (&album, &processed_album);
                             status = openTIDAL_StructAddAlbum (o, album);
                             o->modules->mixedListTotal[0] += 1;
                             o->modules->mixedListTypes[counter++] = 0;
                             break;
                         case 1: // TRACKS
                             processed_item = openTIDAL_ParseJsonItems (innerItem);
-                            openTIDAL_ParseJsonItemsValues (&item, &processed_item);
+                            status = openTIDAL_ParseJsonItemsValues (&item, &processed_item);
                             status = openTIDAL_StructAddItem (o, item);
                             o->modules->mixedListTotal[1] += 1;
                             o->modules->mixedListTypes[counter++] = 1;
                             break;
                         case 2: // VIDEOS
                             processed_item = openTIDAL_ParseJsonItems (innerItem);
-                            openTIDAL_ParseJsonItemsValues (&item, &processed_item);
+                            status = openTIDAL_ParseJsonItemsValues (&item, &processed_item);
                             status = openTIDAL_StructAddItem (o, item);
                             o->modules->mixedListTotal[1] += 1;
                             o->modules->mixedListTypes[counter++] = 1;
@@ -250,7 +250,7 @@ openTIDAL_ParseModuleAlbumList (openTIDAL_ContentContainer *o, struct moduleStru
             struct openTIDAL_AlbumContainer album;
 
             struct openTIDAL_JsonAlbumContainer processed_json = openTIDAL_ParseJsonAlbum (m->item);
-            openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+            status = openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
             status = openTIDAL_StructAddAlbum (o, album);
             if (status == -1) return -1;
 
@@ -269,7 +269,7 @@ openTIDAL_ParseModuleTrackList (openTIDAL_ContentContainer *o, struct moduleStru
             struct openTIDAL_ItemsContainer item;
 
             struct openTIDAL_JsonItemsContainer processed_json = openTIDAL_ParseJsonItems (m->item);
-            openTIDAL_ParseJsonItemsValues (&item, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&item, &processed_json);
             status = openTIDAL_StructAddItem (o, item);
             if (status == -1) return -1;
 
@@ -287,7 +287,7 @@ openTIDAL_ParseModuleVideoList (openTIDAL_ContentContainer *o, struct moduleStru
             struct openTIDAL_ItemsContainer item;
 
             struct openTIDAL_JsonItemsContainer processed_json = openTIDAL_ParseJsonItems (m->item);
-            openTIDAL_ParseJsonItemsValues (&item, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&item, &processed_json);
             status = openTIDAL_StructAddItem (o, item);
             if (status == -1) return -1;
 

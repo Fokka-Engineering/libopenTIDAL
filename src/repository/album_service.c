@@ -63,8 +63,8 @@ openTIDAL_GetAlbum (openTIDAL_SessionContainer *session, const char *albumId)
             struct openTIDAL_AlbumContainer album;
             struct openTIDAL_JsonAlbumContainer processed_json
                 = openTIDAL_ParseJsonAlbum ((cJSON *)o->json);
-            openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
-
+            status = openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+            if (status == -1) goto end;
             o->status = 1;
             status = openTIDAL_StructAddAlbum (o, album);
         }
@@ -131,7 +131,8 @@ openTIDAL_GetAlbumItems (openTIDAL_SessionContainer *session, const char *albumI
                     innerItem = cJSON_GetObjectItem (item, "item");
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (innerItem);
-                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);

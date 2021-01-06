@@ -255,53 +255,55 @@ openTIDAL_StructAlloc (openTIDAL_ContentContainer *o, int index)
 void
 openTIDAL_StructDelete (openTIDAL_ContentContainer *o)
 {
-    cJSON_Delete ((cJSON *)o->json);
-    cJSON_Delete ((cJSON *)o->jsonManifest);
+    if (o) {
+        cJSON_Delete ((cJSON *)o->json);
+        cJSON_Delete ((cJSON *)o->jsonManifest);
 
-    if (o->albums) {
-        int i;
-        for (i = 0; i < o->total[0]; ++i) {
-            free (o->albums[i].artistId);
-            free (o->albums[i].artistName);
+        if (o->albums) {
+            int i;
+            for (i = 0; i < o->total[0]; ++i) {
+                free (o->albums[i].artistId);
+                free (o->albums[i].artistName);
+            }
         }
-    }
-    if (o->items) {
-        int i;
-        for (i = 0; i < o->total[1]; ++i) {
-            free (o->items[i].artistId);
-            free (o->items[i].artistName);
+        if (o->items) {
+            int i;
+            for (i = 0; i < o->total[1]; ++i) {
+                free (o->items[i].artistId);
+                free (o->items[i].artistName);
+            }
         }
+        if (o->modules) {
+            free (o->modules->moduleType);
+            free (o->modules->moduleTitle);
+            free (o->modules->modulePreTitle);
+            free (o->modules->arrayType);
+            free (o->modules->offset);
+            free (o->modules->total);
+            free (o->modules->mixedListTypes);
+            free (o->modules->mixedListOffset);
+            free (o->modules->mixedListTotal);
+        }
+
+        free (o->albums);
+        free (o->items);
+        free (o->artists);
+        free (o->playlists);
+        free (o->mixes);
+        free (o->contributors);
+        free (o->credits);
+        free (o->links);
+
+        free (o->code);
+        free (o->token);
+        free (o->user);
+        free (o->subscription);
+        free (o->stream);
+        free (o->modules);
+
+        free (o);
+        openTIDAL_VerboseHelper ("Struct", "Deallocate all arrays in structure", 2);
     }
-    if (o->modules) {
-        free (o->modules->moduleType);
-        free (o->modules->moduleTitle);
-        free (o->modules->modulePreTitle);
-        free (o->modules->arrayType);
-        free (o->modules->offset);
-        free (o->modules->total);
-        free (o->modules->mixedListTypes);
-        free (o->modules->mixedListOffset);
-        free (o->modules->mixedListTotal);
-    }
-
-    free (o->albums);
-    free (o->items);
-    free (o->artists);
-    free (o->playlists);
-    free (o->mixes);
-    free (o->contributors);
-    free (o->credits);
-    free (o->links);
-
-    free (o->code);
-    free (o->token);
-    free (o->user);
-    free (o->subscription);
-    free (o->stream);
-    free (o->modules);
-
-    free (o);
-    openTIDAL_VerboseHelper ("Struct", "Deallocate all arrays in structure", 2);
 }
 
 /* Resizes a specific dynamic array. Use the openTIDAL_ContentContainer array identifiers

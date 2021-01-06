@@ -67,7 +67,8 @@ openTIDAL_GetVideo (openTIDAL_SessionContainer *session, const char *videoId)
 
             struct openTIDAL_JsonItemsContainer processed_json
                 = openTIDAL_ParseJsonItems ((cJSON *)o->json);
-            openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&video, &processed_json);
+            if (status == -1) goto end;
 
             o->status = 1;
             status = openTIDAL_StructAddItem (o, video);

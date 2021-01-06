@@ -29,7 +29,8 @@
 #include <stdio.h>
 
 openTIDAL_ContentContainer *
-openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
+openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId, const int limit,
+                       const int offset)
 {
     openTIDAL_ContentContainer *o = NULL;
     openTIDAL_CurlContainer curl;
@@ -44,7 +45,8 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
     if (status == -1) goto end;
 
     openTIDAL_StringHelper (&curl.endpoint, "/v1/mixes/%s/items", mixId);
-    openTIDAL_StringHelper (&curl.parameter, "countryCode=%s", session->countryCode);
+    openTIDAL_StringHelper (&curl.parameter, "limit=%d&offset=%d&countryCode=%s", limit, offset,
+                            session->countryCode);
     if (!curl.endpoint || !curl.parameter) {
         status = -1;
         goto end;
@@ -80,7 +82,7 @@ openTIDAL_GetMixItems (openTIDAL_SessionContainer *session, const char *mixId)
 
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (innerItem);
-                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);

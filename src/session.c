@@ -66,8 +66,9 @@ openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session)
     /* cJSON_Print stream created by openTIDAL_SessionCreateFileStream */
     free (session->newStream);
     /* cJSON structures created by various requests and openTIDAL_SessionScanFile*/
-    cJSON_Delete ((cJSON *)session->refreshRequest);
-    cJSON_Delete ((cJSON *)session->tokenRequest);
+    openTIDAL_StructDelete ((openTIDAL_ContentContainer *)session->refreshRequest);
+    openTIDAL_StructDelete ((openTIDAL_ContentContainer *)session->tokenRequest);
+    openTIDAL_StructDelete ((openTIDAL_ContentContainer *)session->subscriptionRequest);
     cJSON_Delete ((cJSON *)session->stream);
     /* Cleanup opened cURL easy handle */
     openTIDAL_CurlCleanup (session);
@@ -75,21 +76,28 @@ openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session)
     openTIDAL_VerboseHelper ("Session", "Deallocated session", 2);
 }
 
-void
+const int
 openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session)
 {
-    FILE *fp = NULL;
-    fp = fopen (session->location, "w");
-    if (fp != NULL) {
-        const char *json = NULL;
-        json = openTIDAL_SessionCreateFileStream (session);
-        fprintf (fp, "%s", json);
+    if (session->location) {
+        FILE *fp = NULL;
+        fp = fopen (session->location, "w");
+        if (fp != NULL) {
+            const char *json = NULL;
+            json = openTIDAL_SessionCreateFileStream (session);
+            fprintf (fp, "%s", json);
+        }
+        else {
+            openTIDAL_VerboseHelper (
+                "Session", "Failed to create persistent config: Could not write to file location",
+                1);
+            return -1;
+        }
+        fclose (fp);
+        return 0;
     }
-    else {
-        openTIDAL_VerboseHelper (
-            "Session", "Failed to create persistent config: Could not write to file location", 1);
-    }
-    fclose (fp);
+    else
+        return -1;
 }
 
 /* Initialise session structure */
@@ -101,6 +109,7 @@ openTIDAL_SessionInitContainer (openTIDAL_SessionContainer *session)
     session->stream = NULL;
     session->refreshRequest = NULL;
     session->tokenRequest = NULL;
+    session->subscriptionRequest = NULL;
     session->demoEnabled = 1;
     session->curlHandle = NULL;
 
@@ -281,6 +290,7 @@ openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session)
     time_t currentTime = time (NULL);
     size_t skip = 0;
     double diff_t = 0;
+    int attempt = 0;
     if (session->demoEnabled) {
         goto end;
     }
@@ -300,35 +310,46 @@ openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session)
     }
     /* Start renewal process    */
     else {
-        openTIDAL_VerboseHelper ("Session", "Start AccessToken renewal process", 2);
+    renewal:
+        attempt += 1;
+        openTIDAL_VerboseHelper ("Session", "Start AccessToken renewal process. Attempt: %d", 2,
+                                 attempt);
         openTIDAL_ContentContainer *res
             = openTIDAL_AuthRefreshBearerToken (session, session->refreshToken);
-        if (res->status == 1) {
-            FILE *fp = NULL;
-            session->accessToken = res->token->access_token;
-            session->expiresIn = time (NULL) + 604800; /* Calculate new ExpiryDate */
+        if (res) {
+            if (res->status == 1) {
+                FILE *fp = NULL;
+                session->accessToken = res->token->access_token;
+                session->expiresIn = time (NULL) + 604800; /* Calculate new ExpiryDate */
 
-            fp = fopen (session->location, "w");
-            if (fp != NULL) {
-                const char *json = NULL;
-                json = openTIDAL_SessionCreateFileStream (session);
-                fprintf (fp, "%s", json);
+                if (session->location) {
+                    fp = fopen (session->location, "w");
+                    if (fp != NULL) {
+                        const char *json = NULL;
+                        json = openTIDAL_SessionCreateFileStream (session);
+                        fprintf (fp, "%s", json);
 
-                openTIDAL_VerboseHelper ("Session", "AccessToken renewal successful", 2);
+                        openTIDAL_VerboseHelper ("Session", "AccessToken renewal successful", 2);
+                    }
+                    else {
+                        openTIDAL_VerboseHelper ("Session",
+                                                 "AccessToken renewal partially failed. Failed to "
+                                                 "update persistent config",
+                                                 1);
+                    }
+                    fclose (fp);
+                }
+                openTIDAL_StructDelete ((openTIDAL_ContentContainer *)session->refreshRequest);
+                session->refreshRequest = res;
+                session->demoEnabled = 0;
             }
             else {
-                openTIDAL_VerboseHelper (
-                    "Session",
-                    "AccessToken renewal partially failed. Failed to update persistent config", 1);
+                while (attempt != 5)
+                    goto renewal;
+                openTIDAL_VerboseHelper ("Session",
+                                         "AccessToken refresh failed. Switching to demo-mode", 1);
+                session->demoEnabled = 1;
             }
-            fclose (fp);
-            cJSON_Delete ((cJSON *)session->refreshRequest);
-            session->refreshRequest = res->json;
-        }
-        else {
-            openTIDAL_VerboseHelper ("Session",
-                                     "AccessToken refresh failed. Switching to demo-mode", 1);
-            session->demoEnabled = 1;
         }
     }
 end:

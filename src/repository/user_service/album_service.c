@@ -82,7 +82,8 @@ openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limi
                     innerItem = cJSON_GetObjectItem (item, "item");
                     struct openTIDAL_JsonAlbumContainer processed_json
                         = openTIDAL_ParseJsonAlbum (innerItem);
-                    openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+                    status = openTIDAL_ParseJsonAlbumValues (&album, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonNumber (limit, (size_t *)&album.limit);
                     openTIDAL_ParseJsonNumber (offset, (size_t *)&album.offset);
                     openTIDAL_ParseJsonNumber (totalNumberOfItems,

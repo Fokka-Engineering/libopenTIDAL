@@ -47,14 +47,16 @@ typedef struct openTIDAL_SessionContainer {
      * openTIDAL_SessionCleanup */
     void *stream;
     /* Part of the SessionAuthAutoRenewal process. Typecasted
-     * cJSON Structure. Allocated after refresh request is performed.
+     * openTIDAL_ContentContainer Structure. Allocated after refresh
+     * request is performed.
      * Old cJSON Structure from previous request will be deallocated
      * prior. */
     void *refreshRequest;
-    /* Part of the AuthCreateBearerToken process. Typecasted cJSON
+    /* Part of the AuthCreateBearerToken process. Typecasted openTIDAL_ContentContainer
      * Structure. Allocated after request is performed. Only used
      * after persistent config creation. */
     void *tokenRequest;
+    void *subscriptionRequest;
 
     /* Boolean to specifiy state of authorization.
      *
@@ -158,7 +160,7 @@ void openTIDAL_StructDelete (openTIDAL_ContentContainer *o);
 
 /* Session */
 const int openTIDAL_SessionInit (openTIDAL_SessionContainer *session, const char *file_location);
-void openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session);
+const int openTIDAL_SessionCreateFile (openTIDAL_SessionContainer *session);
 void openTIDAL_SessionRefresh (openTIDAL_SessionContainer *session);
 void openTIDAL_SessionCleanup (openTIDAL_SessionContainer *session);
 
@@ -241,7 +243,8 @@ openTIDAL_ContentContainer *openTIDAL_GetVideoStream (openTIDAL_SessionContainer
 
 /* Mix Service */
 openTIDAL_ContentContainer *openTIDAL_GetMixItems (openTIDAL_SessionContainer *session,
-                                                   const char *mixid);
+                                                   const char *mixid, const int limit,
+                                                   const int offset);
 
 /* Favorite Service */
 openTIDAL_ContentContainer *openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session,
@@ -297,7 +300,7 @@ const int openTIDAL_DeleteFavoritePlaylist (openTIDAL_SessionContainer *session,
 openTIDAL_ContentContainer *openTIDAL_SearchAll (openTIDAL_SessionContainer *session, char *term,
                                                  const int limit);
 
-/* Page Service */
+/* Dynamic Page Service */
 openTIDAL_ContentContainer *openTIDAL_GetPageHome (openTIDAL_SessionContainer *session);
 openTIDAL_ContentContainer *openTIDAL_GetPageMixes (openTIDAL_SessionContainer *session);
 

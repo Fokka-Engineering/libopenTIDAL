@@ -83,7 +83,8 @@ openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limi
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (innerItem);
 
-                    openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &track.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &track.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &track.totalNumberOfItems);

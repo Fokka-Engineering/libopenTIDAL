@@ -132,7 +132,8 @@ openTIDAL_GetPlaylistItems (openTIDAL_SessionContainer *session, const char *pla
 
                     struct openTIDAL_JsonItemsContainer processed_json
                         = openTIDAL_ParseJsonItems (innerItem);
-                    openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    status = openTIDAL_ParseJsonItemsValues (&Value, &processed_json);
+                    if (status == -1) goto end;
                     openTIDAL_ParseJsonSignedNumber (limit, &Value.limit);
                     openTIDAL_ParseJsonSignedNumber (offset, &Value.offset);
                     openTIDAL_ParseJsonSignedNumber (totalNumberOfItems, &Value.totalNumberOfItems);

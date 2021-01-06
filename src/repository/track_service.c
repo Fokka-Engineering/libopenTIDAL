@@ -67,7 +67,8 @@ openTIDAL_GetTrack (openTIDAL_SessionContainer *session, const char *trackId)
 
             struct openTIDAL_JsonItemsContainer processed_json
                 = openTIDAL_ParseJsonItems ((cJSON *)o->json);
-            openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+            status = openTIDAL_ParseJsonItemsValues (&track, &processed_json);
+            if (status == -1) goto end;
 
             o->status = 1;
             status = openTIDAL_StructAddItem (o, track);
