@@ -1,0 +1,64 @@
+.TH openTIDAL_GetFavorite 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+openTIDAL_GetFavoriteAlbums, openTIDAL_GetFavoriteTracks, openTIDAL_GetFavoriteVideos, openTIDAL_GetFavoriteArtists, openTIDAL_GetFavoritePlaylists \- Request favorite metadata
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetFavoriteAlbums (openTIDAL_SessionContainer *session, const int limit, const int offset, const char *order, const char *orderDirection);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetFavoriteTracks (openTIDAL_SessionContainer *session, const int limit, const int offset, const char *order, const char *orderDirection);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetFavoriteVideos (openTIDAL_SessionContainer *session, const int limit, const int offset, const char *order, const char *orderDirection);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetFavoriteArtists (openTIDAL_SessionContainer *session, const int limit, const int offset, const char *order, const char *orderDirection);"
+
+.BI "openTIDAL_ContentContainer *openTIDAL_GetFavoritePlaylists (openTIDAL_SessionContainer *session, const int limit, const int offset, const char *order, const char *orderDirection);"
+.SH DESCRIPTION
+The openTIDAL_GetFavorite family of service functions requests favorite metadata from the TIDAL API. These service calls
+\fBmust\fP have a corresponding call to \fIopenTIDAL_StructDelete(3)\fP when the operation is complete.
+
+The \fBopenTIDAL_GetFavoriteAlbums\fP() function (GET /v1/users/{id}/favorites/albums) requests album metadata. *
+
+The \fBopenTIDAL_GetFavoriteTracks\fP() function (GET /v1/users/{id}/favorites/tracks) requests item metadata. *
+
+The \fBopenTIDAL_GetFavoriteVideos\fP() function (GET /v1/users/{id}/favorites/videos) requests item metadata. *
+
+The \fBopenTIDAL_GetFavoriteArtists\fP() function (GET /v1/users/{id}/favorites/artists) requests artist metadata. *
+
+The \fBopenTIDAL_GetFavoritePlaylists\fP() function (GET /v1/users/{id}/playlistsAndFavoritePlaylists) requests playlist metadata. *
+
+* This service function supports pagination and limitation. Keep in mind that the TIDAL API has restricted limits.
+The "totalNumberOfItems" integer specifies the number of items that the response contains, regardless of the limit/offset.
+Use this value in combination with the total number of items inside the content pool (\fIopenTIDAL_ContentContainer(7)\fP)
+to determine if a subsequent offset request is needed.
+
+\fBOrder Enum\fP
+.nf
+DATE
+NAME
+ARTIST
+RELEASE_DATE
+.fi
+
+\fBOrderDirection Enum\fP
+.nf
+ASC
+DESC
+.fi
+.SH STRUCTURE
+\fIopenTIDAL_AlbumContainer(7)\fP
+
+\fIopenTIDAL_ItemsContainer(7)\fP
+
+\fIopenTIDAL_ArtistContainer(7)\fP
+
+\fIopenTIDAL_PlaylistContainer(7)\fP
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIopenTIDAL_ContentContainer(7)\fP, a
+pointer to a \fIopenTIDAL_ContentContainer(7)\fP will be returned.
+With this function the content structure inside the \fIopenTIDAL_ContentContainer(7)\fP is allocated and
+populated.
+Otherwise it returns a NULL pointer.
+(See \fIopenTIDAL_StatusCodes(7)\fP and \fIopenTIDAL_ContentContainer(7)\fP).
+.SH EXAMPLE
+\fIopenTIDAL_ServiceRequestExample(7)\fP
