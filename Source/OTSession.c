@@ -1,0 +1,147 @@
+/*
+    Copyright (c) 2020-2021 Hugo Melder and openTIDAL contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+*/
+
+/* openTIDAL session helper
+ */
+
+#include "OTHelper.h"
+#include "OTJson.h"
+#include "OTPersistent.h"
+#include <stdlib.h>
+#include <string.h>
+
+/* Predeclare function prototypes. */
+static void OTSessionContainerInit (struct OTSessionContainer *session);
+
+/* Allocate a session container and initialise its values. */
+struct OTSessionContainer *
+OTSessionInit (void)
+{
+    struct OTSessionContainer *ptr;
+    enum OTTypes type;
+
+    type = SESSION_CONTAINER;
+    ptr = OTAllocContainer (type);
+    if (!ptr)
+        return NULL;
+    OTSessionContainerInit (ptr);
+    return ptr;
+}
+
+/* Initialise session container values. */
+static void
+OTSessionContainerInit (struct OTSessionContainer *const session)
+{
+    session->persistentFileLocation = NULL;
+    session->accessToken = NULL;
+    session->refreshToken = NULL;
+    session->clientId = "OFNFWldhNEoxTlZDNVU1WQ";
+    session->clientSecret = "b3dVWURreGRkeis5RnB2R1gyNERseEVDTnRGRU1CeGlwVTBsQmZyYnE2MD0";
+    session->scopes = "r_usr+w_usr";
+    session->baseUrl = "https://api.tidal.com";
+    session->authUrl = "https://auth.tidal.com";
+    session->audioQuality = "LOW";
+    session->videoQuality = "LOW";
+    session->countryCode = "US";
+    session->userId = NULL;
+    session->locale = "en_US";
+    session->expiresIn = 0;
+    session->timeFrame = 0;
+    session->tree = NULL;
+    session->restrictedMode = 1;
+    session->httpHandle = NULL;
+}
+
+/* Allocate persistent file location path ASCII string and
+ * opens a file handle. */
+int
+OTSessionLogin (struct OTSessionContainer *const session, const char *const location)
+{
+    int status = -1;
+    if (location)
+        {
+            char *stream;
+
+            session->persistentFileLocation = strdup (location);
+            if (!session->persistentFileLocation)
+                return -1;
+            stream = OTPersistentLoad (session);
+            if (!stream)
+                return -1;
+            status = OTPersistentParse (session, stream);
+            free (stream);
+        }
+    return status;
+}
+
+/* Change audioQuality and videoQuality pointer. */
+void
+OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality *quality)
+{
+    switch (*quality)
+        {
+        case AUDIO_LOW:
+            session->audioQuality = "LOW";
+            break;
+        case AUDIO_HIGH:
+            session->audioQuality = "HIGH";
+            break;
+        case AUDIO_LOSSLESS:
+            session->audioQuality = "LOSSLESS";
+            break;
+        case AUDIO_HI_RES:
+            session->audioQuality = "HI_RES";
+            break;
+        case VIDEO_AUDIO_ONLY:
+            session->videoQuality = "AUDIO_ONLY";
+            break;
+        case VIDEO_LOW:
+            session->videoQuality = "LOW";
+            break;
+        case VIDEO_MEDIUM:
+            session->videoQuality = "MEDIUM";
+            break;
+        case VIDEO_HIGH:
+            session->videoQuality = "HIGH";
+            break;
+        }
+}
+
+int
+OTSessionWriteChanges (const struct OTSessionContainer *session)
+{
+    if (session->persistentFileLocation)
+        {
+            int status = OTPersistentCreate (session, session->persistentFileLocation);
+            return status;
+        }
+    else
+        return -1;
+}
+
+void
+OTSessionCleanup (struct OTSessionContainer *session)
+{
+    enum OTTypes type = SESSION_CONTAINER;
+    /* TODO: Deallocate HTTPHandle */
+    OTDeallocContainer (session, &type);
+}

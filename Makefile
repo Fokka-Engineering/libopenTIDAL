@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -fPIC -Wall -Werror
+#CFLAGS = -fPIC -Wall -Werror
+CFLAGS = -fPIC -Werror
 RM = rm -f
 
 LDFLAGS = -shared -lcurl
@@ -20,7 +21,7 @@ ifeq (Darwin, $(uname))
 	TARGET_LIB = libopenTIDAL.dylib
 endif
 
-SRCS = $(wildcard src/*.c) $(wildcard src/external/*.c) $(wildcard src/helper/*.c) $(wildcard src/repository/*.c) $(wildcard src/repository/user_service/*.c) $(wildcard src/parse/*.c) $(wildcard src/parse/modules/*.c)
+SRCS = $(wildcard Source/*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
@@ -38,7 +39,7 @@ include $(SRCS:.c=.d)
 .PHONY: install
 install:
 	mkdir -p $(INSTALL_LIBRARY_PATH) $(INSTALL_INCLUDE_PATH)
-	$(INSTALL) src/openTIDAL.h $(INSTALL_INCLUDE_PATH)
+	$(INSTALL) Source/openTIDAL.h $(INSTALL_INCLUDE_PATH)
 	$(INSTALL) $(TARGET_LIB) $(INSTALL_LIBRARY_PATH)
 
 .PHONY: clean
