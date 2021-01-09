@@ -26,5 +26,7 @@
 struct OTContentContainer *OTServiceRequestStandard (struct OTSessionContainer *session,
                                                      struct OTHttpContainer *http,
                                                      void *threadHandle);
-
+struct OTContentStreamContainer *OTServiceRequestStream (struct OTSessionContainer *session,
+                                                         struct OTHttpContainer *http,
+                                                         void *threadHandle);
 #endif /* OTSERVICE__h */

@@ -22,8 +22,8 @@
 
 /* openTIDAL service request
  */
-
 #include <stdlib.h>
+#include <string.h>
 
 #include "../OTHelper.h"
 #include "../OTHttp.h"
@@ -42,7 +42,7 @@ OTServiceRequestStandard (struct OTSessionContainer *session, struct OTHttpConta
     content = OTAllocContainer (containerType);
     if (!content)
         return NULL;
-
+    content->tree = NULL;
     /* Use the threadHandle if not NULL. */
     if (threadHandle)
         http->handle = threadHandle;
@@ -60,7 +60,83 @@ OTServiceRequestStandard (struct OTSessionContainer *session, struct OTHttpConta
                     isException = 1;
                     goto end;
                 }
-            content->content = content->tree;
+        }
+    else
+        content->status = CURL_NOT_OK;
+end:
+    free (http->response);
+    if (isException)
+        {
+            free (content);
+            return NULL;
+        }
+    return content;
+}
+
+struct OTContentStreamContainer *
+OTServiceRequestStream (struct OTSessionContainer *session, struct OTHttpContainer *http,
+                        void *threadHandle)
+{
+    int isException = 0;
+    struct OTContentStreamContainer *content;
+    struct OTJsonContainer *manifestMimeType;
+    struct OTJsonContainer *manifest;
+    char *manifestMimeTypeString;
+    char *manifestEncString;
+    char *manifestDecString;
+    enum OTTypes containerType = CONTENT_STREAM_CONTAINER;
+
+    /* Allocate OTContentContainer. Needs to be freed after use! */
+    content = OTAllocContainer (containerType);
+    if (!content)
+        return NULL;
+    content->manifest = NULL;
+    content->tree = NULL;
+    /* Use the threadHandle if not NULL. */
+    if (threadHandle)
+        http->handle = threadHandle;
+    else
+        http->handle = session->mainHttpHandle;
+
+    /* Perform http request. */
+    OTHttpRequest (session, http);
+    if (http->httpOk != -1)
+        {
+            content->status = OTHttpParseStatus (http);
+            content->tree = OTJsonParse (http->response);
+            if (!content->tree)
+                {
+                    isException = 1;
+                    goto end;
+                }
+
+            /* Decode and parse manifest. */
+            manifestMimeType = OTJsonGetObjectItem (content->tree, "manifestMimeType");
+            manifest = OTJsonGetObjectItem (content->tree, "manifest");
+            manifestMimeTypeString = OTJsonGetStringValue (manifestMimeType);
+            manifestEncString = OTJsonGetStringValue (manifest);
+            if (manifestMimeTypeString)
+                {
+                    if (strcmp (manifestMimeTypeString, "application/vnd.tidal.bts") == 0
+                        || strcmp (manifestMimeTypeString, "application/vnd.tidal.emu") == 0)
+                        {
+                            manifestDecString = OTStringDecodeBase64 (manifestEncString);
+                            if (!manifestDecString)
+                                {
+                                    isException = 1;
+                                    goto end;
+                                }
+                            content->manifest = OTJsonParse (manifestDecString);
+                            free (manifestDecString);
+                            if (!content->manifest)
+                                {
+                                    isException = 1;
+                                    goto end;
+                                }
+                        }
+                    else
+                        content->status = UNKNOWN_MANIFEST_MIMETYPE;
+                }
         }
     else
         content->status = CURL_NOT_OK;
