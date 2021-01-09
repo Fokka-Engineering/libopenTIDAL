@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-/* OTSession tests
+/* OTService get tests
  */
 
 #include "../../Source/openTIDAL.h"
@@ -30,34 +30,27 @@ int
 main (void)
 {
     struct OTSessionContainer *session;
-    enum OTTypes type = CONTENT_CONTAINER;
-    int i;
+    struct OTContentStreamContainer *content;
+    enum OTTypes type = CONTENT_STREAM_CONTAINER;
     session = OTSessionInit ();
 
-#pragma omp parallel for
-    for (i = 0; i < 10; i++)
+    content = OTServiceGetStream (session, "tracks", "13479532", 1, NULL);
+    if (content)
         {
-            void *handle;
-            struct OTContentContainer *content;
-            /* Creating and closing a session for one
-             * request is not efficient. This is only a test. */
-            handle = OTHttpThreadHandleCreate ();
-            content = OTServiceGetDeviceCode (session, handle);
-            if (content)
+            printf ("Response Not NULL // Status %d\n", content->status);
+            if (content->status == SUCCESS)
                 {
-                    printf ("Response Not NULL\n");
-                    if (content->status == SUCCESS)
-                        {
-                            struct OTJsonContainer *deviceCode = NULL;
-                            deviceCode = OTJsonGetObjectItem (content->tree, "deviceCode");
-                            printf ("DeviceCode: %s\n", OTJsonGetStringValue (deviceCode));
-                        }
-                }
+                    struct OTJsonContainer *url = NULL;
+                    struct OTJsonContainer *urls = NULL;
 
-            OTDeallocContainer (content, &type);
-            OTHttpThreadHandleCleanup (handle);
+                    urls = OTJsonGetObjectItem (content->manifest, "urls");
+                    if (OTJsonIsArray (urls))
+                        url = OTJsonGetArrayItem (urls, 0);
+                    printf ("Url: %s\n", OTJsonGetStringValue (url));
+                }
         }
+
+    OTDeallocContainer (content, &type);
     OTSessionCleanup (session);
     return 0;
 }
-

@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-/* OTSession tests
+/* OTService tests
  */
 
 #include "../../Source/openTIDAL.h"
@@ -41,7 +41,7 @@ main (void)
             if (content->status == SUCCESS)
                 {
                     struct OTJsonContainer *deviceCode = NULL;
-                    deviceCode = OTJsonGetObjectItem (content->content, "deviceCode");
+                    deviceCode = OTJsonGetObjectItem (content->tree, "deviceCode");
                     printf ("DeviceCode: %s\n", OTJsonGetStringValue (deviceCode));
                 }
         }
