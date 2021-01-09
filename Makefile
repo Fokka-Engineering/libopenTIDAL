@@ -21,7 +21,7 @@ ifeq (Darwin, $(uname))
 	TARGET_LIB = libopenTIDAL.dylib
 endif
 
-SRCS = $(wildcard Source/*.c)
+SRCS = $(wildcard Source/*.c) $(wildcard Source/OTService/*.c)
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
