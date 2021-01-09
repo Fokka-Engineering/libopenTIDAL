@@ -26,6 +26,7 @@
 #include "OTHelper.h"
 #include "OTJson.h"
 #include "OTPersistent.h"
+#include <curl/curl.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -44,6 +45,14 @@ OTSessionInit (void)
     if (!ptr)
         return NULL;
     OTSessionContainerInit (ptr);
+    char *a = ptr->clientId;
+    char *b = ptr->clientSecret;
+    /* One time libcurl global init. */
+    curl_global_init (CURL_GLOBAL_ALL);
+    ptr->mainHttpHandle = curl_easy_init ();
+    /* Decode. */
+    ptr->x = OTStringDecodeBase64 (a);
+    ptr->y = OTStringDecodeBase64 (b);
     return ptr;
 }
 
@@ -56,6 +65,8 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->refreshToken = NULL;
     session->clientId = "OFNFWldhNEoxTlZDNVU1WQ";
     session->clientSecret = "b3dVWURreGRkeis5RnB2R1gyNERseEVDTnRGRU1CeGlwVTBsQmZyYnE2MD0";
+    session->x = NULL;
+    session->y = NULL;
     session->scopes = "r_usr+w_usr";
     session->baseUrl = "https://api.tidal.com";
     session->authUrl = "https://auth.tidal.com";
@@ -68,7 +79,7 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->timeFrame = 0;
     session->tree = NULL;
     session->restrictedMode = 1;
-    session->httpHandle = NULL;
+    session->mainHttpHandle = NULL;
 }
 
 /* Allocate persistent file location path ASCII string and
@@ -141,7 +152,10 @@ OTSessionWriteChanges (const struct OTSessionContainer *session)
 void
 OTSessionCleanup (struct OTSessionContainer *session)
 {
+    free (session->x);
+    free (session->y);
+    curl_easy_cleanup (session->mainHttpHandle);
+    curl_global_cleanup ();
     enum OTTypes type = SESSION_CONTAINER;
-    /* TODO: Deallocate HTTPHandle */
     OTDeallocContainer (session, &type);
 }
