@@ -20,37 +20,39 @@
     THE SOFTWARE.
 */
 
-#ifndef OTHTTP__h
-#define OTHTTP__h
+/* openTIDAL auth service.
+ */
 
-#include "openTIDAL.h"
+#include <stdlib.h>
 
-enum OTHttpTypes
+#include "../OTHelper.h"
+#include "../OTHttp.h"
+#include "../OTJson.h"
+#include "../openTIDAL.h"
+#include "OTService.h"
+
+struct OTContentContainer *
+OTServiceGetDeviceCode (struct OTSessionContainer *session, void *threadHandle)
 {
-    GET,
-    POST,
-    DELETE,
-    PUT,
-    HEAD
-};
+    int isException = 0;
+    struct OTHttpContainer http;
+    struct OTContentContainer *content = NULL;
+    enum OTHttpTypes reqType = POST;
 
-struct OTHttpContainer
-{
-    void *handle;
-    enum OTHttpTypes *type;
-    int httpOk;
-    int isAuthRequest;
-    int isDummy;
-    int isVerbose;
-    long responseCode;
-    char *response;
-    char *entityTagHeader;
-    char *endpoint;
-    char *parameter;
-    char *postData;
-};
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+    http.endpoint = "/v1/oauth2/device_authorization";
+    http.type = &reqType;
+    http.isAuthRequest = 1;
+    OTConcatenateString (&http.postData, "client_id=%s&scope=%s", session->x, session->scopes);
+    if (!http.postData)
+        {
+            isException = 1;
+            goto end;
+        }
 
-void OTHttpContainerInit (struct OTHttpContainer *const http);
-void OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer *const http);
-enum OTStatus OTHttpParseStatus (struct OTHttpContainer *const http);
-#endif /* OTHTTP__h */
+    content = OTServiceRequestStandard (session, &http, threadHandle);
+end:
+    free (http.postData);
+    return content;
+}

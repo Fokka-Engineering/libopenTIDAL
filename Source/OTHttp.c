@@ -84,9 +84,10 @@ void
 OTHttpContainerInit (struct OTHttpContainer *const http)
 {
     http->handle = NULL;
-    http->httpOk = -1;
+    http->httpOk = 0;
     http->isAuthRequest = 0;
     http->isDummy = 0;
+    http->isVerbose = 0;
     http->responseCode = 0;
     http->entityTagHeader = NULL;
     http->response = NULL;
@@ -149,7 +150,6 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     char *url = NULL;
     char *authHeader = NULL;
     int isHeadRequest = 0;
-    int status = -1;
     /* Check if allocation of handle failed */
     if (!http->handle)
         goto end;
@@ -162,7 +162,6 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
         {
             /* Do TIDAL Session refresh check. */
         }
-
     /* Concatenate Url & AuthHeader. */
     url = OTHttpUrl (session, http);
     authHeader = OTHttpAuthHeader (session, http);
@@ -229,6 +228,8 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
                 chunk = curl_slist_append (chunk, http->entityTagHeader);
             curl_easy_setopt (http->handle, CURLOPT_HTTPHEADER, chunk);
         }
+    if (http->isVerbose)
+        curl_easy_setopt (http->handle, CURLOPT_VERBOSE, 1L);
     /* Perform request. */
     res = curl_easy_perform (http->handle);
     if (res != CURLE_OK)
@@ -237,7 +238,6 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
         {
             long http_code = 0;
             curl_easy_getinfo (http->handle, CURLINFO_RESPONSE_CODE, &http_code);
-            http->httpOk = 0;
             http->responseCode = http_code;
         }
 
@@ -246,5 +246,4 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
 end:
     free (url);
     free (authHeader);
-    http->httpOk = status;
 }

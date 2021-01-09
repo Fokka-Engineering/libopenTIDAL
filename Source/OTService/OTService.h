@@ -20,37 +20,11 @@
     THE SOFTWARE.
 */
 
-#ifndef OTHTTP__h
-#define OTHTTP__h
+#ifndef OTSERVICE__h
+#define OTSERVICE__h
 
-#include "openTIDAL.h"
+struct OTContentContainer *OTServiceRequestStandard (struct OTSessionContainer *session,
+                                                     struct OTHttpContainer *http,
+                                                     void *threadHandle);
 
-enum OTHttpTypes
-{
-    GET,
-    POST,
-    DELETE,
-    PUT,
-    HEAD
-};
-
-struct OTHttpContainer
-{
-    void *handle;
-    enum OTHttpTypes *type;
-    int httpOk;
-    int isAuthRequest;
-    int isDummy;
-    int isVerbose;
-    long responseCode;
-    char *response;
-    char *entityTagHeader;
-    char *endpoint;
-    char *parameter;
-    char *postData;
-};
-
-void OTHttpContainerInit (struct OTHttpContainer *const http);
-void OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer *const http);
-enum OTStatus OTHttpParseStatus (struct OTHttpContainer *const http);
-#endif /* OTHTTP__h */
+#endif /* OTSERVICE__h */

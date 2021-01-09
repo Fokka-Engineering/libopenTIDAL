@@ -40,8 +40,11 @@ extern "C"
         ARTEFACT_NOT_FOUND,
         ASSET_NOT_READY_FOR_PLAYBACK,
         PRECONDITION_FAILED,
+        REDIRECT,
+        CLIENT_ERROR,
         SERVER_ERROR,
-        UNKNOWN_MANIFEST_MIMETYPE
+        UNKNOWN_MANIFEST_MIMETYPE,
+        UNKNOWN
     };
 
     enum OTQuality
@@ -144,6 +147,10 @@ extern "C"
      * main handle refreshes it. */
     void *OTHttpThreadHandleCreate (void);
     void OTHttpThreadHandleCleanup (void *handle);
+
+    /* Service. */
+    struct OTContentContainer *OTServiceGetDeviceCode (struct OTSessionContainer *session,
+                                                       void *threadHandle);
 
     /* SECTION: OTJson parsing. */
     /* Returns the number of items in an array (or object). */

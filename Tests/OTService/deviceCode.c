@@ -20,37 +20,34 @@
     THE SOFTWARE.
 */
 
-#ifndef OTHTTP__h
-#define OTHTTP__h
+/* OTSession tests
+ */
 
-#include "openTIDAL.h"
+#include "../../Source/openTIDAL.h"
+#include <stdio.h>
 
-enum OTHttpTypes
+int
+main (void)
 {
-    GET,
-    POST,
-    DELETE,
-    PUT,
-    HEAD
-};
+    struct OTSessionContainer *session;
+    struct OTContentContainer *content;
+    enum OTTypes type = CONTENT_CONTAINER;
+    session = OTSessionInit ();
 
-struct OTHttpContainer
-{
-    void *handle;
-    enum OTHttpTypes *type;
-    int httpOk;
-    int isAuthRequest;
-    int isDummy;
-    int isVerbose;
-    long responseCode;
-    char *response;
-    char *entityTagHeader;
-    char *endpoint;
-    char *parameter;
-    char *postData;
-};
+    content = OTServiceGetDeviceCode (session, NULL);
+    if (content)
+        {
+            printf ("Response Not NULL\n");
+            if (content->status == SUCCESS)
+                {
+                    struct OTJsonContainer *deviceCode = NULL;
+                    deviceCode = OTJsonGetObjectItem (content->content, "deviceCode");
+                    printf ("DeviceCode: %s\n", OTJsonGetStringValue (deviceCode));
+                }
+        }
 
-void OTHttpContainerInit (struct OTHttpContainer *const http);
-void OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer *const http);
-enum OTStatus OTHttpParseStatus (struct OTHttpContainer *const http);
-#endif /* OTHTTP__h */
+    OTDeallocContainer (content, &type);
+    OTSessionCleanup (session);
+    return 0;
+}
+
