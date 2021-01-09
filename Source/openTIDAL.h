@@ -34,7 +34,6 @@ extern "C"
     {
         SUCCESS,
         CURL_NOT_OK,
-        MEMORY_ALLOCATION_ERROR,
         BAD_REQUEST,
         UNAUTHORISED,
         EXPIRED_SESSION,
@@ -73,6 +72,8 @@ extern "C"
         char *refreshToken;
         char *clientId;
         char *clientSecret;
+        char *x;
+        char *y;
         char *scopes;
         char *baseUrl;
         char *authUrl;
@@ -85,7 +86,7 @@ extern "C"
         time_t timeFrame;
         int restrictedMode;
         struct OTJsonContainer *tree;
-        void *httpHandle;
+        void *mainHttpHandle;
     };
 
     struct OTContentContainer
@@ -134,6 +135,15 @@ extern "C"
     int OTPersistentCreate (const struct OTSessionContainer *const session,
                             const char *const location);
     void OTDeallocContainer (void *container, enum OTTypes *type);
+
+    /* Create a http handle. Use one handle per thread.
+     * Keep the handle(s) alive to utilise persistent connections.
+     * DO NOT use one handle in multiple threads!
+     * Cleanup the handles before exiting to avoid a memory leak.
+     * These handles DO NOT refresh a TIDAL session. Only the
+     * main handle refreshes it. */
+    void *OTHttpThreadHandleCreate (void);
+    void OTHttpThreadHandleCleanup (void *handle);
 
     /* SECTION: OTJson parsing. */
     /* Returns the number of items in an array (or object). */

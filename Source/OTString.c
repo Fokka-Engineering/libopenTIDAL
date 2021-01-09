@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "OTBase64.h"
 #include "OTHelper.h"
 
 /* Allocates and encodes an ASCII String. Similar to sprintf.
@@ -85,4 +86,15 @@ OTArrayToString (char **str, const char **array, const int length)
         }
     *str = ptr;
     return 0;
+}
+
+char *
+OTStringDecodeBase64 (const char *const enc)
+{
+    size_t size = OTBase64DecodeLen (enc);
+    char *dec = malloc (size);
+    if (!dec)
+        return NULL;
+    OTBase64Decode (dec, enc);
+    return dec;
 }

@@ -28,6 +28,7 @@
 int OTConcatenateString (char **str, char *format, ...) __attribute__ ((format (printf, 2, 3)));
 int OTArrayToString (char **str, const char **array, const int length);
 char *OTUrlEncode (char *str);
+char *OTStringDecodeBase64 (const char *const enc);
 
 void *OTAllocContainer (enum OTTypes type);
 void **OTAllocArray (const int size);
