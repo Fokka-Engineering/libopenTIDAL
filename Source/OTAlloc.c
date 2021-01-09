@@ -41,12 +41,6 @@ OTAllocContainer (enum OTTypes type)
         case CONTENT_CONTAINER:
             ptr = malloc (sizeof (struct OTContentContainer));
             break;
-        case CONTENT_PAGED_CONTAINER:
-            ptr = malloc (sizeof (struct OTContentPagedContainer));
-            break;
-        case CONTENT_MODULE_CONTAINER:
-            ptr = malloc (sizeof (struct OTContentModuleContainer));
-            break;
         case CONTENT_STREAM_CONTAINER:
             ptr = malloc (sizeof (struct OTContentStreamContainer));
             break;

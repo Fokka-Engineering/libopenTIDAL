@@ -33,8 +33,6 @@ OTDeallocContainer (void *container, enum OTTypes *type)
 {
     struct OTSessionContainer *session;
     struct OTContentContainer *singleContainer;
-    struct OTContentPagedContainer *pagedContainer;
-    struct OTContentModuleContainer *moduleContainer;
     struct OTContentStreamContainer *streamContainer;
     switch (*type)
         {
@@ -49,21 +47,9 @@ OTDeallocContainer (void *container, enum OTTypes *type)
             OTJsonDelete (singleContainer->tree);
             free (singleContainer);
             break;
-        case CONTENT_PAGED_CONTAINER:
-            pagedContainer = (struct OTContentPagedContainer *)container;
-            OTJsonDelete (pagedContainer->tree);
-            free (pagedContainer);
-            break;
-        case CONTENT_MODULE_CONTAINER:
-            moduleContainer = (struct OTContentModuleContainer *)container;
-            OTJsonDelete (moduleContainer->tree);
-            free (moduleContainer->singleModule);
-            free (moduleContainer->content);
-            free (moduleContainer);
-            break;
         case CONTENT_STREAM_CONTAINER:
             streamContainer = (struct OTContentStreamContainer *)container;
-            OTJsonDelete (streamContainer->content);
+            OTJsonDelete (streamContainer->tree);
             OTJsonDelete (streamContainer->manifest);
             free (streamContainer);
             break;

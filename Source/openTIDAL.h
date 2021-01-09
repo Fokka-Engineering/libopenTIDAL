@@ -63,8 +63,6 @@ extern "C"
     {
         SESSION_CONTAINER,
         CONTENT_CONTAINER,
-        CONTENT_PAGED_CONTAINER,
-        CONTENT_MODULE_CONTAINER,
         CONTENT_STREAM_CONTAINER
     };
 
@@ -74,6 +72,7 @@ extern "C"
         char *accessToken;
         char *refreshToken;
         char *clientId;
+        char *previewClientId;
         char *clientSecret;
         char *x;
         char *y;
@@ -85,6 +84,7 @@ extern "C"
         char *countryCode;
         char *userId;
         char *locale;
+        char *deviceType;
         time_t expiresIn;
         time_t timeFrame;
         int restrictedMode;
@@ -98,33 +98,12 @@ extern "C"
          * parsing of API specific error codes. */
         enum OTStatus status;
         struct OTJsonContainer *tree;
-        struct OTJsonContainer *content;
-    };
-
-    struct OTContentPagedContainer
-    {
-        enum OTStatus status;
-        struct OTJsonContainer *tree;
-        struct OTJsonContainer *limit;
-        struct OTJsonContainer *offset;
-        struct OTJsonContainer *totalNumberOfItems;
-        struct OTJsonContainer *content;
-    };
-
-    struct OTContentModuleContainer
-    {
-        enum OTStatus status;
-        int numberOfModules;
-        struct OTJsonContainer *tree;
-        struct OTJsonContainer **singleModule;
-        struct OTJsonContainer **content;
     };
 
     struct OTContentStreamContainer
     {
         enum OTStatus status;
-        struct OTJsonContainer *url;
-        struct OTJsonContainer *content;
+        struct OTJsonContainer *tree;
         struct OTJsonContainer *manifest;
     };
 
@@ -148,9 +127,53 @@ extern "C"
     void *OTHttpThreadHandleCreate (void);
     void OTHttpThreadHandleCleanup (void *handle);
 
-    /* Service. */
+    /* SECTION: Service functions. */
+    /* OAuth2 service.*/
     struct OTContentContainer *OTServiceGetDeviceCode (struct OTSessionContainer *session,
                                                        void *threadHandle);
+    struct OTContentContainer *OTServiceGetBearerToken (struct OTSessionContainer *session,
+                                                        const char *const deviceCode,
+                                                        void *threadHandle);
+    struct OTContentContainer *OTServiceRefreshBearerToken (struct OTSessionContainer *session,
+                                                            const char *const refreshToken,
+                                                            void *threadHandle);
+    /* v1 standard service.
+     * Supported prefixes and suffixes (NULL = No Suffix):
+     * albums (NULL, "items", "items/credits", "review")
+     * tracks // videos (NULL, "contributors", "credits", "mix" (tracks only), "recommendations")
+     * artists (NULL, "bio", "links", "mix", "toptracks", "videos")
+     * playlists (NULL, "items", "recommendations/items")
+     * mixes (items) */
+    struct OTContentContainer *OTServiceGetStandard (struct OTSessionContainer *session,
+                                                     const char *const prefix,
+                                                     const char *const suffix, const char *const id,
+                                                     const int limit, const int offset,
+                                                     void *threadHandle);
+    /* Favorite service.
+     * (Suffixes: "ids", "albums", "tracks", "videos", "artists", "playlists", "mixes") */
+    struct OTContentContainer *OTServiceGetFavorites (struct OTSessionContainer *session,
+                                                      const char *const suffix, const int limit,
+                                                      const int offset, const char *const order,
+                                                      const char *const orderDirection,
+                                                      void *threadHandle);
+    /* DynamicPage service.
+     * Id parameter only used if suffix ("album", "artist", "mix") */
+    struct OTContentContainer *OTServiceGetPage (struct OTSessionContainer *session,
+                                                 const char *const suffix, const char *const id,
+                                                 const int limit, const int offset,
+                                                 void *threadHandle);
+    /* Search service.
+     * (Suffixes: NULL (ALL), "albums", "tracks", "videos", "artists", "playlists", "topHit") */
+    struct OTContentContainer *OTServiceSearch (struct OTSessionContainer *session,
+                                                const char *const suffix, char *query,
+                                                const int limit, const int offset,
+                                                void *threadHandle);
+    /* Stream service.
+     * Prefixes: "tracks", "videos" */
+    struct OTContentStreamContainer *OTServiceGetStream (struct OTSessionContainer *session,
+                                                         const char *const prefix,
+                                                         const char *const id, const int isPreview,
+                                                         void *threadHandle);
 
     /* SECTION: OTJson parsing. */
     /* Returns the number of items in an array (or object). */
@@ -165,11 +188,9 @@ extern "C"
 #define OTJsonArrayForEach(element, array)                                                         \
     for (element = (array != NULL) ? (array)->child : NULL; element != NULL;                       \
          element = element->next)
-
     /* Check item type and return its value. */
     char *OTJsonGetStringValue (const struct OTJsonContainer *const item);
     double OTJsonGetNumberValue (const struct OTJsonContainer *const item);
-
     /* These functions check the type of an item. */
     int OTJsonIsInvalid (const struct OTJsonContainer *const item);
     int OTJsonIsFalse (const struct OTJsonContainer *const item);
