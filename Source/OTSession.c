@@ -64,6 +64,7 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->accessToken = NULL;
     session->refreshToken = NULL;
     session->clientId = "OFNFWldhNEoxTlZDNVU1WQ";
+    session->previewClientId = "gsFXkJqGrUNoYMQPZe4k3WKwijnrp8iGSwn3bApe";
     session->clientSecret = "b3dVWURreGRkeis5RnB2R1gyNERseEVDTnRGRU1CeGlwVTBsQmZyYnE2MD0";
     session->x = NULL;
     session->y = NULL;
@@ -75,6 +76,7 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->countryCode = "US";
     session->userId = NULL;
     session->locale = "en_US";
+    session->deviceType = "BROWSER";
     session->expiresIn = 0;
     session->timeFrame = 0;
     session->tree = NULL;
