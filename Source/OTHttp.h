@@ -23,9 +23,30 @@
 #ifndef OTHTTP__h
 #define OTHTTP__h
 
-struct OTHttpContainer
+enum OTHttpTypes
 {
-    char *endpoint;
+    GET,
+    POST,
+    DELETE,
+    PUT,
+    HEAD
 };
 
+struct OTHttpContainer
+{
+    void *handle;
+    enum OTHttpTypes *type;
+    int httpOk;
+    int isAuthRequest;
+    int isDummy;
+    long responseCode;
+    char *response;
+    char *entityTagHeader;
+    char *endpoint;
+    char *parameter;
+    char *postData;
+};
+
+void OTHttpContainerInit (struct OTHttpContainer *const http);
+void OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer *const http);
 #endif /* OTHTTP__h */
