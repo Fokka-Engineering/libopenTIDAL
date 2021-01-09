@@ -88,6 +88,7 @@ OTHttpContainerInit (struct OTHttpContainer *const http)
     http->isAuthRequest = 0;
     http->isDummy = 0;
     http->isVerbose = 0;
+    http->isPreviewClientId = 0;
     http->responseCode = 0;
     http->entityTagHeader = NULL;
     http->response = NULL;
@@ -109,8 +110,13 @@ OTHttpAuthHeader (const struct OTSessionContainer *const session,
         }
     else
         {
-            if (session->x)
-                OTConcatenateString (&string, "X-Tidal-Token: %s", session->x);
+            if (!http->isPreviewClientId)
+                {
+                    if (session->x)
+                        OTConcatenateString (&string, "X-Tidal-Token: %s", session->x);
+                }
+            else
+                OTConcatenateString (&string, "X-Tidal-Token: %s", session->previewClientId);
         }
     return string;
 }
