@@ -31,27 +31,31 @@
 void
 OTDeallocContainer (void *container, enum OTTypes *type)
 {
-    struct OTSessionContainer *session;
-    struct OTContentContainer *singleContainer;
-    struct OTContentStreamContainer *streamContainer;
-    switch (*type)
+    if (container)
         {
-        case SESSION_CONTAINER:
-            session = (struct OTSessionContainer *)container;
-            free (session->persistentFileLocation);
-            OTJsonDelete (session->tree);
-            free (session);
-            break;
-        case CONTENT_CONTAINER:
-            singleContainer = (struct OTContentContainer *)container;
-            OTJsonDelete (singleContainer->tree);
-            free (singleContainer);
-            break;
-        case CONTENT_STREAM_CONTAINER:
-            streamContainer = (struct OTContentStreamContainer *)container;
-            OTJsonDelete (streamContainer->tree);
-            OTJsonDelete (streamContainer->manifest);
-            free (streamContainer);
-            break;
+            struct OTSessionContainer *session;
+            struct OTContentContainer *singleContainer;
+            struct OTContentStreamContainer *streamContainer;
+            switch (*type)
+                {
+                case SESSION_CONTAINER:
+                    session = (struct OTSessionContainer *)container;
+                    free (session->persistentFileLocation);
+                    OTJsonDelete (session->tree);
+                    OTJsonDelete (session->renewalTree);
+                    free (session);
+                    break;
+                case CONTENT_CONTAINER:
+                    singleContainer = (struct OTContentContainer *)container;
+                    OTJsonDelete (singleContainer->tree);
+                    free (singleContainer);
+                    break;
+                case CONTENT_STREAM_CONTAINER:
+                    streamContainer = (struct OTContentStreamContainer *)container;
+                    OTJsonDelete (streamContainer->tree);
+                    OTJsonDelete (streamContainer->manifest);
+                    free (streamContainer);
+                    break;
+                }
         }
 }
