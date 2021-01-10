@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2009-2020 Dave Gamble and cJSON contributors
+  Copyright (c) 2009-2021 Dave Gamble, Hugo Melder and contributors
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,7 @@
 */
 
 /* OTJson */
-/* JSON parser in C. */
-
-/* disable warnings about old C89 functions in MSVC */
-#if !defined(_CRT_SECURE_NO_DEPRECATE) && defined(_MSC_VER)
-#define _CRT_SECURE_NO_DEPRECATE
-#endif
+/* JSON parser in C (cJSON based). */
 
 #ifdef __GNUC__
 #pragma GCC visibility push(default)
@@ -380,55 +375,6 @@ loop_end:
 
     input_buffer->offset += (size_t) (after_end - number_c_string);
     return true;
-}
-
-/* don't ask me, but the original OTJsonSetNumberValue returns an integer or double */
-double
-OTJsonSetNumberHelper (struct OTJsonContainer *object, double number)
-{
-    if (number >= INT_MAX)
-        {
-            object->valueint = INT_MAX;
-        }
-    else if (number <= (double)INT_MIN)
-        {
-            object->valueint = INT_MIN;
-        }
-    else
-        {
-            object->valueint = (int)number;
-        }
-
-    return object->valuedouble = number;
-}
-
-char *
-OTJsonSetValuestring (struct OTJsonContainer *object, const char *valuestring)
-{
-    char *copy = NULL;
-    /* if object's type is not OTJsonString or is OTJsonIsReference, it should not set valuestring
-     */
-    if (!(object->type & OTJsonString) || (object->type & OTJsonIsReference))
-        {
-            return NULL;
-        }
-    if (strlen (valuestring) <= strlen (object->valuestring))
-        {
-            strcpy (object->valuestring, valuestring);
-            return object->valuestring;
-        }
-    copy = (char *)OTJsonstrdup ((const unsigned char *)valuestring, &global_hooks);
-    if (copy == NULL)
-        {
-            return NULL;
-        }
-    if (object->valuestring != NULL)
-        {
-            OTJsonfree (object->valuestring);
-        }
-    object->valuestring = copy;
-
-    return copy;
 }
 
 typedef struct
@@ -1204,12 +1150,6 @@ struct OTJsonContainer *
 OTJsonParse (const char *value)
 {
     return OTJsonParseWithOpts (value, 0, 0);
-}
-
-struct OTJsonContainer *
-OTJsonParseWithLength (const char *value, size_t buffer_length)
-{
-    return OTJsonParseWithLengthOpts (value, buffer_length, 0, 0);
 }
 
 #define cjson_min(a, b) (((a) < (b)) ? (a) : (b))

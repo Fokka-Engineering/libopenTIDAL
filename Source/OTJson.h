@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2009-2020 Dave Gamble, Hugo Melder and struct OTJsonContainer contributors
+  Copyright (c) 2009-2020 Dave Gamble, Hugo Melder and contributors
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -77,7 +77,6 @@ void OTJsonInitHooks (OTJsonHooks *hooks);
 /* Supply a block of JSON, and this returns a struct OTJsonContainer object you can interrogate.
  */
 struct OTJsonContainer *OTJsonParse (const char *value);
-struct OTJsonContainer *OTJsonParseWithLength (const char *value, size_t buffer_length);
 /* ParseWithOpts allows you to require (and check) that the JSON is null terminated, and to
  * retrieve the pointer to the final byte parsed. */
 /* If you supply a ptr in return_parse_end and parsing fails, then return_parse_end will contain
@@ -105,7 +104,6 @@ int OTJsonPrintPreallocated (struct OTJsonContainer *item, char *buffer, const i
                              const int format);
 /* Delete a struct OTJsonContainer entity and all subentities. */
 void OTJsonDelete (struct OTJsonContainer *item);
-
 
 /* These calls create a struct OTJsonContainer item of the appropriate type. */
 struct OTJsonContainer *OTJsonCreateNull (void);
