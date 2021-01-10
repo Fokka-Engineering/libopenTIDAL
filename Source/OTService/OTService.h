@@ -23,10 +23,14 @@
 #ifndef OTSERVICE__h
 #define OTSERVICE__h
 
+#include "../openTIDAL.h"
+
 struct OTContentContainer *OTServiceRequestStandard (struct OTSessionContainer *session,
                                                      struct OTHttpContainer *http,
                                                      void *threadHandle);
 struct OTContentStreamContainer *OTServiceRequestStream (struct OTSessionContainer *session,
                                                          struct OTHttpContainer *http,
                                                          void *threadHandle);
+enum OTStatus OTServiceRequestSilent (struct OTSessionContainer *session,
+                                      struct OTHttpContainer *http, void *threadHandle);
 #endif /* OTSERVICE__h */

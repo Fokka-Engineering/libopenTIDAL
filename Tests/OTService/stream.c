@@ -27,30 +27,33 @@
 #include <stdio.h>
 
 int
-main (void)
+main (int argc, char *argv[])
 {
     struct OTSessionContainer *session;
     struct OTContentStreamContainer *content;
     enum OTTypes type = CONTENT_STREAM_CONTAINER;
     session = OTSessionInit ();
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
-    content = OTServiceGetStream (session, "tracks", "13479532", 0, NULL);
-    if (content)
+    if (argc == 2)
         {
-            printf ("Response Not NULL // Status %d\n", content->status);
-            if (content->status == SUCCESS)
+            content = OTServiceGetStream (session, "tracks", argv[1], 0, NULL);
+            if (content)
                 {
-                    struct OTJsonContainer *url = NULL;
-                    struct OTJsonContainer *urls = NULL;
+                    printf ("Response Not NULL // Status %d\n", content->status);
+                    if (content->status == SUCCESS)
+                        {
+                            struct OTJsonContainer *url = NULL;
+                            struct OTJsonContainer *urls = NULL;
 
-                    urls = OTJsonGetObjectItem (content->manifest, "urls");
-                    if (OTJsonIsArray (urls))
-                        url = OTJsonGetArrayItem (urls, 0);
-                    printf ("Url: %s\n", OTJsonGetStringValue (url));
+                            urls = OTJsonGetObjectItem (content->manifest, "urls");
+                            if (OTJsonIsArray (urls))
+                                url = OTJsonGetArrayItem (urls, 0);
+                            printf ("Url: %s\n", OTJsonGetStringValue (url));
+                        }
                 }
+            OTDeallocContainer (content, &type);
         }
 
-    OTDeallocContainer (content, &type);
     OTSessionCleanup (session);
     return 0;
 }

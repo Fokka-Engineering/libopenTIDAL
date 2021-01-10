@@ -23,6 +23,7 @@
 /* openTIDAL playlist manipulation service
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -30,3 +31,84 @@
 #include "../OTHttp.h"
 #include "../openTIDAL.h"
 #include "OTService.h"
+
+struct OTContentContainer *
+OTServiceCreatePlaylist (struct OTSessionContainer *session, char *title, char *description,
+                         void *threadHandle)
+{
+    int isException = 0;
+    struct OTHttpContainer http;
+    struct OTContentContainer *content = NULL;
+    char *encTitle = NULL;
+    char *encDescription = NULL;
+    enum OTHttpTypes reqType = POST;
+
+    /* UrlEncode strings. */
+    encTitle = OTUrlEncode (title);
+    encDescription = OTUrlEncode (description);
+    if (!encTitle || !encDescription)
+        {
+            isException = 1;
+            goto end;
+        }
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+    http.type = &reqType;
+    OTConcatenateString (&http.endpoint, "/v1/users/%s/playlists", session->userId);
+    OTConcatenateString (&http.parameter, "countryCode=%s", session->countryCode);
+    OTConcatenateString (&http.postData, "title=%s&description=%s", encTitle, encDescription);
+    if (!http.parameter || !http.endpoint || !http.postData)
+        {
+            isException = 1;
+            goto end;
+        }
+
+    content = OTServiceRequestStandard (session, &http, threadHandle);
+end:
+    free (http.endpoint);
+    free (http.parameter);
+    free (http.postData);
+    free (encTitle);
+    free (encDescription);
+    return content;
+}
+
+/* Free returned value after use. */
+char *
+OTServiceGetPlaylistEntityTag (struct OTSessionContainer *session, const char *const id,
+                               void *threadHandle)
+{
+    int isException = 0;
+    struct OTHttpContainer http;
+    char *value = NULL;
+    enum OTHttpTypes reqType = HEAD;
+    enum OTStatus status = UNKNOWN;
+
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+    http.type = &reqType;
+    OTConcatenateString (&http.endpoint, "/v1/playlists/%s", id);
+    OTConcatenateString (&http.parameter, "countryCode=%s", session->countryCode);
+    if (!http.parameter || !http.endpoint)
+        {
+            isException = 1;
+            goto end;
+        }
+
+    status = OTServiceRequestSilent (session, &http, threadHandle);
+    if (status == SUCCESS)
+        {
+            char *tmp = OTHttpParseHeader (http.response, "etag");
+            if (tmp)
+                {
+                    if (tmp[strlen (tmp) - 1] == '\x20')
+                        tmp[strlen (tmp) - 1] = '\0';
+                    value = strdup (tmp);
+                }
+        }
+end:
+    free (http.endpoint);
+    free (http.parameter);
+    free (http.response);
+    return value;
+}

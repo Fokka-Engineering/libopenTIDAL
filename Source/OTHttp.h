@@ -54,4 +54,5 @@ struct OTHttpContainer
 void OTHttpContainerInit (struct OTHttpContainer *const http);
 void OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer *const http);
 enum OTStatus OTHttpParseStatus (struct OTHttpContainer *const http);
+char *OTHttpParseHeader (char *buffer, char *key);
 #endif /* OTHTTP__h */

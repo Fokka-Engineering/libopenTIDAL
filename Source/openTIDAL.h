@@ -178,6 +178,12 @@ extern "C"
                                                          const char *const id, const int isPreview,
                                                          void *threadHandle);
 
+    /* Playlist service. */
+    struct OTContentContainer *OTServiceCreatePlaylist (struct OTSessionContainer *session,
+                                                        char *title, char *description,
+                                                        void *threadHandle);
+    char *OTServiceGetPlaylistEntityTag (struct OTSessionContainer *session, const char *const id,
+                                         void *threadHandle);
     /* SECTION: OTJson parsing. */
     /* Returns the number of items in an array (or object). */
     int OTJsonGetArraySize (const struct OTJsonContainer *array);
@@ -193,7 +199,11 @@ extern "C"
          element = element->next)
     /* Check item type and return its value. */
     char *OTJsonGetStringValue (const struct OTJsonContainer *const item);
+    char *OTJsonGetObjectItemStringValue (const struct OTJsonContainer *const object,
+                                          const char *const string);
     double OTJsonGetNumberValue (const struct OTJsonContainer *const item);
+    double OTJsonGetObjectItemNumberValue (const struct OTJsonContainer *const object,
+                                           const char *const string);
     /* These functions check the type of an item. */
     int OTJsonIsInvalid (const struct OTJsonContainer *const item);
     int OTJsonIsFalse (const struct OTJsonContainer *const item);

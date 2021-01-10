@@ -150,3 +150,30 @@ end:
         }
     return content;
 }
+
+/* Free http response after use. */
+enum OTStatus
+OTServiceRequestSilent (struct OTSessionContainer *session, struct OTHttpContainer *http,
+                        void *threadHandle)
+{
+    int isException = 0;
+    enum OTStatus status = UNKNOWN;
+    enum OTTypes containerType = CONTENT_CONTAINER;
+
+    /* Use the threadHandle if not NULL. */
+    if (threadHandle)
+        http->handle = threadHandle;
+    else
+        http->handle = session->mainHttpHandle;
+
+    /* Perform http request. */
+    OTHttpRequest (session, http);
+    if (http->httpOk != -1)
+        {
+            status = OTHttpParseStatus (http);
+        }
+    else
+        status = CURL_NOT_OK;
+    return status;
+}
+

@@ -100,6 +100,14 @@ OTJsonGetStringValue (const struct OTJsonContainer *const item)
         return NULL;
 }
 
+char *
+OTJsonGetObjectItemStringValue (const struct OTJsonContainer *const object,
+                                const char *const string)
+{
+    struct OTJsonContainer *obj = OTJsonGetObjectItem (object, string);
+    return OTJsonGetStringValue (obj);
+}
+
 double
 OTJsonGetNumberValue (const struct OTJsonContainer *const item)
 {
@@ -109,6 +117,14 @@ OTJsonGetNumberValue (const struct OTJsonContainer *const item)
         }
 
     return item->valuedouble;
+}
+
+double
+OTJsonGetObjectItemNumberValue (const struct OTJsonContainer *const object,
+                                const char *const string)
+{
+    struct OTJsonContainer *obj = OTJsonGetObjectItem (object, string);
+    return OTJsonGetNumberValue (obj);
 }
 
 /* Case insensitive string comparison, doesn't consider two NULL pointers equal though */

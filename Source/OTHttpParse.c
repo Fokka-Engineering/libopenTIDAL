@@ -23,6 +23,8 @@
 /* Parse a http request and create the json structure
  */
 
+#include <string.h>
+
 #include "OTHttp.h"
 #include "OTJson.h"
 #include "openTIDAL.h"
@@ -65,4 +67,29 @@ OTHttpParseStatus (struct OTHttpContainer *const http)
             status = SERVER_ERROR;
         }
     return status;
+}
+
+char *
+OTHttpParseHeader (char *buffer, char *key)
+{
+    const char delim[] = "\n";
+    char *value = NULL, *token = NULL, *sep = NULL;
+    int i;
+
+    token = strtok (buffer, delim);
+    while (token != NULL)
+        {
+            i = 0;
+            if (strncmp (token, key, strlen (key)) == 0)
+                {
+                    while ((sep = strsep (&token, ":")) != NULL)
+                        {
+                            if (i == 1)
+                                value = sep + 1;
+                            i += 1;
+                        }
+                }
+            token = strtok (NULL, delim);
+        }
+    return value;
 }

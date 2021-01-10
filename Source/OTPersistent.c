@@ -210,17 +210,7 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
 {
     int status = 0;
     const struct OTJsonContainer *authorisation = NULL;
-    const struct OTJsonContainer *accessToken = NULL;
-    const struct OTJsonContainer *refreshToken = NULL;
-    const struct OTJsonContainer *expiresIn = NULL;
-    const struct OTJsonContainer *timeFrame = NULL;
     const struct OTJsonContainer *user = NULL;
-    const struct OTJsonContainer *id = NULL;
-    const struct OTJsonContainer *countryCode = NULL;
-    const struct OTJsonContainer *locale = NULL;
-    const struct OTJsonContainer *audioQuality = NULL;
-    const struct OTJsonContainer *videoQuality = NULL;
-
     struct OTJsonContainer *json = OTJsonParse (stream);
     if (!json)
         {
@@ -231,24 +221,21 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
     /* Parse values. */
     authorisation = OTJsonGetObjectItem (json, "authorisation");
     user = OTJsonGetObjectItem (json, "user");
-    accessToken = OTJsonGetObjectItem (authorisation, "accessToken");
-    session->accessToken = OTJsonGetStringValue (accessToken);
-    refreshToken = OTJsonGetObjectItem (authorisation, "refreshToken");
-    session->refreshToken = OTJsonGetStringValue (refreshToken);
-    expiresIn = OTJsonGetObjectItem (authorisation, "expiresIn");
-    session->expiresIn = OTJsonGetNumberValue (expiresIn);
-    timeFrame = OTJsonGetObjectItem (authorisation, "timeFrame");
-    session->timeFrame = OTJsonGetNumberValue (timeFrame);
-    id = OTJsonGetObjectItem (user, "id");
-    session->userId = OTJsonGetStringValue (id);
-    countryCode = OTJsonGetObjectItem (user, "countryCode");
-    session->countryCode = OTJsonGetStringValue (countryCode);
-    locale = OTJsonGetObjectItem (user, "locale");
-    session->locale = OTJsonGetStringValue (locale);
-    audioQuality = OTJsonGetObjectItem (user, "audioQuality");
-    session->audioQuality = OTJsonGetStringValue (audioQuality);
-    videoQuality = OTJsonGetObjectItem (user, "videoQuality");
-    session->videoQuality = OTJsonGetStringValue (videoQuality);
+    if (!authorisation || !user)
+        {
+            status = -1;
+            goto end;
+        }
+
+    session->accessToken = OTJsonGetObjectItemStringValue (authorisation, "accessToken");
+    session->refreshToken = OTJsonGetObjectItemStringValue (authorisation, "refreshToken");
+    session->expiresIn = OTJsonGetObjectItemNumberValue (authorisation, "expiresIn");
+    session->timeFrame = OTJsonGetObjectItemNumberValue (authorisation, "timeFrame");
+    session->userId = OTJsonGetObjectItemStringValue (user, "id");
+    session->countryCode = OTJsonGetObjectItemStringValue (user, "countryCode");
+    session->locale = OTJsonGetObjectItemStringValue (user, "locale");
+    session->audioQuality = OTJsonGetObjectItemStringValue (user, "audioQuality");
+    session->videoQuality = OTJsonGetObjectItemStringValue (user, "videoQuality");
 
     /* Delete old tree. */
     OTJsonDelete (session->tree);
