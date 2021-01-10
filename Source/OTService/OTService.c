@@ -22,6 +22,7 @@
 
 /* openTIDAL service request
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

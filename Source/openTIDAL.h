@@ -43,6 +43,7 @@ extern "C"
         REDIRECT,
         CLIENT_ERROR,
         SERVER_ERROR,
+        MALLOC_ERROR,
         UNKNOWN_MANIFEST_MIMETYPE,
         UNKNOWN
     };
@@ -89,6 +90,7 @@ extern "C"
         time_t timeFrame;
         int restrictedMode;
         struct OTJsonContainer *tree;
+        struct OTJsonContainer *renewalTree;
         void *mainHttpHandle;
     };
 
@@ -112,6 +114,7 @@ extern "C"
     int OTSessionLogin (struct OTSessionContainer *const session, const char *const location);
     void OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality *quality);
     int OTSessionWriteChanges (const struct OTSessionContainer *session);
+    enum OTStatus OTSessionRefresh (struct OTSessionContainer *session);
     void OTSessionCleanup (struct OTSessionContainer *session);
 
     int OTPersistentCreate (const struct OTSessionContainer *const session,

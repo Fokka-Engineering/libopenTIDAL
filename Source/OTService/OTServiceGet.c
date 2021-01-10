@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-/* openTIDAL artist service.
+/* openTIDAL standard get service.
  */
 
 #include <stdlib.h>

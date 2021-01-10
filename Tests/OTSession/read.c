@@ -20,7 +20,7 @@
     THE SOFTWARE.
 */
 
-/* OTService get tests
+/* OTSession tests
  */
 
 #include "../../Source/openTIDAL.h"
@@ -30,27 +30,19 @@ int
 main (void)
 {
     struct OTSessionContainer *session;
-    struct OTContentStreamContainer *content;
-    enum OTTypes type = CONTENT_STREAM_CONTAINER;
+    struct OTContentContainer *content;
+    enum OTTypes type = CONTENT_CONTAINER;
     session = OTSessionInit ();
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
-    content = OTServiceGetStream (session, "tracks", "13479532", 0, NULL);
-    if (content)
-        {
-            printf ("Response Not NULL // Status %d\n", content->status);
-            if (content->status == SUCCESS)
-                {
-                    struct OTJsonContainer *url = NULL;
-                    struct OTJsonContainer *urls = NULL;
+    printf ("Status: %d\n", status);
+    printf ("BaseUrl: %s\n", session->baseUrl);
+    printf ("AuthUrl: %s\n", session->authUrl);
+    printf ("AudioQuality: %s\n", session->audioQuality);
+    printf ("RefreshToken: %s\n", session->refreshToken);
+    printf ("AccessToken: %s\n", session->accessToken);
+    printf ("IsRestricted: %d\n", session->restrictedMode);
 
-                    urls = OTJsonGetObjectItem (content->manifest, "urls");
-                    if (OTJsonIsArray (urls))
-                        url = OTJsonGetArrayItem (urls, 0);
-                    printf ("Url: %s\n", OTJsonGetStringValue (url));
-                }
-        }
-
-    OTDeallocContainer (content, &type);
     OTSessionCleanup (session);
     return 0;
 }
+

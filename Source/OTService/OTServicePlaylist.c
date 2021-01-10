@@ -20,37 +20,13 @@
     THE SOFTWARE.
 */
 
-/* OTService get tests
+/* openTIDAL playlist manipulation service
  */
 
-#include "../../Source/openTIDAL.h"
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int
-main (void)
-{
-    struct OTSessionContainer *session;
-    struct OTContentStreamContainer *content;
-    enum OTTypes type = CONTENT_STREAM_CONTAINER;
-    session = OTSessionInit ();
-    int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
-    content = OTServiceGetStream (session, "tracks", "13479532", 0, NULL);
-    if (content)
-        {
-            printf ("Response Not NULL // Status %d\n", content->status);
-            if (content->status == SUCCESS)
-                {
-                    struct OTJsonContainer *url = NULL;
-                    struct OTJsonContainer *urls = NULL;
-
-                    urls = OTJsonGetObjectItem (content->manifest, "urls");
-                    if (OTJsonIsArray (urls))
-                        url = OTJsonGetArrayItem (urls, 0);
-                    printf ("Url: %s\n", OTJsonGetStringValue (url));
-                }
-        }
-
-    OTDeallocContainer (content, &type);
-    OTSessionCleanup (session);
-    return 0;
-}
+#include "../OTHelper.h"
+#include "../OTHttp.h"
+#include "../openTIDAL.h"
+#include "OTService.h"
