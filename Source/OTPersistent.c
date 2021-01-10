@@ -170,7 +170,7 @@ end:
 char *
 OTPersistentLoad (const struct OTSessionContainer *const session)
 {
-    if (session->persistentFileLocation && session->accessToken)
+    if (session->persistentFileLocation)
         {
             FILE *fp;
             size_t size = 0;
@@ -229,6 +229,8 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
         }
 
     /* Parse values. */
+    authorisation = OTJsonGetObjectItem (json, "authorisation");
+    user = OTJsonGetObjectItem (json, "user");
     accessToken = OTJsonGetObjectItem (authorisation, "accessToken");
     session->accessToken = OTJsonGetStringValue (accessToken);
     refreshToken = OTJsonGetObjectItem (authorisation, "refreshToken");
