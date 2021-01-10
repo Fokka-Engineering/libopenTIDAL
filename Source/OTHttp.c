@@ -167,6 +167,7 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     if (session->mainHttpHandle == http->handle && !http->isAuthRequest)
         {
             /* Do TIDAL Session refresh check. */
+            OTSessionRefresh (session);
         }
     /* Concatenate Url & AuthHeader. */
     url = OTHttpUrl (session, http);
