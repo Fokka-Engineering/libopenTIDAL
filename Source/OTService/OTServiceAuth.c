@@ -104,7 +104,7 @@ OTServiceRefreshBearerToken (struct OTSessionContainer *session, const char *con
     http.endpoint = "/v1/oauth2/token";
     http.type = &reqType;
     http.isAuthRequest = 1;
-    OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grand_type=%s&refresh_token=%s",
+    OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grant_type=%s&refresh_token=%s",
                          session->x, session->scopes, grand_type, refreshToken);
     if (!http.postData)
         {
