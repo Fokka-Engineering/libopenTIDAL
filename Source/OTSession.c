@@ -80,6 +80,7 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->expiresIn = 0;
     session->timeFrame = 0;
     session->tree = NULL;
+    session->renewalTree = NULL;
     session->restrictedMode = 1;
     session->mainHttpHandle = NULL;
 }
@@ -101,6 +102,8 @@ OTSessionLogin (struct OTSessionContainer *const session, const char *const loca
             if (!stream)
                 return -1;
             status = OTPersistentParse (session, stream);
+            if (status == 0)
+                session->restrictedMode = 0;
             free (stream);
         }
     return status;
