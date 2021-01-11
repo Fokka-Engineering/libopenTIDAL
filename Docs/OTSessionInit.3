@@ -1,0 +1,38 @@
+.TH OTSessionInit 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionInit \- Start a libopenTIDAL session handle
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTSessionContainer *OTSessionInit (void);"
+.SH DESCRIPTION
+Before calling a \fBlibopenTIDAL\fP(3) service function, this function must be the
+first function to call. This call \fBmust\fP have a corresponding call to
+\fIOTSessionCleanup(3)\fP when the operation is complete.
+
+If successful restricted client
+authorisation is enabled. With this mode enabled, a service request will
+use the client id to authenticate with the TIDAL API. User-based and stream
+service requests are disabled and will return an error.
+30s previews of a track (64kbps 22.05kHz MP3) or a video (640x360 1116kbps MP4)
+are available. The restricted client authorisation mode is primarily useful for
+metadata service requests.
+
+Specify the location of the \fBlibopenTIDAL\fP(3) persistent session configuration
+file by calling \fIOTSessionLogin(3)\fP. The persistent session
+config stores the oAuth2.0 refresh- and access-token, the user-id and other
+important configuration values.
+.SH RETURN VALUE
+If this function returns NULL, something went wrong and you cannot use the other openTIDAL functions.
+.SH EXAMPLE
+.nf
+struct OTSessionContainer *session = OTSessionInit ();
+if (session)
+    {
+        /* do smth with the session */
+    }
+OTSessionCleanup (session);
+.fi
+.SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
+.BR OTSessionWriteChanges "(3) "
