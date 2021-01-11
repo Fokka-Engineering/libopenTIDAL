@@ -63,14 +63,15 @@ OTServiceGetFavorites (struct OTSessionContainer *session, const char *const suf
     struct OTContentContainer *content = NULL;
     enum OTHttpTypes reqType = GET;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         {
             isException = 1;
             goto end;
         }
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
 
     /* Favorite mixes are in v2. */
@@ -109,11 +110,12 @@ OTServiceDeleteFavorite (struct OTSessionContainer *session, const char *const s
     enum OTHttpTypes reqType = DELETE;
     enum OTStatus status = UNKNOWN;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         return status;
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.isDummy = 1;
 
@@ -155,11 +157,12 @@ OTServiceAddFavorite (struct OTSessionContainer *session, const char *const suff
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         return status;
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.isDummy = 1;
 
@@ -209,11 +212,12 @@ OTServiceAddFavorites (struct OTSessionContainer *session, const char *const suf
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         return status;
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.isDummy = 1;
 

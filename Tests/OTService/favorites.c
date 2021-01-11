@@ -29,33 +29,25 @@
 int
 main (int argc, char *argv[])
 {
-    struct OTSessionContainer *session;
-    struct OTContentStreamContainer *content;
-    enum OTTypes type = CONTENT_STREAM_CONTAINER;
+    struct OTSessionContainer *session = NULL;
+    struct OTContentContainer *content = NULL;
+    enum OTTypes type = CONTENT_CONTAINER;
+    enum OTStatus statusFav;
     session = OTSessionInit ();
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
         goto end;
 
-    if (argc == 2)
-        {
-            content = OTServiceGetStream (session, "tracks", argv[1], 0, NULL);
-            if (content)
-                {
-                    printf ("Response Not NULL // Status %d\n", content->status);
-                    if (content->status == SUCCESS)
-                        {
-                            struct OTJsonContainer *url = NULL;
-                            struct OTJsonContainer *urls = NULL;
+    printf ("Proceed...\n");
 
-                            urls = OTJsonGetObjectItem (content->manifest, "urls");
-                            if (OTJsonIsArray (urls))
-                                url = OTJsonGetArrayItem (urls, 0);
-                            printf ("Url: %s\n", OTJsonGetStringValue (url));
-                        }
-                }
-            OTDeallocContainer (content, &type);
-        }
+    content = OTServiceGetFavorites (session, "albums", 20, 0, "DATE", "ASC", NULL);
+    if (content)
+        if (content->status == SUCCESS)
+            printf ("Success\n");
+    OTDeallocContainer (content, &type);
+
+    const char *list[2] = { "165297486", "154949024" };
+    statusFav = OTServiceAddFavorites (session, "albums", list, 2, "FAIL", NULL);
 end:
     OTSessionCleanup (session);
     return 0;

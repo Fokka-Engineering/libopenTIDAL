@@ -29,33 +29,23 @@
 int
 main (int argc, char *argv[])
 {
-    struct OTSessionContainer *session;
-    struct OTContentStreamContainer *content;
-    enum OTTypes type = CONTENT_STREAM_CONTAINER;
+    struct OTSessionContainer *session = NULL;
+    struct OTContentContainer *content = NULL;
+    enum OTTypes type = CONTENT_CONTAINER;
+    enum OTStatus statusPlaylist;
     session = OTSessionInit ();
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
         goto end;
 
-    if (argc == 2)
-        {
-            content = OTServiceGetStream (session, "tracks", argv[1], 0, NULL);
-            if (content)
-                {
-                    printf ("Response Not NULL // Status %d\n", content->status);
-                    if (content->status == SUCCESS)
-                        {
-                            struct OTJsonContainer *url = NULL;
-                            struct OTJsonContainer *urls = NULL;
+    printf ("Proceed...\n");
 
-                            urls = OTJsonGetObjectItem (content->manifest, "urls");
-                            if (OTJsonIsArray (urls))
-                                url = OTJsonGetArrayItem (urls, 0);
-                            printf ("Url: %s\n", OTJsonGetStringValue (url));
-                        }
-                }
-            OTDeallocContainer (content, &type);
-        }
+    content = OTServiceCreatePlaylist (session, "Testing from openTIDAL",
+                                       "This is a native TIDAL API client", NULL);
+    OTDeallocContainer (content, &type);
+
+    statusPlaylist = OTServiceAddPlaylistItem (session, "9a1d6a6b-3405-4090-89f3-a04218a07764",
+                                               "62929297", "SKIP", "SKIP", NULL);
 end:
     OTSessionCleanup (session);
     return 0;

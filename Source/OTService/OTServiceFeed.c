@@ -39,14 +39,15 @@ OTServiceGetFeedActivities (struct OTSessionContainer *session, void *threadHand
     struct OTContentContainer *content = NULL;
     enum OTHttpTypes reqType = GET;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         {
             isException = 1;
             goto end;
         }
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.endpoint = "/v2/feed/activities";
     OTConcatenateString (&http.parameter, "countryCode=%s&locale=%s&userId=%s",
@@ -56,7 +57,6 @@ OTServiceGetFeedActivities (struct OTSessionContainer *session, void *threadHand
             isException = 1;
             goto end;
         }
-
     content = OTServiceRequestStandard (session, &http, threadHandle);
 end:
     free (http.parameter);
@@ -71,14 +71,15 @@ OTServiceGetFeedActivityUnseenExists (struct OTSessionContainer *session, void *
     struct OTContentContainer *content = NULL;
     enum OTHttpTypes reqType = GET;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         {
             isException = 1;
             goto end;
         }
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.endpoint = "/v2/feed/activities/unseen/exists";
     OTConcatenateString (&http.parameter, "countryCode=%s&locale=%s&userId=%s",
@@ -103,11 +104,12 @@ OTServiceFeedActivitySeen (struct OTSessionContainer *session, void *threadHandl
     enum OTHttpTypes reqType = PUT;
     enum OTStatus status = UNKNOWN;
 
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+
     if (session->restrictedMode)
         return status;
 
-    /* Initialise values in structure. */
-    OTHttpContainerInit (&http);
     http.type = &reqType;
     http.isDummy = 1;
     http.endpoint = "/v2/feed/activities/seen";

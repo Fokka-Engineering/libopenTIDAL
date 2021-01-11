@@ -29,33 +29,39 @@
 int
 main (int argc, char *argv[])
 {
-    struct OTSessionContainer *session;
-    struct OTContentStreamContainer *content;
-    enum OTTypes type = CONTENT_STREAM_CONTAINER;
+    struct OTSessionContainer *session = NULL;
+    struct OTContentContainer *content = NULL;
+    enum OTTypes type = CONTENT_CONTAINER;
+    enum OTStatus statusFeed;
     session = OTSessionInit ();
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
         goto end;
+    printf ("Proceed...\n");
 
-    if (argc == 2)
+    content = OTServiceGetFeedActivities (session, NULL);
+    if (content)
         {
-            content = OTServiceGetStream (session, "tracks", argv[1], 0, NULL);
-            if (content)
+            printf ("Response Not NULL // Status %d\n", content->status);
+            if (content->status == SUCCESS)
                 {
-                    printf ("Response Not NULL // Status %d\n", content->status);
-                    if (content->status == SUCCESS)
-                        {
-                            struct OTJsonContainer *url = NULL;
-                            struct OTJsonContainer *urls = NULL;
-
-                            urls = OTJsonGetObjectItem (content->manifest, "urls");
-                            if (OTJsonIsArray (urls))
-                                url = OTJsonGetArrayItem (urls, 0);
-                            printf ("Url: %s\n", OTJsonGetStringValue (url));
-                        }
+                    printf ("SUCCESS\n");
                 }
-            OTDeallocContainer (content, &type);
         }
+    OTDeallocContainer (content, &type);
+    content = OTServiceGetFeedActivityUnseenExists (session, NULL);
+    if (content)
+        {
+            printf ("Response Not NULL // Status %d\n", content->status);
+            if (content->status == SUCCESS)
+                {
+                    printf ("SUCCESS\n");
+                }
+        }
+    OTDeallocContainer (content, &type);
+    statusFeed = OTServiceFeedActivitySeen (session, NULL);
+    if (statusFeed == SUCCESS)
+        printf ("FeedActivitySeen SUCCESS\n");
 end:
     OTSessionCleanup (session);
     return 0;

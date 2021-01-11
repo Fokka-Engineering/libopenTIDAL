@@ -165,7 +165,7 @@ OTServiceMovePlaylistItem (struct OTSessionContainer *session, const char *const
 {
     int isException = 0;
     struct OTHttpContainer http;
-    char *entityTag;
+    char *entityTag = NULL;
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
@@ -210,7 +210,7 @@ OTServiceAddPlaylistItem (struct OTSessionContainer *session, const char *const 
 {
     int isException = 0;
     struct OTHttpContainer http;
-    char *entityTag;
+    char *entityTag = NULL;
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
@@ -256,8 +256,8 @@ OTServiceAddPlaylistItems (struct OTSessionContainer *session, const char *const
 {
     int isException = 0;
     struct OTHttpContainer http;
-    char *entityTag;
-    char *arrayString;
+    char *entityTag = NULL;
+    char *arrayString = NULL;
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
