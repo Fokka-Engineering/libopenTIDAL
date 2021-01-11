@@ -103,7 +103,7 @@ OTHttpAuthHeader (const struct OTSessionContainer *const session,
                   struct OTHttpContainer *const http)
 {
     char *string = NULL;
-    if (!session->restrictedMode)
+    if (!session->restrictedMode && !http->isPreviewClientId)
         {
             if (session->accessToken)
                 OTConcatenateString (&string, "Authorization: Bearer %s", session->accessToken);

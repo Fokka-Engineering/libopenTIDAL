@@ -140,6 +140,8 @@ extern "C"
     struct OTContentContainer *OTServiceRefreshBearerToken (struct OTSessionContainer *session,
                                                             const char *const refreshToken,
                                                             void *threadHandle);
+    enum OTStatus OTServiceLogout (struct OTSessionContainer *session, void *threadHandle);
+
     /* v1 standard service.
      * Supported prefixes and suffixes (NULL = No Suffix):
      * albums (NULL, "items", "items/credits", "review")

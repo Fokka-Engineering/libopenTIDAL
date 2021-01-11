@@ -117,3 +117,26 @@ end:
     free (http.postData);
     return content;
 }
+
+enum OTStatus
+OTServiceLogout (struct OTSessionContainer *session, void *threadHandle)
+{
+    int isException = 0;
+    struct OTHttpContainer http;
+    enum OTHttpTypes reqType = POST;
+    enum OTStatus status = UNKNOWN;
+
+    if (session->restrictedMode)
+        return status;
+
+    /* Initialise values in structure. */
+    OTHttpContainerInit (&http);
+    http.type = &reqType;
+    http.isDummy = 1;
+    http.isAuthRequest = 1;
+    http.endpoint = "/v1/logout";
+
+    status = OTServiceRequestSilent (session, &http, threadHandle);
+    return status;
+}
+

@@ -25,7 +25,9 @@
 
 #include "../../Source/openTIDAL.h"
 #include <stdio.h>
+#include <stdlib.h>
 
+/* ./stream {id} {isPreview} */
 int
 main (int argc, char *argv[])
 {
@@ -37,9 +39,9 @@ main (int argc, char *argv[])
     if (status != 0)
         goto end;
 
-    if (argc == 2)
+    if (argc == 3)
         {
-            content = OTServiceGetStream (session, "tracks", argv[1], 0, NULL);
+            content = OTServiceGetStream (session, "tracks", argv[1], atoi (argv[2]), NULL);
             if (content)
                 {
                     printf ("Response Not NULL // Status %d\n", content->status);

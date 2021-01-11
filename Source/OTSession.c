@@ -53,6 +53,11 @@ OTSessionInit (void)
     /* Decode. */
     ptr->x = OTStringDecodeBase64 (a);
     ptr->y = OTStringDecodeBase64 (b);
+    if (!ptr->x || !ptr->y)
+        {
+            OTDeallocContainer (ptr, &type);
+            ptr = NULL;
+        }
     return ptr;
 }
 
@@ -157,10 +162,13 @@ OTSessionWriteChanges (const struct OTSessionContainer *session)
 void
 OTSessionCleanup (struct OTSessionContainer *session)
 {
-    free (session->x);
-    free (session->y);
-    curl_easy_cleanup (session->mainHttpHandle);
-    curl_global_cleanup ();
-    enum OTTypes type = SESSION_CONTAINER;
-    OTDeallocContainer (session, &type);
+    if (session)
+        {
+            free (session->x);
+            free (session->y);
+            curl_easy_cleanup (session->mainHttpHandle);
+            curl_global_cleanup ();
+            enum OTTypes type = SESSION_CONTAINER;
+            OTDeallocContainer (session, &type);
+        }
 }
