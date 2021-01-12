@@ -34,7 +34,7 @@ openTIDAL is a TIDAL API wrapper written in ANSI C. It's lightweight, fast and e
 
 After reverse-engineering the TIDAL API and documenting all endpoints, I had the idea to write a portable C library. The goal was to integrate the OAuth2 Device-Flow, auto-refreshing sessions and all endpoints. 
 
-A python module using openTIDAL is also available and easy to install.
+A python module using openTIDAL is also available and easy to install (currently in development).
 
 ##### What is implemented?
 * OAuth Log-In/Logout and Automatic Session Renewal
@@ -48,13 +48,18 @@ A python module using openTIDAL is also available and easy to install.
 * Content HTTP Streams (Audio & Video)
 * Easy and Extensive Error Handling
 
+### Thread Safety
+openTIDAL is thread safe.
+You need to create a http-handle for a new thread.
+Session refresh checks and requests are only available on the main thread.
+
 ### Building
 Currently the compilation has only been tested on macOS and GNU/Linux. Keep in mind that the Makefile is currently macOS/LINUX/UNIX only. It generates a dylib.
 
 Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
 ```
-$ make
+$ cmake CMakeList.txt && make
 ```
 Cleanup the working directory:
 ```
