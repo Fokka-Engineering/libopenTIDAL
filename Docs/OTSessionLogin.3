@@ -1,0 +1,30 @@
+.TH OTSessionLogin 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionLogin \- Loads a persistent config file
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTSessionLogin (struct OTSessionContainer *const " session ", const char *const " location ");"
+.SH DESCRIPTION
+
+Specify the location of the \fBlibopenTIDAL\fP(3) persistent session configuration
+file. The persistent session config stores the oAuth2.0 refresh- and access-token,
+the user-id and other important configuration values.
+It should be stored in a secure location. Read and write permissions are needed.
+
+
+.SH RETURN VALUE
+.SH EXAMPLE
+.nf
+struct OTSessionContainer *session = OTSessionInit ();
+if (session)
+    {
+        int status = OTSessionLogin (session, "/path/to/persistent/config");
+        if (status == 0)
+            {
+                /* Parsing successful! */
+            }
+    }
+OTSessionCleanup (session);
+.fi
+.SH "SEE ALSO"
