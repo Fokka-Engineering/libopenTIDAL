@@ -55,7 +55,7 @@ OTSessionInit (void)
     ptr->y = OTStringDecodeBase64 (b);
     if (!ptr->x || !ptr->y)
         {
-            OTDeallocContainer (ptr, &type);
+            OTDeallocContainer (ptr, type);
             ptr = NULL;
         }
     return ptr;
@@ -116,9 +116,9 @@ OTSessionLogin (struct OTSessionContainer *const session, const char *const loca
 
 /* Change audioQuality and videoQuality pointer. */
 void
-OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality *quality)
+OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality quality)
 {
-    switch (*quality)
+    switch (quality)
         {
         case AUDIO_LOW:
             session->audioQuality = "LOW";
@@ -169,6 +169,6 @@ OTSessionCleanup (struct OTSessionContainer *session)
             curl_easy_cleanup (session->mainHttpHandle);
             curl_global_cleanup ();
             enum OTTypes type = SESSION_CONTAINER;
-            OTDeallocContainer (session, &type);
+            OTDeallocContainer (session, type);
         }
 }

@@ -1,0 +1,18 @@
+.TH OTSessionChangeQuality 3 "04 Jan 2021" "libopenTIDAL 0.0.1" "libopenTIDAL Manual"
+.SH NAME
+OTSessionChangeQuality \- Change the streaming quality 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "void OTSessionChangeQuality (struct OTSessionContainer *const " session ", enum OTQuality * " quality ");"
+.SH DESCRIPTION
+Change the audio/video streaming quality using predefined enums.
+Available quality enums: 
+.BI "AUDIO_LOW, AUDIO_HIGH, AUDIO_LOSSLESS, AUDIO_HI_RES, VIDEO_AUDIO_ONLY, VIDEO_LOW, VIDEO_MEDIUM, VIDEO_HIGH"
+ 
+This change is only valid for this session, except you write the changes to the persistent config \fIOTSessionWriteChanges(3)\fP.
+.SH RETURN VALUE
+None
+.SH "SEE ALSO"
+.BR OTSessionWriteChanges "(3), " OTSessionCleanup "(3), " OTSessionLogin "(3), "
+.BR OTSessionInit "(3) "

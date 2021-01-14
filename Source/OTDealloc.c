@@ -29,14 +29,14 @@
 #include <stdlib.h>
 
 void
-OTDeallocContainer (void *container, enum OTTypes *type)
+OTDeallocContainer (void *container, enum OTTypes type)
 {
     if (container)
         {
             struct OTSessionContainer *session;
             struct OTContentContainer *singleContainer;
             struct OTContentStreamContainer *streamContainer;
-            switch (*type)
+            switch (type)
                 {
                 case SESSION_CONTAINER:
                     session = (struct OTSessionContainer *)container;

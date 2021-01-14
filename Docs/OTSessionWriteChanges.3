@@ -1,0 +1,17 @@
+.TH OTSessionWriteChanges 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionWriteChanges \- Write session changes to the persistent config
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTSessionWriteChanges (const struct OTSessionContainer *" session ");"
+.SH DESCRIPTION
+If one makes changes to the \fBlibopenTIDAL\fP(3) session handle and its allocated structure itself, calling the
+\fIOTSessionWriteChanges(3)\fP function will make these changes persistent. 
+
+\fBlibopenTIDAL\fP(3) overwrites
+the old persistent config. The file location path was specified prior in the \fIOTSessionLogin(3)\fP function parameter.
+.SH RETURN VALUE
+Status (0) means everything  was  ok. If a parsing error occurred Status (-1).
+.SH "SEE ALSO"
+.BR OTSessionChangeQuality "(3), " OTSessionCleanup "(3), " OTSessionRefresh "(3) "

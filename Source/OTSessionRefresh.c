@@ -73,7 +73,6 @@ OTSessionRefresh (struct OTSessionContainer *session)
                                     status = SUCCESS;
                                     session->accessToken = accessTokenString;
                                     session->expiresIn = currentTimeStamp + timeFrameNumber;
-                                    printf ("Expires: %ld\n", session->expiresIn);
                                     /* Update config. */
                                     OTPersistentCreate (session, session->persistentFileLocation);
                                 }
@@ -84,7 +83,7 @@ OTSessionRefresh (struct OTSessionContainer *session)
                         {
                             enum OTTypes type = CONTENT_CONTAINER;
                             status = req->status;
-                            OTDeallocContainer (req, &type);
+                            OTDeallocContainer (req, type);
                         }
                 }
             else

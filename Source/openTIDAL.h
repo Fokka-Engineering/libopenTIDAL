@@ -113,14 +113,14 @@ extern "C"
     /* Manage an OTSession handle. */
     struct OTSessionContainer *OTSessionInit (void);
     int OTSessionLogin (struct OTSessionContainer *const session, const char *const location);
-    void OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality *quality);
+    void OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality quality);
     int OTSessionWriteChanges (const struct OTSessionContainer *session);
     enum OTStatus OTSessionRefresh (struct OTSessionContainer *session);
     void OTSessionCleanup (struct OTSessionContainer *session);
 
     int OTPersistentCreate (const struct OTSessionContainer *const session,
                             const char *const location);
-    void OTDeallocContainer (void *container, enum OTTypes *type);
+    void OTDeallocContainer (void *container, enum OTTypes type);
 
     /* Create a http handle. Use one handle per thread.
      * Keep the handle(s) alive to utilise persistent connections.

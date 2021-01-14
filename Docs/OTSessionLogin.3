@@ -6,14 +6,16 @@ OTSessionLogin \- Loads a persistent config file
 
 .BI "int OTSessionLogin (struct OTSessionContainer *const " session ", const char *const " location ");"
 .SH DESCRIPTION
-
 Specify the location of the \fBlibopenTIDAL\fP(3) persistent session configuration
 file. The persistent session config stores the oAuth2.0 refresh- and access-token,
 the user-id and other important configuration values.
 It should be stored in a secure location. Read and write permissions are needed.
 
-
+If successful, http requests will use the parsed accessToken and keep
+track of the renewal-process.
+The user has now access to user-based service endpoints.
 .SH RETURN VALUE
+Status (0) means everything  was  ok. If a parsing error occurred Status (-1).
 .SH EXAMPLE
 .nf
 struct OTSessionContainer *session = OTSessionInit ();
@@ -28,3 +30,5 @@ if (session)
 OTSessionCleanup (session);
 .fi
 .SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionChangeQuality "(3), " OTSessionWriteChanges "(3), "
+.BR OTSessionRefresh "(3) "
