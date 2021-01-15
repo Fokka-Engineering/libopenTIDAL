@@ -48,7 +48,7 @@ main (int argc, char *argv[])
                     printf ("SUCCESS\n");
                 }
         }
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
     content = OTServiceGetFeedActivityUnseenExists (session, NULL);
     if (content)
         {
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
                     printf ("SUCCESS\n");
                 }
         }
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
     statusFeed = OTServiceFeedActivitySeen (session, NULL);
     if (statusFeed == SUCCESS)
         printf ("FeedActivitySeen SUCCESS\n");

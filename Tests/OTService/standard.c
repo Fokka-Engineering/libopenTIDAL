@@ -47,7 +47,7 @@ main (void)
                     items = OTJsonGetObjectItem (content->tree, "items");
                     printf ("totalNumberOfItems: %d\n",
                             (int)OTJsonGetNumberValue (totalNumberOfItems));
-                    printf ("arraySize: %d\n", OTJsonGetArraySize(items));
+                    printf ("arraySize: %d\n", OTJsonGetArraySize (items));
                     OTJsonArrayForEach (item, items)
                     {
                         struct OTJsonContainer *innerItem = NULL;
@@ -55,11 +55,11 @@ main (void)
                         innerItem = OTJsonGetObjectItem (item, "item");
                         title = OTJsonGetObjectItem (innerItem, "title");
                         printf ("Title: %s\n", OTJsonGetStringValue (title));
-                    } 
+                    }
                 }
         }
 
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
     OTSessionCleanup (session);
     return 0;
 }

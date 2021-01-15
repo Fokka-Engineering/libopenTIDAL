@@ -36,7 +36,7 @@ main (void)
     printf ("AuthUrl: %s\n", session->authUrl);
     printf ("AudioQuality: %s\n", session->audioQuality);
 
-    OTSessionChangeQuality (session, &quality);
+    OTSessionChangeQuality (session, quality);
     printf ("AudioQuality: %s\n", session->audioQuality);
 
     int status = OTPersistentCreate (session, "/tmp/persistent");

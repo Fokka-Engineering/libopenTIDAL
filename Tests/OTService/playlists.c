@@ -42,7 +42,7 @@ main (int argc, char *argv[])
 
     content = OTServiceCreatePlaylist (session, "Testing from openTIDAL",
                                        "This is a native TIDAL API client", NULL);
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
 
     statusPlaylist = OTServiceAddPlaylistItem (session, "9a1d6a6b-3405-4090-89f3-a04218a07764",
                                                "62929297", "SKIP", "SKIP", NULL);

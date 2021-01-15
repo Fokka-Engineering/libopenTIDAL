@@ -44,7 +44,7 @@ main (int argc, char *argv[])
     if (content)
         if (content->status == SUCCESS)
             printf ("Success\n");
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
 
     const char *list[2] = { "165297486", "154949024" };
     statusFav = OTServiceAddFavorites (session, "albums", list, 2, "FAIL", NULL);

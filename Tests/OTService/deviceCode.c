@@ -46,7 +46,7 @@ main (void)
                 }
         }
 
-    OTDeallocContainer (content, &type);
+    OTDeallocContainer (content, type);
     OTSessionCleanup (session);
     return 0;
 }

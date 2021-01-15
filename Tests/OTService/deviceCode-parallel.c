@@ -54,7 +54,7 @@ main (void)
                         }
                 }
 
-            OTDeallocContainer (content, &type);
+            OTDeallocContainer (content, type);
             OTHttpThreadHandleCleanup (handle);
         }
     OTSessionCleanup (session);
