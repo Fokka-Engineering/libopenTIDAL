@@ -113,6 +113,8 @@ extern "C"
     /* Manage an OTSession handle. */
     struct OTSessionContainer *OTSessionInit (void);
     int OTSessionLogin (struct OTSessionContainer *const session, const char *const location);
+    /* disabled = 0, enabled = 1, debug = 2 */
+    void OTSessionVerbose (struct OTSessionContainer *const session, const int enabled);
     void OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality quality);
     int OTSessionWriteChanges (const struct OTSessionContainer *session);
     enum OTStatus OTSessionRefresh (struct OTSessionContainer *session);
@@ -169,7 +171,7 @@ extern "C"
                                                  const int limit, const int offset,
                                                  void *threadHandle);
     /* Search service.
-     * (Suffixes: NULL (ALL), "albums", "tracks", "videos", "artists", "playlists", "topHit") */
+     * (Suffixes: NULL (ALL), "albums", "tracks", "videos", "artists", "playlists", "top-hits") */
     struct OTContentContainer *OTServiceSearch (struct OTSessionContainer *session,
                                                 const char *const suffix, char *query,
                                                 const int limit, const int offset,

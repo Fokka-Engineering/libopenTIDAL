@@ -27,6 +27,7 @@
 #include "OTJson.h"
 #include "OTPersistent.h"
 #include <curl/curl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -114,6 +115,12 @@ OTSessionLogin (struct OTSessionContainer *const session, const char *const loca
     return status;
 }
 
+void
+OTSessionVerbose (struct OTSessionContainer *const session, const int enabled)
+{
+    session->verboseMode = enabled;
+}
+
 /* Change audioQuality and videoQuality pointer. */
 void
 OTSessionChangeQuality (struct OTSessionContainer *const session, enum OTQuality quality)
@@ -164,6 +171,8 @@ OTSessionCleanup (struct OTSessionContainer *session)
 {
     if (session)
         {
+            if (session->verboseMode)
+                printf ("* Free OTSessionContainer\n");
             free (session->x);
             free (session->y);
             curl_easy_cleanup (session->mainHttpHandle);

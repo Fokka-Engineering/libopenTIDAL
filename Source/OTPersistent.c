@@ -40,14 +40,25 @@ OTPersistentCreate (const struct OTSessionContainer *const session, const char *
         {
             FILE *fp;
             char *stream;
+
+            if (session->verboseMode)
+                printf ("* Create file-handle and create config at location.\n");
+
             fp = fopen (location, "w");
             if (!fp)
                 return -1;
+
+            if (session->verboseMode)
+                printf ("* Create json stream.\n");
+
             stream = OTPersistentStream (session);
             if (!stream)
                 {
+                    if (session->verboseMode)
+                        printf ("* Failed to create json stream. Aborting...\n");
+
                     fclose (fp);
-                    return -2;
+                    return -1;
                 }
             fprintf (fp, "%s", stream);
             free (stream);
@@ -214,6 +225,8 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
     struct OTJsonContainer *json = OTJsonParse (stream);
     if (!json)
         {
+            if (session->verboseMode)
+                printf ("* Parsing configuration stream failed.\n");
             status = -1;
             goto end;
         }
@@ -228,11 +241,31 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
         }
 
     session->accessToken = OTJsonGetObjectItemStringValue (authorisation, "accessToken");
+    if (!session->accessToken)
+        {
+            status = -1;
+            goto end;
+        }
     session->refreshToken = OTJsonGetObjectItemStringValue (authorisation, "refreshToken");
+    if (!session->refreshToken)
+        {
+            status = -1;
+            goto end;
+        }
     session->expiresIn = OTJsonGetObjectItemNumberValue (authorisation, "expiresIn");
     session->timeFrame = OTJsonGetObjectItemNumberValue (authorisation, "timeFrame");
     session->userId = OTJsonGetObjectItemStringValue (user, "id");
+    if (!session->userId)
+        {
+            status = -1;
+            goto end;
+        }
     session->countryCode = OTJsonGetObjectItemStringValue (user, "countryCode");
+    if (!session->countryCode)
+        {
+            status = -1;
+            goto end;
+        }
     session->locale = OTJsonGetObjectItemStringValue (user, "locale");
     session->audioQuality = OTJsonGetObjectItemStringValue (user, "audioQuality");
     session->videoQuality = OTJsonGetObjectItemStringValue (user, "videoQuality");
@@ -242,6 +275,9 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
     session->tree = json;
 end:
     if (status == -1)
-        OTJsonDelete (json);
+        {
+            OTJsonDelete (json);
+            printf ("* Aborting configuration stream parsing...\n");
+        }
     return status;
 }

@@ -37,6 +37,9 @@ OTSessionRefresh (struct OTSessionContainer *session)
     double diffTimeStamp;
     struct OTContentContainer *req;
 
+    if (session->verboseMode)
+        printf ("* Compare OAuth2 accessToken timestamp with SystemRTC timestamp...\n");
+
     if (session->restrictedMode)
         goto end;
 
@@ -50,6 +53,8 @@ OTSessionRefresh (struct OTSessionContainer *session)
      */
     if (!(currentTimeStamp < session->expiresIn && (time_t)diffTimeStamp >= 300))
         {
+            if (session->verboseMode)
+                printf ("* Performing OTServiceRefreshBearerToken...\n");
             req = OTServiceRefreshBearerToken (session, session->refreshToken, NULL);
             if (req)
                 {

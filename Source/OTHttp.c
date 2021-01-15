@@ -156,10 +156,14 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     char *url = NULL;
     char *authHeader = NULL;
     int isHeadRequest = 0;
+    if (session->verboseMode)
+        printf ("* Check if HTTP-HANDLE is initialised...");
     /* Check if allocation of handle failed */
     if (!http->handle)
         goto end;
     CURLcode res;
+    if (session->verboseMode)
+        printf ("OK\n");
 
     /* Check if handle is the mainHttpHandle.
      * Only the mainHttpHandle should perform oAuth refresh requests to
@@ -167,6 +171,8 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     if (session->mainHttpHandle == http->handle && !http->isAuthRequest)
         {
             /* Do TIDAL Session refresh check. */
+            if (session->verboseMode >= 1)
+                printf ("* Check for expired OAuth2 accessToken timestamp...\n");
             OTSessionRefresh (session);
         }
     /* Concatenate Url & AuthHeader. */
@@ -180,6 +186,10 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     /* libcurl doesn't like NULL */
     if (!http->postData)
         http->postData = "";
+
+    if (session->verboseMode)
+        printf ("* Begin CURLOPT configuration...\n");
+
     /* Begin curl_easy_opt configuration. */
     curl_easy_setopt (http->handle, CURLOPT_URL, url);
     curl_easy_setopt (http->handle, CURLOPT_NOBODY, 0L);
@@ -214,6 +224,8 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     /* Standard WriteFunction/Data callback. */
     if (!http->isDummy && !isHeadRequest)
         {
+            if (session->verboseMode)
+                printf ("* Enabled CURLOPT_WRITEDATA. \n");
             curl_easy_setopt (http->handle, CURLOPT_WRITEFUNCTION, OTHttpCallbackFunction);
             curl_easy_setopt (http->handle, CURLOPT_WRITEDATA, &memchunk);
         }
@@ -235,9 +247,13 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
                 chunk = curl_slist_append (chunk, http->entityTagHeader);
             curl_easy_setopt (http->handle, CURLOPT_HTTPHEADER, chunk);
         }
-    if (http->isVerbose)
+    if (session->verboseMode)
         curl_easy_setopt (http->handle, CURLOPT_VERBOSE, 1L);
+
     /* Perform request. */
+    if (session->verboseMode)
+        printf ("* End CURLOPT configuration\n* Call curl_easy_perform...\n");
+
     res = curl_easy_perform (http->handle);
     if (res != CURLE_OK)
         http->httpOk = -1;
@@ -248,9 +264,13 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
             http->responseCode = http_code;
         }
 
+    if (session->verboseMode)
+        printf ("* Call curl_slist_free_all to free chunk\n");
     curl_slist_free_all (chunk);
     http->response = memchunk.memory;
 end:
+    if (session->verboseMode)
+        printf ("* Free concatenated url and authHeader\n");
     free (url);
     free (authHeader);
 }

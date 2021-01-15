@@ -35,6 +35,7 @@ main (int argc, char *argv[])
     struct OTContentStreamContainer *content;
     enum OTTypes type = CONTENT_STREAM_CONTAINER;
     session = OTSessionInit ();
+    OTSessionVerbose (session, 1);
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
         goto end;
@@ -56,7 +57,7 @@ main (int argc, char *argv[])
                             printf ("Url: %s\n", OTJsonGetStringValue (url));
                         }
                 }
-            OTDeallocContainer (content, &type);
+            OTDeallocContainer (content, type);
         }
 end:
     OTSessionCleanup (session);
