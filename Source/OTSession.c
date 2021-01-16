@@ -88,6 +88,7 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->tree = NULL;
     session->renewalTree = NULL;
     session->restrictedMode = 1;
+    session->verboseMode = 0;
     session->mainHttpHandle = NULL;
 }
 
