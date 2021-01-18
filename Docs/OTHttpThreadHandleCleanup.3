@@ -1,0 +1,17 @@
+.TH OTHttpThreadHandleCleanup 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTHttpThreadHandleCleanup \- Free a http-handle
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "void OTHttpThreadHandleCleanup (void *" handle ");"
+.SH DESCRIPTION
+This function must be the last function to call in a thread.
+
+It is the opposite of the init function and must be called with
+the same session as input that a \fIOTHttpThreadHandleCreate(3)\fP call allocated.
+.SH RETURN VALUE
+None
+.SH "SEE ALSO"
+.BR OTHttpThreadHandleCreate "(3), " OTServiceGetBearerToken "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetDeviceCode "(3), "OTServiceGetFavorites "(3) "

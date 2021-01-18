@@ -7,7 +7,7 @@ OTSessionCleanup \- End a libopenTIDAL session handle
 .BI "void OTSessionCleanup (struct OTSessionContainer *" session ");"
 .SH DESCRIPTION
 This function must be the last function to call for a \fBlibopenTIDAL\fP(3) session.
-It deallocated the memory allocation performed by the \fIOTSessionInit(3)\fP
+It deallocates the memory allocation performed by the \fIOTSessionInit(3)\fP
 function. It is the opposite of the init function and must be called with
 the same session as input that a \fIOTSessionInit(3)\fP call allocated.
 

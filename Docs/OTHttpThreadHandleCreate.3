@@ -1,0 +1,20 @@
+.TH OTHttpThreadHandleCreate 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTHttpThreadHandleCreate \- Create a new http-handle
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "void *OTHttpThreadHandleCreate (void);"
+.SH DESCRIPTION
+If you perform service requests in an additional thread, you \fBmust\fP use a new http-handle.
+However, you can use a handle persistently.
+
+Call this function to initialise a new http-handle.
+
+This call \fBmust\fP have a corresponding call to \fIOTHttpThreadHandleCleanup(3)\fP
+when the operation is complete.
+.SH RETURN VALUE
+If successful, a new http-handle gets returned. Otherwise \fIOTHttpThreadHandleCreate(3)\fP returns NULL.
+.SH "SEE ALSO"
+.BR OTHttpThreadHandleCleanup "(3), " OTServiceGetBearerToken "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetDeviceCode "(3), "OTServiceGetFavorites "(3) "
