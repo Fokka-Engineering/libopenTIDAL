@@ -29,10 +29,11 @@ If this function returns NULL, something went wrong and you cannot use the other
 struct OTSessionContainer *session = OTSessionInit ();
 if (session)
     {
-        /* do smth with the session */
+        OTSessionClientPair ({clientId}, {clientSecret}); 
+        /* do smth with the session if OTSessionClientPair returns 0 */
     }
 OTSessionCleanup (session);
 .fi
 .SH "SEE ALSO"
 .BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
-.BR OTSessionWriteChanges "(3) "
+.BR OTSessionWriteChanges "(3), " OTSessionClientPair "(3) "

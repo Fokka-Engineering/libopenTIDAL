@@ -1,7 +1,18 @@
 .TH OTSessionRefresh 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
 .SH NAME
-OTSessionRefresh
+OTSessionRefresh \- Request a manual session renewal
 .SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTSessionRefresh (struct OTSessionContainer *session);"
 .SH DESCRIPTION
+Call this function to manually trigger an session renewal. This can be useful if a service function returns EXPIRED_SESSION
+in the main thread.
+
+This only occurs if the internal call fails.
+The internal refresh call is not likely to fail.
 .SH RETURN VALUE
+Returns an enum \fIOTStatus(7)\fP.
 .SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
+.BR OTSessionWriteChanges "(3), " OTSessionClientPair "(3) "

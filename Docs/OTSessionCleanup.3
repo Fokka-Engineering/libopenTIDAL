@@ -24,7 +24,8 @@ None
 struct OTSessionContainer *session = OTSessionInit ();
 if (session)
     {
-        /* do smth with the session */
+        OTSessionClientPair ({clientId}, {clientSecret}); 
+        /* do smth with the session if OTSessionClientPair returns 0 */
     }
 OTSessionCleanup (session);
 .fi

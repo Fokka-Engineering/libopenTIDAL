@@ -1,0 +1,26 @@
+.TH OTSessionClientPair 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionClientPair \- Specify the OAuth2 clientId and clientSecret
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTSessionClientPair (const char *const " clientId ", const char *const " clientSecret ");"
+.SH DESCRIPTION
+\fBlibopenTIDAL\fP(3) uses TIDALs OAuth2 authorisation service to authenticate with the TIDAL API.
+For this to work you need a clientId and a clientSecret. 
+
+\fBNote: The clientSecret is only required if one
+plans to use the auth and user-based services.\fP
+
+The device authorisation grant is not enabled in all clientIds. You need a clientId/clientSecret pair that
+was generated to be used in restricted-input or browserless devices/applications.
+Standard webflow pairs will throw an error.
+
+Features like preview track/video streams are only available in the restrictedMode with the web clientId/clientSecret pair.
+.SH RETURN VALUE
+If successful \fIOTSessionClientPair(3)\fP returns 0.
+
+If an MALLOC error occurred \fIOTSessionClientPair(3)\fP returns -1.
+.SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
+.BR OTSessionWriteChanges "(3), " OTPersistentCreate "(3) "

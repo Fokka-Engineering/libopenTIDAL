@@ -21,6 +21,8 @@ Status (0) means everything  was  ok. If a parsing error occurred Status (-1).
 struct OTSessionContainer *session = OTSessionInit ();
 if (session)
     {
+        OTSessionClientPair ({clientId}, {clientSecret}); 
+        /* do smth with the session if OTSessionClientPair returns 0 */
         int status = OTSessionLogin (session, "/path/to/persistent/config");
         if (status == 0)
             {

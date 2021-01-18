@@ -1,0 +1,17 @@
+.TH OTSessionVerbose 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionVerbose \- Enable the verbose mode
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "void OTSessionVerbose (struct OTSessionContainer *const " session ", const int " enabled ");"
+.SH DESCRIPTION
+Toggle \fBopenTIDAL\fP(3)'s verbose feature.
+This enables libcurl CURLOPT_VERBOSE and the internal
+verbose printf calls.
+\fBopenTIDAL\fP(3) prints to stdout.
+.SH RETURN VALUE
+None
+.SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
+.BR OTSessionWriteChanges "(3) "
