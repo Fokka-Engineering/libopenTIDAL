@@ -1,8 +1,13 @@
-# openTIDAL
+<p align="center">
+  <a href="https://github.com/openTIDAL/openTIDAL.js" target="_blank">
+    <img src="https://colo.vaaski.com/static/openTIDAL-banner.svg">
+  </a>
+</p>
+<hr>
 
-An effort to make the Streaming Service TIDAL more open.
-(Alpha Release)
-
+<p align="center">
+  A thin TIDAL API interface written in C (in development).
+</p>
 ## License
 
 MIT License
