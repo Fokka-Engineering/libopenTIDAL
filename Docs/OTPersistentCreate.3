@@ -1,0 +1,29 @@
+.TH OTPersistentCreate 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTPersistentCreate \- Create a persistent configuration file
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTPersistentCreate (const struct OTSessionContainer *const session, const char *const location);"
+.SH DESCRIPTION
+After a successful authentication with the oAuth device authorisation grant
+(RFC 8628), call this function to create the persistent configuration file.
+See \fIOTServiceGetDeviceCode(3)\fP and \fIOTServiceGetBearerToken(3)\fP
+for login polling examples.
+
+\fIOTPersistentCreate(3)\fP allocates a stream of the newly created json
+session configuration and writes it to the specified file location
+parameter.
+
+Do not store any additional values inside the configuration file!
+\fBlibopenTIDAL\fP(3) overwrites the configuration file after a successful session
+oAuth access token renewal.
+
+This function is only available if a file location was specified prior.
+.SH RETURN VALUE
+If successful \fIOTPersistentCreate(3)\fP returns 0.
+
+If an fopen error (Could not write to file location) or an malloc/parse error occurred, \fIOTPersistentCreate(3)\fP returns -1.
+.SH "SEE ALSO"
+.BR OTSessionCleanup "(3), " OTSessionLogin "(3), " OTSessionChangeQuality "(3), "
+.BR OTSessionWriteChanges "(3), " OTSessionClientPair "(3) "

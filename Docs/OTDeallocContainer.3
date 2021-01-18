@@ -1,0 +1,32 @@
+.TH OTDeallocContainer 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTDeallocContainer \- Deallocate a container from heap
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "void OTDeallocContainer (void *" container ", enum OTTypes " type ");"
+.SH DESCRIPTION
+After using a OTContainer returned from a service function one needs to deallocate it.
+Up to this point values inside the container are still allocated in heap. The container itself
+is also allocated in heap and needs to be freed.
+
+Specify the type of the container with the OTTypes enum.
+Available enums: \fBCONTENT_CONTAINER\fP, \fBCONTENT_STREAM_CONTAINER\fP 
+.SH RETURN VALUE
+None
+.SH EXAMPLE
+.nf
+struct OTSessionContainer *session = OTSessionInit ();
+if (session)
+    {
+        OTSessionClientPair ({clientId}, {clientSecret}); 
+        /* do smth with the session if OTSessionClientPair returns 0 */
+        struct OTContentContainer *content = OTServiceGetDeviceCode (session, NULL);
+        
+        OTDeallocContainer (content, CONTENT_CONTAINER);
+    }
+OTSessionCleanup (session);
+.fi
+.SH "SEE ALSO"
+.BR OTServiceGetDeviceCode "(3), " OTServiceGetBearerToken "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetFavorites "(3) "

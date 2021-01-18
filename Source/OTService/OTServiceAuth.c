@@ -139,4 +139,3 @@ OTServiceLogout (struct OTSessionContainer *session, void *threadHandle)
     status = OTServiceRequestSilent (session, &http, threadHandle);
     return status;
 }
-
