@@ -1,0 +1,22 @@
+.TH OTServiceLogout 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceLogout \- Logout from an active TIDAL session 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceLogout (struct OTSessionContainer *" session ", void *" threadHandle ");"
+.SH DESCRIPTION
+Call the \fIOTServiceLogout(3)\fP service function to log the user out of a oAuth2.0 
+session. \fBlibopenTIDAL\fP(3) requested access to the protected resources on behalf of the
+Resource Owner (User) prior with the device authorization grant (RFC 8628).
+
+This call requests a logout from TIDALs session layer. If successful The tokens issued by the
+authorization server get invalidated.
+Further interaction with the API is not possible without reauthenticating. 
+
+The restricted client-id based authorisation method will not be effected by this call.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceGetBearerToken "(3), " OTServiceGetDeviceCode "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetFavorites "(3) "

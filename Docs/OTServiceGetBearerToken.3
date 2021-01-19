@@ -1,0 +1,23 @@
+.TH OTServiceGetBearerToken 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceGetBearerToken \- Request an access- and refresh-token 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentContainer *OTServiceGetBearerToken (struct OTSessionContainer *session, const char *const deviceCode, void *threadHandle);"
+.SH DESCRIPTION
+While the application is waiting for the user to complete the authorization flow
+\fIOTServiceGetDeviceCode(3)\fP in their browser,
+the device/application meanwhile begins polling \fIOTServiceGetBearerToken(3)\fP
+to request an access token.
+
+The application makes a POST request with the deviceCode at the rate specified by interval.
+The device should continue requesting an access token until the status in the OTContentContainer
+is SUCCESS. Remember to deallocate the OTContentContainer after each polling-cycle.
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
+pointer to an \fIOTContentContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
+.SH "SEE ALSO"
+.BR OTServiceGetDeviceCode "(3), " OTServiceLogout "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetFavorites "(3) "

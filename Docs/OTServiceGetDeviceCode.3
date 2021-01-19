@@ -1,6 +1,37 @@
 .TH OTServiceGetDeviceCode 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
 .SH NAME
+OTServiceGetDeviceCode \- Request a user- and device-code pair 
 .SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentContainer *OTServiceGetDeviceCode (struct OTSessionContainer *" session ", void *" threadHandle ");"
 .SH DESCRIPTION
+This service function requests a userCode and a deviceCode from the TIDAL auth server.
+\fBlibopenTIDAL\fP(3) uses the oAuth2.0 device authorisation grant (RFC 8628) to authenticate with
+the TIDAL API. This grant is primarily useful for restricted input devices such as TVs or
+browser-less applications. TIDALs oAuth2.0 web-flow (RFC 6749) is reCaptcha v3 secured
+and thus can't be used outside a web browser. 
+
+.nf
+.B Device Authorisation Grant
+.fi
+Call the \fIOTServiceGetDeviceCode(3)\fP service function to request a userCode and a deviceCode.
+If successful instruct the user to authorise the session with the URI (https://link.tidal.com/ABCDE). While doing
+that poll the authorisation server with the \fIOTServiceGetBearerToken(3)\fP service function.
+The polling cycle has a specified minimum interval between each request.
+The userCode and deviceCode pair has a specified lifetime. If the user was not able to authenticate
+in this timeframe, request a new code pair.
+The authorisation server returns the access- and refresh-token and other user values after
+a successful authentication by the user.
+
+Username/Password and third-party oAuth2.0 authorisation methods are supported.
+
+This call \fBmust\fP have a corresponding call to \fIOTDeallocContainer(3)\fP
+when the operation is complete.
 .SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
+pointer to an \fIOTContentContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
 .SH "SEE ALSO"
+.BR OTServiceGetBearerToken "(3), " OTServiceLogout "(3), " OTServiceRefreshBearerToken "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetFavorites "(3) "
