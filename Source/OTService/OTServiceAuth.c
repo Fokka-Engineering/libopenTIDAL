@@ -45,7 +45,9 @@ OTServiceGetDeviceCode (struct OTSessionContainer *session, void *threadHandle)
     http.endpoint = "/v1/oauth2/device_authorization";
     http.type = &reqType;
     http.isAuthRequest = 1;
-    OTConcatenateString (&http.postData, "client_id=%s&scope=%s", session->x, session->scopes);
+    if (session->clientId)
+        OTConcatenateString (&http.postData, "client_id=%s&scope=%s", session->clientId,
+                             session->scopes);
     if (!http.postData)
         {
             isException = 1;
@@ -74,8 +76,9 @@ OTServiceGetBearerToken (struct OTSessionContainer *session, const char *const d
     http.endpoint = "/v1/oauth2/token";
     http.type = &reqType;
     http.isAuthRequest = 1;
-    OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grand_type=%s&device_code=%s",
-                         session->x, session->scopes, grand_type, deviceCode);
+    if (session->clientId)
+        OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grand_type=%s&device_code=%s",
+                             session->clientId, session->scopes, grand_type, deviceCode);
     if (!http.postData)
         {
             isException = 1;
@@ -104,8 +107,9 @@ OTServiceRefreshBearerToken (struct OTSessionContainer *session, const char *con
     http.endpoint = "/v1/oauth2/token";
     http.type = &reqType;
     http.isAuthRequest = 1;
-    OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grant_type=%s&refresh_token=%s",
-                         session->x, session->scopes, grand_type, refreshToken);
+    if (session->clientId)
+        OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grant_type=%s&refresh_token=%s",
+                             session->clientId, session->scopes, grand_type, refreshToken);
     if (!http.postData)
         {
             isException = 1;

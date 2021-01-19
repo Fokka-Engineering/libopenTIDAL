@@ -84,11 +84,9 @@ void
 OTHttpContainerInit (struct OTHttpContainer *const http)
 {
     http->handle = NULL;
-    http->httpOk = 0;
+    http->httpOk = -1;
     http->isAuthRequest = 0;
     http->isDummy = 0;
-    http->isVerbose = 0;
-    http->isPreviewClientId = 0;
     http->responseCode = 0;
     http->entityTagHeader = NULL;
     http->response = NULL;
@@ -103,21 +101,13 @@ OTHttpAuthHeader (const struct OTSessionContainer *const session,
                   struct OTHttpContainer *const http)
 {
     char *string = NULL;
-    if (!session->restrictedMode && !http->isPreviewClientId)
+    if (!session->restrictedMode)
         {
             if (session->accessToken)
                 OTConcatenateString (&string, "Authorization: Bearer %s", session->accessToken);
         }
     else
-        {
-            if (!http->isPreviewClientId)
-                {
-                    if (session->x)
-                        OTConcatenateString (&string, "X-Tidal-Token: %s", session->x);
-                }
-            else
-                OTConcatenateString (&string, "X-Tidal-Token: %s", session->previewClientId);
-        }
+        OTConcatenateString (&string, "X-Tidal-Token: %s", session->clientId);
     return string;
 }
 
@@ -156,6 +146,14 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     char *url = NULL;
     char *authHeader = NULL;
     int isHeadRequest = 0;
+
+    if (!session->clientId || !session->clientSecret)
+        {
+            if (session->verboseMode)
+                printf ("* ClientId or ClientSecret ASCII string is not allocated.");
+            goto end;
+        }
+
     if (session->verboseMode)
         printf ("* Check if HTTP-HANDLE is initialised...");
     /* Check if allocation of handle failed */
@@ -234,11 +232,8 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     /* clientId & clientSecret authorisation. */
     if (http->isAuthRequest)
         {
-            if (session->x && session->y)
-                {
-                    curl_easy_setopt (http->handle, CURLOPT_USERNAME, session->x);
-                    curl_easy_setopt (http->handle, CURLOPT_PASSWORD, session->y);
-                }
+            curl_easy_setopt (http->handle, CURLOPT_USERNAME, session->clientId);
+            curl_easy_setopt (http->handle, CURLOPT_PASSWORD, session->clientSecret);
         }
     else
         {
@@ -255,10 +250,9 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
         printf ("* End CURLOPT configuration\n* Call curl_easy_perform...\n");
 
     res = curl_easy_perform (http->handle);
-    if (res != CURLE_OK)
-        http->httpOk = -1;
-    else
+    if (res == CURLE_OK)
         {
+            http->httpOk = 0;
             long http_code = 0;
             curl_easy_getinfo (http->handle, CURLINFO_RESPONSE_CODE, &http_code);
             http->responseCode = http_code;

@@ -46,19 +46,9 @@ OTSessionInit (void)
     if (!ptr)
         return NULL;
     OTSessionContainerInit (ptr);
-    char *a = ptr->clientId;
-    char *b = ptr->clientSecret;
     /* One time libcurl global init. */
     curl_global_init (CURL_GLOBAL_ALL);
     ptr->mainHttpHandle = curl_easy_init ();
-    /* Decode. */
-    ptr->x = OTStringDecodeBase64 (a);
-    ptr->y = OTStringDecodeBase64 (b);
-    if (!ptr->x || !ptr->y)
-        {
-            OTDeallocContainer (ptr, type);
-            ptr = NULL;
-        }
     return ptr;
 }
 
@@ -69,11 +59,8 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->persistentFileLocation = NULL;
     session->accessToken = NULL;
     session->refreshToken = NULL;
-    session->clientId = "OFNFWldhNEoxTlZDNVU1WQ";
-    session->previewClientId = "gsFXkJqGrUNoYMQPZe4k3WKwijnrp8iGSwn3bApe";
-    session->clientSecret = "b3dVWURreGRkeis5RnB2R1gyNERseEVDTnRGRU1CeGlwVTBsQmZyYnE2MD0";
-    session->x = NULL;
-    session->y = NULL;
+    session->clientId = "NULL";
+    session->clientSecret = "NULL";
     session->scopes = "r_usr+w_usr";
     session->baseUrl = "https://api.tidal.com";
     session->authUrl = "https://auth.tidal.com";
@@ -90,6 +77,18 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->restrictedMode = 1;
     session->verboseMode = 0;
     session->mainHttpHandle = NULL;
+}
+
+/* Allocate the OAuth2 clientId and clientSecret into heap */
+int
+OTSessionClientPair (struct OTSessionContainer *const session, const char *const clientId,
+                     const char *const clientSecret)
+{
+    session->clientId = strdup (clientId);
+    session->clientSecret = strdup (clientSecret);
+    if (!session->clientId || !session->clientSecret)
+        return -1;
+    return 0;
 }
 
 /* Allocate persistent file location path ASCII string and
@@ -174,8 +173,8 @@ OTSessionCleanup (struct OTSessionContainer *session)
         {
             if (session->verboseMode)
                 printf ("* Free OTSessionContainer\n");
-            free (session->x);
-            free (session->y);
+            free (session->clientId);
+            free (session->clientSecret);
             curl_easy_cleanup (session->mainHttpHandle);
             curl_global_cleanup ();
             enum OTTypes type = SESSION_CONTAINER;

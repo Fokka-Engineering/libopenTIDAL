@@ -75,8 +75,6 @@ extern "C"
         char *clientId;
         char *previewClientId;
         char *clientSecret;
-        char *x;
-        char *y;
         char *scopes;
         char *baseUrl;
         char *authUrl;
@@ -112,7 +110,8 @@ extern "C"
 
     /* Manage an OTSession handle. */
     struct OTSessionContainer *OTSessionInit (void);
-    int OTSessionClientPair (const char *const clientId, const char *const clientSecret);
+    int OTSessionClientPair (struct OTSessionContainer *const session, const char *const clientId,
+                             const char *const clientSecret);
     int OTSessionLogin (struct OTSessionContainer *const session, const char *const location);
     /* disabled = 0, enabled = 1, debug = 2 */
     void OTSessionVerbose (struct OTSessionContainer *const session, const int enabled);

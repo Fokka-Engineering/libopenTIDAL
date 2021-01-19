@@ -41,8 +41,6 @@ struct OTHttpContainer
     int httpOk;
     int isAuthRequest;
     int isDummy;
-    int isVerbose;
-    int isPreviewClientId;
     long responseCode;
     char *response;
     char *entityTagHeader;

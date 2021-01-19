@@ -164,10 +164,8 @@ OTServiceGetStream (struct OTSessionContainer *session, const char *const prefix
     if (!isPreview)
         OTConcatenateString (&http.endpoint, "/v1/%s/%s/playbackinfopostpaywall", prefix, id);
     else
-        {
-            http.isPreviewClientId = 1;
-            OTConcatenateString (&http.endpoint, "/v1/%s/%s/playbackinfoprepaywall", prefix, id);
-        }
+        OTConcatenateString (&http.endpoint, "/v1/%s/%s/playbackinfoprepaywall", prefix, id);
+
     if (strcmp (prefix, "videos") == 0)
         OTConcatenateString (
             &http.parameter,
