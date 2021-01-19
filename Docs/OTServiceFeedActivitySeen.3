@@ -1,0 +1,21 @@
+.TH OTServiceFeedActivitySeen 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceFeedActivitySeen \- Marks new activity as seen
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceFeedActivitySeen (struct OTSessionContainer *" session ", void *" threadHandle ");"
+.SH DESCRIPTION
+Call OTServiceFeedActivitySeen to mark new activity in the user's feed as seen.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceGetFeedActivities "(3), " OTServiceGetFeedActivityUnseenExists "(3), " OTServiceAddFavorite "(3), "
+.BR OTServiceGetFavorites "(3) "

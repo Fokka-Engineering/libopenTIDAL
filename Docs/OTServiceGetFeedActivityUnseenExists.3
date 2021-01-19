@@ -1,0 +1,23 @@
+.TH OTServiceGetFeedActivityUnseenExists 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceGetFeedActivityUnseenExists \- Check if new unseen activity exists
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentContainer *OTServiceGetFeedActivityUnseenExists (struct OTSessionContainer *" session ", void *" threadHandle ");"
+.SH DESCRIPTION
+Call OTServiceGetFeedActivityUnseenExists to check if new unseen activity in the user's feed exists.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
+pointer to an \fIOTContentContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
+.SH "SEE ALSO"
+.BR OTServiceGetFeedActivities "(3), " OTServiceFeedActivitySeen "(3), " OTServiceDeleteFavorite "(3), "
+.BR OTServiceAddFavorite "(3), " OTServiceGetFavorites "(3) "

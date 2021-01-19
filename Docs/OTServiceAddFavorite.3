@@ -1,0 +1,29 @@
+.TH OTServiceAddFavorite 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceAddFavorite \- Manipulate favorites
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceAddFavorite (struct OTSessionContainer *" session ", const char *const " suffix ", const char *" itemId ", const char *" onArtifactNotFound ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceAddFavorite service function adds an artefact to the user-based favorite section.
+
+.nf
+.B Suffixes
+.fi
+"albums", "tracks", "videos", "artists", "playlists", "mixes"
+
+The ArtifactNotFound parameter alters the behaviour of the TIDAL API, not finding the artefact.
+When adding an array of artefacts, one might choose to skip the missing artefact (Enum: "SKIP")
+instead of giving up (ENUM: "FAIL").
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceDeleteFavorite "(3), " OTServiceAddFavorites "(3), " OTServiceGetFavorites "(3) "

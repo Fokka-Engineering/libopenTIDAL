@@ -1,0 +1,28 @@
+.TH OTServiceDeleteFavorite 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceDeleteFavorite \- Manipulate favorites 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceDeleteFavorite (struct OTSessionContainer *" session ", const char *const " suffix ", const char *const " id ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceDeleteFavorite service function deletes an artefact from the user-saved content.
+
+To delete an artefact from the collection, call the correct endpoint that represents the type of the
+artefact.
+
+.nf
+.B Suffixes
+.fi
+"albums", "tracks", "videos", "artists", "playlists", "mixes"
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceAddFavorite "(3), " OTServiceAddFavorites "(3), " OTServiceGetFavorites "(3) " 
