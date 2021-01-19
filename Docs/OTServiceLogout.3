@@ -15,6 +15,13 @@ authorization server get invalidated.
 Further interaction with the API is not possible without reauthenticating. 
 
 The restricted client-id based authorisation method will not be effected by this call.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
 .SH RETURN VALUE
 \fIOTStatus(7)\fP
 .SH "SEE ALSO"

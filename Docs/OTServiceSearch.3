@@ -1,0 +1,34 @@
+.TH OTServiceSearch 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceSearch \- metadata search
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentContainer *OTServiceSearch (struct OTSessionContainer *" session ", const char *const " suffix ", char *" query ", const int " limit ", const int " offset ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceSearch service function requests TIDAL metadata.
+The suffix parameter is used to specify the endpoint of the request.
+This service call \fBmust\fP have a corresponding call to \fIOTDeallocContainer(3)\fP when the operation is complete.
+
+.nf
+.B Suffixes (NULL = ALL)
+NULL, "albums", "tracks", "videos", "artists", "playlists", "top-hits"
+
+.B Pagination
+.fi
+Use the limit and offset parameters to control metadata pagination.
+Keep in mind that the TIDAL API will error out on certain limits.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
+pointer to an \fIOTContentContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
+.SH "SEE ALSO"
+.BR OTServiceGetStandard "(3), " OTServiceGetPage "(3), "
+.BR OTServiceFavorites "(3), " OTServiceGetStream "(3), " OTServiceCreatePlaylist "(3) "

@@ -1,0 +1,39 @@
+.TH OTServiceGetStream 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceGetStream \- Request a track/video stream
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentStreamContainer *OTServiceGetStream (struct OTSessionContainer *" session ", const char *const " prefix ", const char *const " id ", const int " isPreview ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceStream service function requests TIDAL http streams.
+This service call \fBmust\fP have a corresponding call to \fIOTDeallocContainer(3)\fP when the operation is complete.
+
+The audio-quality is specified in the session configuration file but can be changed. Depending on the subscription type four
+different audio-quality presets are available. With the \fBAUDIO_LOW\fP preset, tracks are encoded in 96kbps AAC. \fBAUDIO_HIGH\fP
+preset tracks are encoded in 320kbps AAC. If the user has an active hifi subscription two additional modes are available.
+\fBAUDIO_LOSSLESS\fP preset tracks are encoded in 1411kbps 16bit/44.1kHz FLAC. \fBAUDIO_HI_RES\fP preset tracks are encoded in 24bit/96kHz
+MQA FLAC. \fIOTQuality(7)\fP.
+
+.nf
+.B Prefixes
+"tracks", "videos"
+
+.B Restricted Preview
+.fi
+With isPreview enabled, 30s previews of a track (64kbps 22.05kHz MP3) or a video (640x360 1116kbps MP4)
+are available. Keep in mind that this endpoint is enabled on a few clientIds. 
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentStreamContainer(7)\fP, a
+pointer to an \fIOTContentStreamContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
+.SH "SEE ALSO"
+.BR OTServiceGetStandard "(3), " OTServiceGetPage "(3), "
+.BR OTServiceFavorites "(3), " OTServiceSearch "(3), " OTServiceCreatePlaylist "(3) "

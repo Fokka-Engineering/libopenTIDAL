@@ -1,0 +1,35 @@
+.TH OTServiceGetPage 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceGetPage \- Request dynamic page metadata
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTContentContainer *OTServiceGetPage (struct OTSessionContainer *" session ", const char *const " suffix ", const char * const " id ", const int " limit ", const int " offset ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceGetPage service function requests TIDAL dynamic page metadata.
+The suffix parameter is used to specify the endpoint of the request.
+This service call \fBmust\fP have a corresponding call to \fIOTDeallocContainer(3)\fP when the operation is complete.
+
+The id parameter is only used with the following suffixes ("album", "artist", "mix").
+Other suffixes: "home", "explore", "videos", "my_collection_my_mixes".
+Other dynamic pages can be requested. Seperate the path from the url ("pages/data/xxxxxxxxx" (Remove "pages/")).
+
+.nf
+.B Pagination
+.fi
+Use the limit and offset parameters to control metadata pagination.
+Keep in mind that the TIDAL API will error out on certain limits.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
+pointer to an \fIOTContentContainer(7)\fP will be returned.
+Otherwise a NULL pointer will be returned.
+.SH "SEE ALSO"
+.BR OTServiceGetStandard "(3), " OTServiceGetFavorites "(3), "
+.BR OTServiceSearch "(3), " OTServiceGetStream "(3), " OTServiceCreatePlaylist "(3) "

@@ -1,28 +1,30 @@
-.TH OTServiceGetStandard 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.TH OTServiceGetFavorites 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
 .SH NAME
-OTServiceGetStandard \- Request standard metadata
+OTServiceGetFavorites \- Request user-based metadata
 .SH SYNOPSIS
 .B #include <openTIDAL/openTIDAL.h>
 
-.BI "struct OTContentContainer *OTServiceGetStandard (struct OTSessionContainer *" session ", const char *const " prefix ", const char *const " suffix ", const char *const " id ", const int " limit ", const int " offset ", void * "threadHandle ");"
+.BI "struct OTContentContainer *OTServiceGetFavorites (struct OTSessionContainer *" session ", const char *const " suffix ", const int " limit ", const int " offset ", const char *const " order ", const char *const " orderDirection ", void *threadHandle);"
 .SH DESCRIPTION
-The OTServiceGetStandard service function requests TIDAL metadata.
+The OTServiceGetFavorites service function requests TIDAL metadata.
 The prefix and suffix parameter are used to specify the endpoint of the request.
 This service call \fBmust\fP have a corresponding call to \fIOTDeallocContainer(3)\fP when the operation is complete.
 
 .nf
-.B Prefixes & Suffixes (NULL = No Suffix)
-"albums" - NULL (ALL), "items", "items/credits", "review"
-"tracks" - NULL, "contributors", "credits", "mix", "recommendations"
-"videos" - NULL, "contributors", "credits", "recommendations"
-"artist" - NULL, "bio", "links", "mix", "toptracks", "videos"
-"playlists" - NULL, "items", "recommendations/items"
-"mixes" - "items"
+.B Suffixes
+"ids", "albums", "tracks", "videos", "artists", "playlists", "mixes"
 
 .B Pagination
 .fi
 Use the limit and offset parameters to control metadata pagination.
 Keep in mind that the TIDAL API will error out on certain limits.
+
+.nf
+.B Sorting
+.fi
+order: "DATE", "NAME", "ARTIST", "RELEASE_DATE", "MIX_TYPE"
+
+orderDirection: "ASC", "DESC"
 
 .nf
 .B Thread Handle
@@ -35,5 +37,5 @@ If no memory allocation error occurred in allocating the \fIOTContentContainer(7
 pointer to an \fIOTContentContainer(7)\fP will be returned.
 Otherwise a NULL pointer will be returned.
 .SH "SEE ALSO"
-.BR OTServiceGetFavorites "(3), " OTServiceGetPage "(3), "
+.BR OTServiceGetStandard "(3), " OTServiceGetPage "(3), "
 .BR OTServiceSearch "(3), " OTServiceGetStream "(3), " OTServiceCreatePlaylist "(3) "
