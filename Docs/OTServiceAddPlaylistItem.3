@@ -1,0 +1,28 @@
+.TH OTServiceAddPlaylistItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceAddPlaylistItem \- Add an artefact to a playlist
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceAddPlaylistItem (struct OTSessionContainer *" session ", const char *const " id ", const char *" itemId ", const char *" onArtifactNotFound ", const char *" onDupes ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceAddPlaylistItem service function adds an artefact to a playlist.
+
+The ArtifactNotFound parameter alters the behaviour of the TIDAL API, not finding the artefact.
+When adding an array of artefacts, one might choose to skip the missing artefact (Enum: "SKIP")
+instead of giving up (ENUM: "FAIL").
+
+The onDupes parameter alters the behaviour of the TIDAL API if the artefact occurs multiple times.
+Three enums are available: "ADD", "SKIP", "FAIL".
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceGetPlaylistEntityTag "(3), " OTServiceCreatePlaylist "(3), " OTServiceMovePlaylistItem "(3), "
+.BR OTServiceDeletePlaylistItem "(3), " OTServiceAddPlaylistItems "(3) "

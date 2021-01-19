@@ -1,0 +1,27 @@
+.TH OTServiceDeletePlaylistItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceDeletePlaylistItem \- Delete an artefact from a playlist
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceDeletePlaylistItem (struct OTSessionContainer *" session ", const char *const " id ", const int " index ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceDeletePlaylistItem service function deletes an artefact in a playlist.
+
+Despite the convenience of adding multiple artefacts to a playlist at once, one can only delete a single artefact per
+function call. This is a limitation by the TIDAL API.
+
+To delete an artefact in a playlist specify the position of the artefact with the index parameter.
+A playlist starts from 0.
+
+.nf
+.B Thread Handle
+.fi
+You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time.
+
+Use the session main handle by parsing a NULL pointer.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceGetPlaylistEntityTag "(3), " OTServiceCreatePlaylist "(3), " OTServiceMovePlaylistItem "(3), "
+.BR OTServiceAddPlaylistItem "(3), " OTServiceAddPlaylistItems "(3) "

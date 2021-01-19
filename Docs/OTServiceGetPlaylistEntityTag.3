@@ -4,7 +4,7 @@ OTServiceGetPlaylistEntityTag \- Request the playlist entity tag
 .SH SYNOPSIS
 .B #include <openTIDAL/openTIDAL.h>
 
-.BI "char *OTServiceGetPlaylistEntityTag (struct OTSessionContainer *session, const char *const id, void *threadHandle);"
+.BI "char *OTServiceGetPlaylistEntityTag (struct OTSessionContainer *" session ", const char *const " id ", void *" threadHandle ");"
 .SH DESCRIPTION
 The OTServiceGetPlaylistEntityTag service function requests the http header and parses the entity-tag key
 of the playlist. This entity-tag is used for optimistic concurrency control, as a way to help prevent simultaneous updates of
@@ -21,8 +21,8 @@ You must never share the same handle in multiple threads. You can pass the handl
 
 Use the session main handle by parsing a NULL pointer.
 .SH RETURN VALUE
-If no memory allocation error occurred in allocating the \fIOTContentContainer(7)\fP, a
-pointer to an \fIOTContentContainer(7)\fP will be returned.
+If no memory allocation error occurred in allocating the ASCII string, a
+pointer to an ASCII string will be returned.
 Otherwise a NULL pointer will be returned.
 .SH "SEE ALSO"
 .BR OTServiceCreatePlaylist "(3), " OTServiceDeletePlaylistItem "(3), " OTServiceMovePlaylistItem "(3), "

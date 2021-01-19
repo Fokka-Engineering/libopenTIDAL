@@ -1,0 +1,16 @@
+.TH OTServiceMovePlaylistItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTServiceMovePlaylistItem \- Move an artefact in a playlist
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "enum OTStatus OTServiceMovePlaylistItem (struct OTSessionContainer *" session ", const char *const " id ", const int " index ", const int " toIndex ", void *" threadHandle ");"
+.SH DESCRIPTION
+The OTServiceMovePlaylistItem service function moves an artefact in a playlist.
+
+A playlist starts from 0.
+.SH RETURN VALUE
+\fIOTStatus(7)\fP
+.SH "SEE ALSO"
+.BR OTServiceGetPlaylistEntityTag "(3), " OTServiceCreatePlaylist "(3), " OTServiceDeletePlaylistItem "(3), "
+.BR OTServiceAddPlaylistItem "(3), " OTServiceAddPlaylistItems "(3) "
