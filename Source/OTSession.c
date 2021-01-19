@@ -59,8 +59,8 @@ OTSessionContainerInit (struct OTSessionContainer *const session)
     session->persistentFileLocation = NULL;
     session->accessToken = NULL;
     session->refreshToken = NULL;
-    session->clientId = "NULL";
-    session->clientSecret = "NULL";
+    session->clientId = NULL;
+    session->clientSecret = NULL;
     session->scopes = "r_usr+w_usr";
     session->baseUrl = "https://api.tidal.com";
     session->authUrl = "https://auth.tidal.com";

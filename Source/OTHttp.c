@@ -147,7 +147,7 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     char *authHeader = NULL;
     int isHeadRequest = 0;
 
-    if (!session->clientId || !session->clientSecret)
+    if (!session->clientId)
         {
             if (session->verboseMode)
                 printf ("* ClientId or ClientSecret ASCII string is not allocated.");
@@ -233,6 +233,8 @@ OTHttpRequest (struct OTSessionContainer *const session, struct OTHttpContainer 
     if (http->isAuthRequest)
         {
             curl_easy_setopt (http->handle, CURLOPT_USERNAME, session->clientId);
+            if (!session->clientSecret)
+                goto end;
             curl_easy_setopt (http->handle, CURLOPT_PASSWORD, session->clientSecret);
         }
     else
