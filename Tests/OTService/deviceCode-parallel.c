@@ -36,10 +36,9 @@ main (void)
     if (!session)
         return -1;
 
-    //    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
-    //       return -1;
+    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
+        return -1;
 
-    OTSessionVerbose (session, 1);
 #pragma omp parallel for
     for (i = 0; i < 10; i++)
         {

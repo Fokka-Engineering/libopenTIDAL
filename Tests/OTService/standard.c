@@ -33,6 +33,11 @@ main (void)
     struct OTContentContainer *content;
     enum OTTypes type = CONTENT_CONTAINER;
     session = OTSessionInit ();
+    if (!session)
+        return -1;
+
+    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
+        return -1;
 
     content = OTServiceGetStandard (session, "albums", "items", "13479529", 10, 0, NULL);
     if (content)

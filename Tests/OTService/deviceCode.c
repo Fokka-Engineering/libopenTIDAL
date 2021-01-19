@@ -33,6 +33,11 @@ main (void)
     struct OTContentContainer *content;
     enum OTTypes type = CONTENT_CONTAINER;
     session = OTSessionInit ();
+    if (!session)
+        return -1;
+
+    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
+        return -1;
 
     content = OTServiceGetDeviceCode (session, NULL);
     if (content)

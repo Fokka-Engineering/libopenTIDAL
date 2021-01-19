@@ -34,6 +34,12 @@ main (int argc, char *argv[])
     enum OTTypes type = CONTENT_CONTAINER;
     enum OTStatus statusPlaylist;
     session = OTSessionInit ();
+    if (!session)
+        return -1;
+
+    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
+        return -1;
+
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
         goto end;

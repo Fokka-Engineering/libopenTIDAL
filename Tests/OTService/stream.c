@@ -35,6 +35,12 @@ main (int argc, char *argv[])
     struct OTContentStreamContainer *content;
     enum OTTypes type = CONTENT_STREAM_CONTAINER;
     session = OTSessionInit ();
+    if (!session)
+        return -1;
+
+    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
+        return -1;
+
     OTSessionVerbose (session, 1);
     int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
     if (status != 0)
