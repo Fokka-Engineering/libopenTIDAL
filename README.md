@@ -6,7 +6,7 @@
 <hr>
 
 <p align="center">
-  A thin TIDAL API interface written in C (in development).
+  A TIDAL API interface written in C (in development).
 </p>
 
 ## License
