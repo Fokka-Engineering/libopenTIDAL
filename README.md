@@ -1,11 +1,4 @@
 <p align="center">
-  <a href="https://github.com/openTIDAL/openTIDAL.js" target="_blank">
-    <img src="https://colo.vaaski.com/static/openTIDAL-banner.svg">
-  </a>
-</p>
-<hr>
-
-<p align="center">
   A TIDAL API interface written in C (in development).
 </p>
 
