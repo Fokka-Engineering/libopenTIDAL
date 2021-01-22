@@ -1,0 +1,18 @@
+.TH OTJsonGetArrayItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonGetArrayItem \- Get an element at a given index 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTJsonContainer *OTJsonGetArrayItem (const struct OTJsonContainer *" array ", int " index ");"
+.SH DESCRIPTION
+Call this function to get an element at a given index of an array.
+Check if the OTJsonContainer represents an array with \fIOTJsonIsArray(3)\fP.
+
+Because an array is stored as a linked list, iterating it via index is inefficient (O(n2)),
+so you can iterate over an array using the \fIcJSON_ArrayForEach(3)\fP macro in O(n) time complexity.
+.SH RETURN VALUE
+\fIOTJsonContainer(7)\fP
+.SH "SEE ALSO"
+.BR OTJsonGetArraySize "(3), " OTJsonIsArray "(3), " OTJsonArrayForEach "(3), "
+.BR OTJsonGetObjectItem "(3), " OTJsonGetStringValue "(3), " OTJsonGetObjectItemStringValue "(3) "

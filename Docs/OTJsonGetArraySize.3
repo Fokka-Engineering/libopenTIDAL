@@ -1,0 +1,15 @@
+.TH OTJsonGetArraySize 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonGetArraySize \- Get the size of an array
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonGetArraySize (const struct OTJsonContainer *" array ");"
+.SH DESCRIPTION
+Call this function to get the size of an array or object, this works because internally objects are stored as arrays.
+Check if the OTJsonContainer represents an array with \fIOTJsonIsArray(3)\fP. 
+.SH RETURN VALUE
+Returns the number of items in an array as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonGetArrayItem "(3), " OTJsonGetObjectItem "(3), " OTJsonHasObjectItem "(3), "
+.BR OTJsonArrayForEach "(3), " OTJsonGetStringValue "(3), " OTJsonGetObjectItemStringValue "(3) "

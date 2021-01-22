@@ -69,7 +69,7 @@ OTServiceGetBearerToken (struct OTSessionContainer *session, const char *const d
     struct OTHttpContainer http;
     struct OTContentContainer *content = NULL;
     enum OTHttpTypes reqType = POST;
-    const char *grand_type = "urn:ietf:params:oauth:grant-type:device_code";
+    const char *grant_type = "urn:ietf:params:oauth:grant-type:device_code";
 
     /* Initialise values in structure. */
     OTHttpContainerInit (&http);
@@ -77,8 +77,8 @@ OTServiceGetBearerToken (struct OTSessionContainer *session, const char *const d
     http.type = &reqType;
     http.isAuthRequest = 1;
     if (session->clientId)
-        OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grand_type=%s&device_code=%s",
-                             session->clientId, session->scopes, grand_type, deviceCode);
+        OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grant_type=%s&device_code=%s",
+                             session->clientId, session->scopes, grant_type, deviceCode);
     if (!http.postData)
         {
             isException = 1;
@@ -100,7 +100,7 @@ OTServiceRefreshBearerToken (struct OTSessionContainer *session, const char *con
     struct OTHttpContainer http;
     struct OTContentContainer *content = NULL;
     enum OTHttpTypes reqType = POST;
-    const char *grand_type = "refresh_token";
+    const char *grant_type = "refresh_token";
 
     /* Initialise values in structure. */
     OTHttpContainerInit (&http);
@@ -109,7 +109,7 @@ OTServiceRefreshBearerToken (struct OTSessionContainer *session, const char *con
     http.isAuthRequest = 1;
     if (session->clientId)
         OTConcatenateString (&http.postData, "client_id=%s&scope=%s&grant_type=%s&refresh_token=%s",
-                             session->clientId, session->scopes, grand_type, refreshToken);
+                             session->clientId, session->scopes, grant_type, refreshToken);
     if (!http.postData)
         {
             isException = 1;

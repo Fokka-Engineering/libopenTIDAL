@@ -290,7 +290,7 @@ extern "C"
          * object. */
         char *string;
     };
-
+    ;
 #ifdef __cplusplus
 }
 #endif

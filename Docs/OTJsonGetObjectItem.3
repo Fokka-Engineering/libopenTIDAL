@@ -1,0 +1,15 @@
+.TH OTJsonGetObjectItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonGetObjectItem \- Access an item in an object
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "struct OTJsonContainer *OTJsonGetObjectItem (const struct OTJsonContainer *const " object ", const char *const " string ");"
+.SH DESCRIPTION
+If you want to access an item in an object, use this function.
+This function is standard compliant and follows the JSON standard. It's case sensitive.
+.SH RETURN VALUE
+\fIOTJsonContainer(7)\fP
+.SH "SEE ALSO"
+.BR OTJsonGetObjectItemStringValue "(3), " OTJsonGetStringValue "(3), " OTJsonGetObjectItemNumberValue "(3), "
+.BR OTJsonGetNumberValue "(3), " OTJsonIsObject "(3), " OTJsonHasObjectItem "(3) "
