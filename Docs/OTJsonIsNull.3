@@ -1,0 +1,14 @@
+.TH OTJsonIsNull 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsNull \- Check for a null value
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsNull (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Check an object for a json null value.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsInvalid "(3), " OTJsonIsFalse "(3), " OTJsonIsTrue "(3), "
+.BR OTJsonIsBool "(3), " OTJsonIsNumber "(3), " OTJsonIsString "(3) "

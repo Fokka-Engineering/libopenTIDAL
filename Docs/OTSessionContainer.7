@@ -1,0 +1,40 @@
+.TH OTSessionContainer 7 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTSessionContainer \- openTIDAL session data structure
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.nf
+struct OTSessionContainer
+{
+    char *persistentFileLocation;
+    char *accessToken;
+    char *refreshToken;
+    char *clientId;
+    char *previewClientId;
+    char *clientSecret;
+    char *scopes;
+    char *baseUrl;
+    char *authUrl;
+    char *audioQuality;
+    char *videoQuality;
+    char *countryCode;
+    char *userId;
+    char *locale;
+    char *deviceType;
+    time_t expiresIn;
+    time_t timeFrame;
+    int restrictedMode;
+    int verboseMode;
+    struct OTJsonContainer *tree;
+    struct OTJsonContainer *renewalTree;
+    void *mainHttpHandle;
+};
+.fi
+.SH DESCRIPTION
+libopenTIDAL represents session data using the OTSessionContainer struct data type.
+
+It stores user and authentication values as well as the main libcurl handle.
+.SH "SEE ALSO"
+.BR OTStatus "(7), " OTQuality "(7), " OTTypes "(7), "
+.BR OTJsonContainer "(7), " OTContentContainer "(7), " OTContentStreamContainer "(7) "

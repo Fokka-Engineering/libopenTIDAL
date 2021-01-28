@@ -1,0 +1,16 @@
+.TH OTJsonGetObjectItemNumberValue 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonGetObjectItemNumberValue \- Get an object and its number 
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "double OTJsonGetObjectItemNumberValue (const struct OTJsonContainer *const " object ", const char *const " string ");"
+.SH DESCRIPTION
+Get a number from an object that represents a json number.
+Use the parent object and the string parameter to find the object.
+.SH RETURN VALUE
+If the object is a valid number, a double gets returned.
+Otherwise, a NaN gets returned.
+.SH "SEE ALSO"
+.BR OTJsonGetNumberValue "(3), " OTJsonIsNumber "(3), " OTJsonIsObject "(3), "
+.BR OTJsonArrayForEach "(3), " OTJsonHasObjectItem "(3), " OTJsonIsObject "(3) "

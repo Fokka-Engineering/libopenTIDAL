@@ -1,1 +1,14 @@
-.TH OTJsonGetObjectItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.TH OTJsonHasObjectItem 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonHasObjectItem \- Check if parent has object
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonHasObjectItem (const struct OTJsonContainer *" object ", const char *" string ");"
+.SH DESCRIPTION
+Call this function to check if the parent object has a child with the specified name.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonGetObjectItemStringValue "(3), " OTJsonGetStringValue "(3), " OTJsonGetObjectItemNumberValue "(3), "
+.BR OTJsonGetNumberValue "(3), " OTJsonIsObject "(3), " OTJsonIsObject "(3) "

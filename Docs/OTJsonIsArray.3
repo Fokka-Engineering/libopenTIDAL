@@ -1,0 +1,18 @@
+.TH OTJsonIsArray 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsArray \- Check for an array value
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsArray (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Represent an array value. Check for an array value.
+
+This is implemented by pointing child to a linked list of cJSON items that represent the values in the array.
+The elements are linked together using next and prev, where the first element has prev.next == NULL
+and the last element next == NULL \fIOTJsonContainer(7)\fP.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsString "(3), " OTJsonIsNumber "(3), " OTJsonIsNull "(3), "
+.BR OTJsonIsBool "(3), " OTJsonIsObject "(3), " OTJsonIsInvalid "(3) "

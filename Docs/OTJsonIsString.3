@@ -1,0 +1,16 @@
+.TH OTJsonIsString 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsString \- Check for a string value
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsString (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Represents a string value. Check an object for a json string value.
+
+It is stored in the form of a zero terminated string in valuestring \fIOTJsonContainer(7)\fP.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsNumber "(3), " OTJsonIsArray "(3), " OTJsonIsObject "(3), "
+.BR OTJsonIsBool "(3), " OTJsonIsFalse "(3), " OTJsonIsTrue "(3) "

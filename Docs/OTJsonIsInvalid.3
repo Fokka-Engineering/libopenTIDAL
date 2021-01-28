@@ -1,0 +1,15 @@
+.TH OTJsonIsInvalid 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsInvalid \- Check for an invalid type
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsInvalid (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Represents an invalid item that doesn't contain any value.
+You automatically have this type if you set the item to all zero bytes.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsFalse "(3), " OTJsonIsTrue "(3), " OTJsonIsBool "(3), "
+.BR OTJsonGetObjectItem "(3), " OTJsonIsNull "(3), " OTJsonIsNumber "(3) "

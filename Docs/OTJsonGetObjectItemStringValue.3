@@ -1,0 +1,19 @@
+.TH OTJsonGetObjectItemStringValue 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonGetObjectItemStringValue \- Get an object and its string
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "char *OTJsonGetObjectItemStringValue (const struct OTJsonContainer *const " object ", const char *const " string ");"
+.SH DESCRIPTION
+Get an ASCII string from an object that represents a json string.
+Use the parent object and the string parameter to find the object.
+DO NOT deallocate the ASCII string manually.
+\fIOTDeallocContainer\fP handles \fIOTJsonContainer(7)\fP tree deallocation
+by iterating over the tree and its values.
+.SH RETURN VALUE
+If the object is a valid string, an ASCII string gets returned.
+Otherwise, a NULL pointer gets returned.
+.SH "SEE ALSO"
+.BR OTJsonGetStringValue "(3), " OTJsonIsString "(3), " OTJsonGetNumberValue "(3), "
+.BR OTJsonGetObjectItemNumberValue "(3), " OTJsonGetObjectItem "(3), " OTJsonArrayForEach "(3) "

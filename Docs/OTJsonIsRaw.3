@@ -1,0 +1,19 @@
+.TH OTJsonIsRaw 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsRaw \- Check for a raw value
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsRaw (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Check an object for a raw value.
+
+OTJsonRaw represents any kind of JSON that is stored as a zero terminated array of characters in valuestring.
+This can be used, for example, to avoid printing the same static JSON over and over again to save performance.
+OTJson will never create this type when parsing.
+Also note that OTJson doesn't check if it is valid JSON \fIOTJsonContainer(7)\fP.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsBool "(3), " OTJsonIsNull "(3), " OTJsonIsNumber "(3), "
+.BR OTJsonIsString "(3), " OTJsonIsArray "(3), " OTJsonIsObject "(3) "

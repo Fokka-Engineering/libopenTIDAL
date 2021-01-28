@@ -1,0 +1,20 @@
+.TH OTContentContainer 7 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTContentContainer \- openTIDAL content structure
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.nf
+struct OTContentContainer
+{
+    enum OTStatus status;
+    struct OTJsonContainer *tree;
+};
+.fi
+.SH DESCRIPTION
+libopenTIDAL represents content data using the OTContentContainer struct data type.
+
+It stores the status of the request and the OTJson tree.
+.SH "SEE ALSO"
+.BR OTStatus "(7), " OTQuality "(7), " OTTypes "(7), "
+.BR OTSessionContainer "(7), " OTJsonContainer "(7), " OTContentStreamContainer "(7) "

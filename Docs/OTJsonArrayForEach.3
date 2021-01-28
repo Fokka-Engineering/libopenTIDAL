@@ -1,0 +1,16 @@
+.TH OTJsonArrayForEach 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonArrayForEach \- Iterate over an array
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "#define OTJsonArrayForEach(" element ", " array ") for (element = (array != NULL) ? (array)->child : NULL; element != NULL; element = element->next)"
+.SH DESCRIPTION
+An array is stored as a linked list, iterating it via \fIOTJsonGetArraySize(3)\fP and \fIOTJsonGetArrayItem(3)\fP
+is inefficient (O(n2)), so you can iterate over an array using the \fIOTJsonArrayForEach(3)\fP
+macro in O(n) time complexity.
+.SH RETURN VALUE
+None
+.SH "SEE ALSO"
+.BR OTJsonIsArray "(3), " OTJsonGetArraySize "(3), " OTJsonGetArrayItem "(3), "
+.BR OTJsonGetObjectItem "(3), " OTJsonIsObject "(3), " OTJsonGetStringValue "(3) " 

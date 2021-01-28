@@ -1,0 +1,17 @@
+.TH OTJsonIsNumber 3 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonIsNumber \- Check for a number value
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.BI "int OTJsonIsNumber (const struct OTJsonContainer *const " item ");"
+.SH DESCRIPTION
+Represents a number value. Check an object for a json number value.
+
+The value is stored as a double in valuedouble and also in valueint \fIOTJsonContainer(7)\fP.
+If the number is outside of the range of an integer, INT_MAX or INT_MIN are used for valueint.
+.SH RETURN VALUE
+Returns either 1 or 0 as an integer value.
+.SH "SEE ALSO"
+.BR OTJsonIsInvalid "(3), " OTJsonIsFalse "(3), " OTJsonIsTrue "(3), "
+.BR OTJsonIsString "(3), " OTJsonIsArray "(3), " OTJsonIsObject "(3) "

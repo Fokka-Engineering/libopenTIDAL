@@ -1,0 +1,35 @@
+.TH OTJsonContainer 7 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTJsonContainer \- OTJson data structure
+.SH SYNOPSIS
+.B #include <openTIDAL/openTIDAL.h>
+
+.nf
+struct OTJsonContainer
+{
+    struct OTJsonContainer *next;
+    struct OTJsonContainer *prev;
+
+    struct OTJsonContainer *child;
+    int type;
+
+    char *valuestring;
+    int valueint;
+    char *valueintstring;
+    double valuedouble;
+
+    char *string;
+};
+.fi
+.SH DESCRIPTION
+OTJson represents JSON data using the OTJsonContainer struct data type.
+
+An item of this type represents a JSON value.
+The type is stored in type as a bit-flag
+(this means that you cannot find out the type by just comparing the value of type).
+
+To check the type of an item, use the corresponding OTJsonIs... function.
+It does a NULL check followed by a type check and returns a boolean value if the item is of this type.
+.SH "SEE ALSO"
+.BR OTStatus "(7), " OTQuality "(7), " OTTypes "(7), "
+.BR OTSessionContainer "(7), " OTContentContainer "(7), " OTContentStreamContainer "(7) "
