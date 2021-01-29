@@ -53,6 +53,112 @@ You need to create a http-handle for a new thread.
 Session refresh checks and requests are only available on the main thread.
 
 ### Example
+```yaml
+{
+    "limit": 2,
+    "offset": 0,
+    "totalNumberOfItems": 13,
+    "items": [
+        {
+            "item": {
+                "id": 13479530,
+                "title": "Kyoto, November 5, 1976 (Part 1)",
+                "duration": 2630,
+                "replayGain": -1.81,
+                "peak": 0.974792,
+                "allowStreaming": true,
+                "streamReady": true,
+                "streamStartDate": "2011-11-17T00:00:00.000+0000",
+                "premiumStreamingOnly": false,
+                "trackNumber": 1,
+                "volumeNumber": 1,
+                "version": null,
+                "popularity": 2,
+                "copyright": "℗ 1978 ECM Records GmbH, under exclusive license to Deutsche Grammophon GmbH, Berlin",
+                "url": "http://www.tidal.com/track/13479530",
+                "isrc": "DEB337610001",
+                "editable": false,
+                "explicit": false,
+                "audioQuality": "LOSSLESS",
+                "audioModes": [
+                    "STEREO"
+                ],
+                "artist": {
+                    "id": 1067,
+                    "name": "Keith Jarrett",
+                    "type": "MAIN"
+                },
+                "artists": [
+                    {
+                        "id": 1067,
+                        "name": "Keith Jarrett",
+                        "type": "MAIN"
+                    }
+                ],
+                "album": {
+                    "id": 13479529,
+                    "title": "Sun Bear Concerts",
+                    "cover": "02626326-d09d-4cdb-a301-8bad4b92f0e3",
+                    "videoCover": null
+                },
+                "mixes": {
+                    "TRACK_MIX": "00127d57b8ec246edef3d011a6cf9d"
+                }
+            },
+            "type": "track"
+        },
+        {
+            "item": {
+                "id": 13479531,
+                "title": "Kyoto, November 5, 1976 (Part 2)",
+                "duration": 2045,
+                "replayGain": -1.81,
+                "peak": 0.97055,
+                "allowStreaming": true,
+                "streamReady": true,
+                "streamStartDate": "2011-11-17T00:00:00.000+0000",
+                "premiumStreamingOnly": false,
+                "trackNumber": 2,
+                "volumeNumber": 1,
+                "version": null,
+                "popularity": 1,
+                "copyright": "℗ 1978 ECM Records GmbH, under exclusive license to Deutsche Grammophon GmbH, Berlin",
+                "url": "http://www.tidal.com/track/13479531",
+                "isrc": "DEB337610002",
+                "editable": false,
+                "explicit": false,
+                "audioQuality": "LOSSLESS",
+                "audioModes": [
+                    "STEREO"
+                ],
+                "artist": {
+                    "id": 1067,
+                    "name": "Keith Jarrett",
+                    "type": "MAIN"
+                },
+                "artists": [
+                    {
+                        "id": 1067,
+                        "name": "Keith Jarrett",
+                        "type": "MAIN"
+                    }
+                ],
+                "album": {
+                    "id": 13479529,
+                    "title": "Sun Bear Concerts",
+                    "cover": "02626326-d09d-4cdb-a301-8bad4b92f0e3",
+                    "videoCover": null
+                },
+                "mixes": {
+                    "TRACK_MIX": "001cff6bf35a3a7650cb60ad6f708b"
+                }
+            },
+            "type": "track"
+        }
+    ]
+}
+```
+
 ```c
 struct OTSessionContainer *session = NULL;
 struct OTContentContainer *content = NULL;
@@ -70,7 +176,7 @@ if (!session)
 if (!(OTSessionClientPair (session, clientId, clientSecret) == 0))
     return -1;
 
-const int limit = 10;
+const int limit = 2;
 const int offset = 0;
 const char *id = "13479529";
 
