@@ -80,7 +80,7 @@ $ dnf install libcurl-devel
 ```
 
 ##### Wiki
-I'm still working on a detailed wiki that documents every function. Meanwhile check out the [docs](docs) folder!
+[HTML Documentation](https://mirror.nuntius.dev/docs/libopenTIDAL/)
 
 ## Disclaimer
 
@@ -89,4 +89,4 @@ I deeply discourage you from building and distributing copyright-infringing apps
 ## Credits
 * cURL (Daniel Stenberg & Contributors)
 * cJSON (Dave Gamble & Contributors)
-* Base64 (Apple Inc.)
+* Base64 (The Apache Group.)
