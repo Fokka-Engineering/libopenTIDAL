@@ -29,42 +29,50 @@
 int
 main (void)
 {
-    struct OTSessionContainer *session;
-    struct OTContentContainer *content;
-    enum OTTypes type = CONTENT_CONTAINER;
+    struct OTSessionContainer *session = NULL;
+    struct OTContentContainer *content = NULL;
+
+    /* Create a new libopenTIDAL session. */
     session = OTSessionInit ();
     if (!session)
         return -1;
 
+    /* Specify the clientId and clientSecret. */
     if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
         return -1;
 
-    content = OTServiceGetStandard (session, "albums", "items", "13479529", 10, 0, NULL);
+    const int limit = 10;
+    const int offset = 0;
+    const char *id = "13479529";
+    /* Request the artefacts in an album with the following parameters:
+     * (session, prefix, suffix, id, limit, offset, threadHandle) */
+    content = OTServiceGetStandard (session, "albums", "items", id, limit, offset, NULL);
     if (content)
         {
-            printf ("Response Not NULL\n");
             if (content->status == SUCCESS)
                 {
-                    struct OTJsonContainer *totalNumberOfItems = NULL;
                     struct OTJsonContainer *items = NULL;
                     struct OTJsonContainer *item = NULL;
-                    totalNumberOfItems = OTJsonGetObjectItem (content->tree, "totalNumberOfItems");
+
+                    /* You might want to check for NaN. */
+                    double totalNumberOfItems
+                        = OTJsonGetObjectItemNumberValue (content->tree, "totalNumberOfItems");
+                    printf ("TotalNumberOfItems: %d\n", (int)totalNumberOfItems);
+
                     items = OTJsonGetObjectItem (content->tree, "items");
-                    printf ("totalNumberOfItems: %d\n",
-                            (int)OTJsonGetNumberValue (totalNumberOfItems));
-                    printf ("arraySize: %d\n", OTJsonGetArraySize (items));
                     OTJsonArrayForEach (item, items)
                     {
                         struct OTJsonContainer *innerItem = NULL;
-                        struct OTJsonContainer *title = NULL;
                         innerItem = OTJsonGetObjectItem (item, "item");
-                        title = OTJsonGetObjectItem (innerItem, "title");
-                        printf ("Title: %s\n", OTJsonGetStringValue (title));
+
+                        char *title = OTJsonGetObjectItemStringValue (innerItem, "title");
+                        if (title)
+                            printf ("Title: %s\n", title);
                     }
                 }
         }
 
-    OTDeallocContainer (content, type);
+    OTDeallocContainer (content, CONTENT_CONTAINER);
     OTSessionCleanup (session);
     return 0;
 }
