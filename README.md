@@ -53,6 +53,60 @@ You need to create a http-handle for a new thread.
 Session refresh checks and requests are only available on the main thread.
 
 ### Example
+Simple request without user authorisation.
+```c
+struct OTSessionContainer *session = NULL;
+struct OTContentContainer *content = NULL;
+
+/* This is an old (Lossless Only) clientPair provided for the example. */
+const char *clientId = "OmDtrzFgyVVL6uW56OnFA2COiabqm";
+const char *clientSecret = "zxen1r3pO0hgtOC7j6twMo9UAqngGrmRiWpV7QC1zJ8=";
+
+/* Create a new libopenTIDAL session. */
+session = OTSessionInit ();
+if (!session)
+    return -1;
+
+/* Specify the clientId and clientSecret. */
+if (!(OTSessionClientPair (session, clientId, clientSecret) == 0))
+    return -1;
+
+const int limit = 2;
+const int offset = 0;
+const char *id = "13479529";
+
+/* Request the artefacts in an album with the following parameters:
+ * (session, prefix, suffix, id, limit, offset, threadHandle) */
+content = OTServiceGetStandard (session, "albums", "items", id, limit, offset, NULL);
+if (content)
+    {
+        if (content->status == SUCCESS)
+            {
+                struct OTJsonContainer *items = NULL;
+                struct OTJsonContainer *item = NULL;
+
+                /* You might want to check for NaN. */
+                double totalNumberOfItems
+                    = OTJsonGetObjectItemNumberValue (content->tree, "totalNumberOfItems");
+                printf ("TotalNumberOfItems: %d\n", (int)totalNumberOfItems);
+
+                items = OTJsonGetObjectItem (content->tree, "items");
+                OTJsonArrayForEach (item, items)
+                {
+                    struct OTJsonContainer *innerItem = NULL;
+                    innerItem = OTJsonGetObjectItem (item, "item");
+
+                    char *title = OTJsonGetObjectItemStringValue (innerItem, "title");
+                    if (title)
+                        printf ("Title: %s\n", title);
+                }
+            }
+    }
+
+OTDeallocContainer (content, CONTENT_CONTAINER);
+OTSessionCleanup (session);
+```
+The JSON response that was parsed:
 ```yaml
 {
     "limit": 2,
@@ -159,58 +213,6 @@ Session refresh checks and requests are only available on the main thread.
 }
 ```
 
-```c
-struct OTSessionContainer *session = NULL;
-struct OTContentContainer *content = NULL;
-
-/* This is an old (Lossless Only) clientPair provided for the example. */
-const char *clientId = "OmDtrzFgyVVL6uW56OnFA2COiabqm";
-const char *clientSecret = "zxen1r3pO0hgtOC7j6twMo9UAqngGrmRiWpV7QC1zJ8=";
-
-/* Create a new libopenTIDAL session. */
-session = OTSessionInit ();
-if (!session)
-    return -1;
-
-/* Specify the clientId and clientSecret. */
-if (!(OTSessionClientPair (session, clientId, clientSecret) == 0))
-    return -1;
-
-const int limit = 2;
-const int offset = 0;
-const char *id = "13479529";
-
-/* Request the artefacts in an album with the following parameters:
- * (session, prefix, suffix, id, limit, offset, threadHandle) */
-content = OTServiceGetStandard (session, "albums", "items", id, limit, offset, NULL);
-if (content)
-    {
-        if (content->status == SUCCESS)
-            {
-                struct OTJsonContainer *items = NULL;
-                struct OTJsonContainer *item = NULL;
-
-                /* You might want to check for NaN. */
-                double totalNumberOfItems
-                    = OTJsonGetObjectItemNumberValue (content->tree, "totalNumberOfItems");
-                printf ("TotalNumberOfItems: %d\n", (int)totalNumberOfItems);
-
-                items = OTJsonGetObjectItem (content->tree, "items");
-                OTJsonArrayForEach (item, items)
-                {
-                    struct OTJsonContainer *innerItem = NULL;
-                    innerItem = OTJsonGetObjectItem (item, "item");
-
-                    char *title = OTJsonGetObjectItemStringValue (innerItem, "title");
-                    if (title)
-                        printf ("Title: %s\n", title);
-                }
-            }
-    }
-
-OTDeallocContainer (content, CONTENT_CONTAINER);
-OTSessionCleanup (session);
-```
 
 ### Building
 Currently the compilation has only been tested on macOS and GNU/Linux. Keep in mind that the Makefile is currently macOS/LINUX/UNIX only. It generates a dylib.
