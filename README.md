@@ -47,6 +47,9 @@ A python module using openTIDAL is also available and easy to install (currently
 * Content HTTP Streams (Audio & Video)
 * Easy and Extensive Error Handling
 
+### Wiki
+[HTML Documentation](https://mirror.nuntius.dev/docs/libopenTIDAL/)
+
 ### Thread Safety
 openTIDAL is thread safe.
 You need to create a http-handle for a new thread.
@@ -240,9 +243,6 @@ On CentOS:
 ```
 $ dnf install libcurl-devel
 ```
-
-##### Wiki
-[HTML Documentation](https://mirror.nuntius.dev/docs/libopenTIDAL/)
 
 ## Disclaimer
 
