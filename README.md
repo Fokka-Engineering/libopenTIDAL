@@ -1,5 +1,5 @@
 <p align="center">
-  A TIDAL API interface written in C (in development).
+  A TIDAL API interface written in C.
 </p>
 
 ## License
