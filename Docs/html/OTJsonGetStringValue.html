@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTJsonGetStringValue man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTJsonGetStringValue - Get string from object <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
+<p class="level0"><span Class="bold">&#35;include &lt;openTIDAL/openTIDAL.h&gt;</span> 
+<p class="level0"><span Class="bold">char *OTJsonGetStringValue (const struct OTJsonContainer *const </span><span Class="emphasis">item</span><span Class="bold">);</span> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0">Get an ASCII string from an object that represents a json string. Instead of calling <a Class="emphasis" href="./OTJsonGetObjectItem.html">OTJsonGetObjectItem</a> use <a Class="emphasis" href="./OTJsonGetObjectItemStringValue.html">OTJsonGetObjectItemStringValue</a> to find the object. DO NOT deallocate the ASCII string manually. <span Class="emphasis">OTDeallocContainer</span> handles <a Class="emphasis" href="./OTJsonContainer.html">OTJsonContainer</a> tree deallocation by iterating over the tree and its values. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">If the object is a valid string an ASCII string gets returned. Otherwise, a NULL pointer gets returned. <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTJsonGetObjectItemStringValue.html">OTJsonGetObjectItemStringValue</a>(3), <a Class="bold" href="./OTJsonGetNumberValue.html">OTJsonGetNumberValue</a>(3), <a Class="bold" href="./OTJsonGetObjectItemNumberValue.html">OTJsonGetObjectItemNumberValue</a>(3),  <a Class="bold" href="./OTJsonGetObjectItem.html">OTJsonGetObjectItem</a>(3), <a Class="bold" href="./OTJsonHasObjectItem.html">OTJsonHasObjectItem</a>(3), <a Class="bold" href="./OTJsonIsString.html">OTJsonIsString</a>(3)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>

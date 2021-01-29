@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTJsonArrayForEach man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTJsonArrayForEach - Iterate over an array <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
+<p class="level0"><span Class="bold">&#35;include &lt;openTIDAL/openTIDAL.h&gt;</span> 
+<p class="level0"><span Class="bold">&#35;define OTJsonArrayForEach(</span><span Class="emphasis">element</span><span Class="bold">, </span><span Class="emphasis">array</span><span Class="bold">) for (element = (array != NULL) ? (array)-&gt;child : NULL; element != NULL; element = element-&gt;next)</span> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0">An array is stored as a linked list, iterating it via <a Class="emphasis" href="./OTJsonGetArraySize.html">OTJsonGetArraySize</a> and <a Class="emphasis" href="./OTJsonGetArrayItem.html">OTJsonGetArrayItem</a> is inefficient (O(n2)), so you can iterate over an array using the <a Class="emphasis" href="./OTJsonArrayForEach.html">OTJsonArrayForEach</a> macro in O(n) time complexity. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">None <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTJsonIsArray.html">OTJsonIsArray</a>(3), <a Class="bold" href="./OTJsonGetArraySize.html">OTJsonGetArraySize</a>(3), <a Class="bold" href="./OTJsonGetArrayItem.html">OTJsonGetArrayItem</a>(3),  <a Class="bold" href="./OTJsonGetObjectItem.html">OTJsonGetObjectItem</a>(3), <a Class="bold" href="./OTJsonIsObject.html">OTJsonIsObject</a>(3), <a Class="bold" href="./OTJsonGetStringValue.html">OTJsonGetStringValue</a>(3)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>

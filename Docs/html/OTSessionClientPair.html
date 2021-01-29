@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTSessionClientPair man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTSessionClientPair - Specify the OAuth2 clientId and clientSecret <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
+<p class="level0"><span Class="bold">&#35;include &lt;openTIDAL/openTIDAL.h&gt;</span> 
+<p class="level0"><span Class="bold">int OTSessionClientPair (const char *const </span><span Class="emphasis">clientId</span><span Class="bold">, const char *const </span><span Class="emphasis">clientSecret</span><span Class="bold">);</span> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0"><span Class="bold">libopenTIDAL</span>(3) uses TIDALs OAuth2 authorisation service to authenticate with the TIDAL API. For this to work you need a clientId and a clientSecret.  
+<p class="level0"><span class="bold">Note: The clientSecret is only required if one plans to use the auth and user-based services.</span> 
+<p class="level0">The device authorisation grant is not enabled in all clientIds. You need a clientId/clientSecret pair that was generated to be used in restricted-input or browserless devices/applications. Standard webflow pairs will throw an error. 
+<p class="level0">Features like preview track/video streams are only available in the restrictedMode with the web clientId/clientSecret pair. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">If successful <a Class="emphasis" href="./OTSessionClientPair.html">OTSessionClientPair</a> returns 0. 
+<p class="level0">If an MALLOC error occurred <a Class="emphasis" href="./OTSessionClientPair.html">OTSessionClientPair</a> returns -1. <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTSessionCleanup.html">OTSessionCleanup</a>(3), <a Class="bold" href="./OTSessionLogin.html">OTSessionLogin</a>(3), <a Class="bold" href="./OTSessionChangeQuality.html">OTSessionChangeQuality</a>(3),  <a Class="bold" href="./OTSessionWriteChanges.html">OTSessionWriteChanges</a>(3), <a Class="bold" href="./OTPersistentCreate.html">OTPersistentCreate</a>(3)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>

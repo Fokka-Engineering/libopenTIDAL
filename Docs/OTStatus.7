@@ -1,0 +1,57 @@
+.TH OTStatus 7 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTStatus \- Status codes 
+.SH DESCRIPTION
+This man page includes all available status codes in libopenTIDAL.
+Why they occur and possibly what you can do to fix the problem are also included.
+.SH "OTStatus"
+All service functions return a OTStatus code.
+
+OTStatus is one of the following:
+.IP "SUCCESS (0)"
+All fine. Proceed as usual.
+.IP "CURL_NOT_OK (1)"
+libcurl returned an error code. Abort.
+.IP "BAD_REQUEST (2)"
+A HTTP 400 response.
+The server could not understand the request due to invalid syntax.
+Use the returned json tree to parse TIDAL specific error codes.
+.IP "UNAUTHORISED (3)"
+A HTTP 401 response.
+Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated".
+That is, the client must authenticate itself to get the requested response.
+Use the returned json tree to parse TIDAL specific error codes.
+.IP "EXPIRED_SESSION (4)"
+If a libopenTIDAL OAuth2 session expires and the refresh request fails this error occurres.
+Abort. Refresh the session manually or repeat the previous service call.
+.IP "ARTEFACT_NOT_FOUND (5)"
+The artefact you requested does not exist.
+This happens if you use the track streaming service function for a video artefact or vice-versa.
+.IP "ASSET_NOT_READY_FOR_PLAYBACK (6)"
+Make sure that the streamReady and allowStreaming boolean in the track metadata response are true.
+Did you request a preview with a paid user-account?
+.IP "PRECONDITION_FAILED (7)"
+The If-None-Match header key (entity-tag) is invalid.
+The entity-tag is used for optimistic concurrency control,
+as a way to help prevent simultaneous updates of a resource from overwriting each other. 
+Applied with the http header key "If-None-Match". Abort.
+.IP "REDIRECT (8)"
+A generic HTTP 3xx response.
+.IP "CLIENT_ERROR (9)"
+A generic HTTP 4xx response.
+Use the returned json tree to parse TIDAL specific error codes.
+.IP "SERVER_ERROR (10)"
+A generic HTTP 5xx response.
+Use the returned json tree to parse TIDAL specific error codes.
+.IP "MALLOC_ERROR (11)"
+This error occurres if either the returned content is not allocated correctly or the JSON parser returned NULL. Abort.
+.IP "UNKNOWN_MANIFEST_MIMETYPE (12)"
+This error occurres if the manifestMimeType is not application/vnd.tidal.bts.
+application/vnd.tidal.bts is a vendor specific manifest. The content is represented in a JSON.
+Only this mimetype returns a direct stream url.
+The encrypted CENC streams, the application/dash+xml (MPEG DASH) manifest, is only used by the web app.
+Abort.
+.IP "UNKNOWN (13)"
+.SH "SEE ALSO"
+.BR OTSessionContainer "(7), " OTContentContainer "(7), " OTContentStreamContainer "(7), "
+.BR OTQuality "(7), " OTTypes "(7) "

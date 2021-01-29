@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTServiceAddFavorite man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTServiceAddFavorite - Manipulate favorites <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
+<p class="level0"><span Class="bold">&#35;include &lt;openTIDAL/openTIDAL.h&gt;</span> 
+<p class="level0"><span Class="bold">enum OTStatus OTServiceAddFavorite (struct OTSessionContainer *</span><span Class="emphasis">session</span><span Class="bold">, const char *const </span><span Class="emphasis">suffix</span><span Class="bold">, const char *</span><span Class="emphasis">itemId</span><span Class="bold">, const char *</span><span Class="emphasis">onArtifactNotFound</span><span Class="bold">, void *</span><span Class="emphasis">threadHandle</span><span Class="bold">);</span> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0">The OTServiceAddFavorite service function adds an artefact to the user-based favorite section. 
+<p class="level0"><pre class="level0">
+<span class="bold">Suffixes</span> 
+</pre>
+
+<p class="level0">&quot;albums&quot;, &quot;tracks&quot;, &quot;videos&quot;, &quot;artists&quot;, &quot;playlists&quot;, &quot;mixes&quot; 
+<p class="level0">The ArtifactNotFound parameter alters the behaviour of the TIDAL API, not finding the artefact. When adding an array of artefacts, one might choose to skip the missing artefact (Enum: &quot;SKIP&quot;) instead of giving up (ENUM: &quot;FAIL&quot;). 
+<p class="level0"><pre class="level0">
+<span class="bold">Thread Handle</span> 
+</pre>
+
+<p class="level0">You must never share the same handle in multiple threads. You can pass the handles around among threads, but you must never use a single handle from more than one thread at any given time. 
+<p class="level0">Use the session main handle by parsing a NULL pointer. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0"><a Class="emphasis" href="./OTStatus.html">OTStatus</a> <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTServiceDeleteFavorite.html">OTServiceDeleteFavorite</a>(3), <a Class="bold" href="./OTServiceAddFavorites.html">OTServiceAddFavorites</a>(3), <a Class="bold" href="./OTServiceGetFavorites.html">OTServiceGetFavorites</a>(3)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>

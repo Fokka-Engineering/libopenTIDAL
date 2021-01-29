@@ -1,0 +1,30 @@
+.TH OTQuality 7 "11 Jan 2021" "libopenTIDAL 1.0.0" "libopenTIDAL Manual"
+.SH NAME
+OTQuality \- Streaming quality enums
+.SH DESCRIPTION
+This man page includes all available streaming quality codes in libopenTIDAL.
+Their corresponding codecs and bitrates/samplerates are also included.
+.SH "OTQuality"
+The actual bitrate/framerate or resolution might differ depending on the used clientId
+or the requested artefact.
+
+.IP "AUDIO_LOW (0)"
+Advanced Audio Coding (AAC+) @ 96 kbps.
+.IP "AUDIO_HIGH (1)"
+Advanced Audio Coding (AAC) @ 320 kbps.
+.IP "AUDIO_LOSSLESS (2)"
+Free Lossless Audio Codec (FLAC) @ 1411 kbps, 16bit/44.1kHz.
+.IP "AUDIO_HI_RES (3)"
+Free Lossless Audio Codec (FLAC) + MQA Encoding @ 24bit/96kHz.
+.IP "VIDEO_AUDIO_ONLY (4)"
+High-Efficiency Advanced Audio Coding (AAC, mp4a.40.5).
+.IP "VIDEO_LOW (5)"
+Low-Complexity Advanced Audio Coding (AAC, mp4a.40.2) with H264 video (avc1.42001e) @ 320x180 25fps.
+.IP "VIDEO_MEDIUM (6)"
+Low-Complexity Advanced Audio Coding (AAC, mp4a.40.2) with H264 video (avc1.4d001f) @ 640x360 25fps.
+.IP "VIDEO_HIGH (7)"
+HTTP Live Streaming (HLS) H264 with multiple video and audio feeds.
+From 1920x1080 25fps @ 10173 kbps to 320x180 12.5fps @ 318 kbps.
+.SH "SEE ALSO"
+.BR OTSessionContainer "(7), " OTContentContainer "(7), " OTContentStreamContainer "(7), "
+.BR OTQuality "(7), " OTStatus "(7) "

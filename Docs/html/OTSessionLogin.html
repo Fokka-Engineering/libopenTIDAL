@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTSessionLogin man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTSessionLogin - Loads a persistent config file <a name="SYNOPSIS"></a><h2 class="nroffsh">SYNOPSIS</h2>
+<p class="level0"><span Class="bold">&#35;include &lt;openTIDAL/openTIDAL.h&gt;</span> 
+<p class="level0"><span Class="bold">int OTSessionLogin (struct OTSessionContainer *const </span><span Class="emphasis">session</span><span Class="bold">, const char *const </span><span Class="emphasis">location</span><span Class="bold">);</span> <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0">Specify the location of the <span Class="bold">libopenTIDAL</span>(3) persistent session configuration file. The persistent session config stores the oAuth2.0 refresh- and access-token, the user-id and other important configuration values. It should be stored in a secure location. Read and write permissions are needed. 
+<p class="level0">If successful, http requests will use the parsed accessToken and keep track of the renewal-process. The user has now access to user-based service endpoints. <a name="RETURN"></a><h2 class="nroffsh">RETURN VALUE</h2>
+<p class="level0">Status (0) means everything  was  ok. If a parsing error occurred Status (-1). <a name="EXAMPLE"></a><h2 class="nroffsh">EXAMPLE</h2>
+<p class="level0"><pre class="level0">
+struct OTSessionContainer *session = OTSessionInit ();
+if (session)
+&nbsp;   {
+&nbsp;       OTSessionClientPair ({clientId}, {clientSecret}); 
+&nbsp;       /* do smth with the session if OTSessionClientPair returns 0 */
+&nbsp;       int status = OTSessionLogin (session, &quot;/path/to/persistent/config&quot;);
+&nbsp;       if (status == 0)
+&nbsp;           {
+&nbsp;               /* Parsing successful! */
+&nbsp;           }
+&nbsp;   }
+OTSessionCleanup (session);
+</pre>
+
+<p class="level0"><a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTSessionCleanup.html">OTSessionCleanup</a>(3), <a Class="bold" href="./OTSessionChangeQuality.html">OTSessionChangeQuality</a>(3), <a Class="bold" href="./OTSessionWriteChanges.html">OTSessionWriteChanges</a>(3),  <a Class="bold" href="./OTSessionRefresh.html">OTSessionRefresh</a>(3)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>

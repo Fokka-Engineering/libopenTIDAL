@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<title>OTQuality man page</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope">
+<meta name="generator" content="roffit">
+<STYLE type="text/css">
+body {
+  font-family: Manrope;
+}
+
+pre {
+  overflow: auto;
+  margin: 0;
+}
+
+P.level0, pre.level0 {
+ padding-left: 2em;
+}
+
+P.level1, pre.level1 {
+ padding-left: 4em;
+}
+
+P.level2, pre.level2 {
+ padding-left: 6em;
+}
+
+span.emphasis {
+ font-style: italic;
+}
+
+span.bold {
+ font-weight: bold;
+}
+
+span.manpage {
+ font-weight: bold;
+}
+
+h2.nroffsh {
+ background-color: #e0e0e0;
+}
+
+span.nroffip {
+ font-weight: bold;
+ font-size: 120%;
+ font-family: monospace;
+}
+
+p.roffit {
+ text-align: center;
+ font-size: 80%;
+}
+</STYLE>
+</head><body>
+
+<p class="level0"><a name="NAME"></a><h2 class="nroffsh">NAME</h2>
+<p class="level0">OTQuality - Streaming quality enums <a name="DESCRIPTION"></a><h2 class="nroffsh">DESCRIPTION</h2>
+<p class="level0">This man page includes all available streaming quality codes in libopenTIDAL. Their corresponding codecs and bitrates/samplerates are also included. <a name="OTQuality"></a><h2 class="nroffsh">OTQuality</h2>
+<p class="level0">The actual bitrate/framerate or resolution might differ depending on the used clientId or the requested artefact. 
+<p class="level0">
+<p class="level0"><a name="AUDIOLOW"></a><span class="nroffip">AUDIO_LOW (0)</span> 
+<p class="level1">Advanced Audio Coding (AAC+) @ 96 kbps. 
+<p class="level0"><a name="AUDIOHIGH"></a><span class="nroffip">AUDIO_HIGH (1)</span> 
+<p class="level1">Advanced Audio Coding (AAC) @ 320 kbps. 
+<p class="level0"><a name="AUDIOLOSSLESS"></a><span class="nroffip">AUDIO_LOSSLESS (2)</span> 
+<p class="level1">Free Lossless Audio Codec (FLAC) @ 1411 kbps, 16bit/44.1kHz. 
+<p class="level0"><a name="AUDIOHIRES"></a><span class="nroffip">AUDIO_HI_RES (3)</span> 
+<p class="level1">Free Lossless Audio Codec (FLAC) + MQA Encoding @ 24bit/96kHz. 
+<p class="level0"><a name="VIDEOAUDIOONLY"></a><span class="nroffip">VIDEO_AUDIO_ONLY (4)</span> 
+<p class="level1">High-Efficiency Advanced Audio Coding (AAC, mp4a.40.5). 
+<p class="level0"><a name="VIDEOLOW"></a><span class="nroffip">VIDEO_LOW (5)</span> 
+<p class="level1">Low-Complexity Advanced Audio Coding (AAC, mp4a.40.2) with H264 video (avc1.42001e) @ 320x180 25fps. 
+<p class="level0"><a name="VIDEOMEDIUM"></a><span class="nroffip">VIDEO_MEDIUM (6)</span> 
+<p class="level1">Low-Complexity Advanced Audio Coding (AAC, mp4a.40.2) with H264 video (avc1.4d001f) @ 640x360 25fps. 
+<p class="level0"><a name="VIDEOHIGH"></a><span class="nroffip">VIDEO_HIGH (7)</span> 
+<p class="level1">HTTP Live Streaming (HLS) H264 with multiple video and audio feeds. From 1920x1080 25fps @ 10173 kbps to 320x180 12.5fps @ 318 kbps. <a name="SEE"></a><h2 class="nroffsh">SEE ALSO</h2>
+<p class="level0"><a Class="bold" href="./OTSessionContainer.html">OTSessionContainer</a>(7), <a Class="bold" href="./OTContentContainer.html">OTContentContainer</a>(7), <a Class="bold" href="./OTContentStreamContainer.html">OTContentStreamContainer</a>(7),  <a class="bold" href="#OTQuality">OTQuality</a>(7), <a Class="bold" href="./OTStatus.html">OTStatus</a>(7)  <p class="roffit">
+ This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
+</body></html>
