@@ -130,8 +130,7 @@ OTServiceLogout (struct OTSessionContainer *session, void *threadHandle)
     enum OTHttpTypes reqType = POST;
     enum OTStatus status = UNKNOWN;
 
-    if (session->restrictedMode)
-        return status;
+    if (session->restrictedMode) return status;
 
     /* Initialise values in structure. */
     OTHttpContainerInit (&http);
