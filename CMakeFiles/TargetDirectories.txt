@@ -1,7 +1,0 @@
-/home/hugo/git/libopenTIDAL/CMakeFiles/install/strip.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/install/local.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/install.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/list_install_components.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/rebuild_cache.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/edit_cache.dir
-/home/hugo/git/libopenTIDAL/CMakeFiles/openTIDAL.dir
