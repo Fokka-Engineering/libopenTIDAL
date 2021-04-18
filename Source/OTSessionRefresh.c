@@ -38,7 +38,7 @@ OTSessionRefresh (struct OTSessionContainer *session)
     struct OTContentContainer *req;
 
     if (session->verboseMode)
-        printf ("* Compare OAuth2 accessToken timestamp with SystemRTC timestamp...\n");
+        fprintf (stderr, "* Compare OAuth2 accessToken timestamp with SystemRTC timestamp...\n");
 
     if (session->restrictedMode) goto end;
 
@@ -52,13 +52,14 @@ OTSessionRefresh (struct OTSessionContainer *session)
      */
     if (!(currentTimeStamp < session->expiresIn && (time_t)diffTimeStamp >= 300))
         {
-            if (session->verboseMode) printf ("* Performing OTServiceRefreshBearerToken...\n");
+            if (session->verboseMode)
+                fprintf (stderr, "* Performing OTServiceRefreshBearerToken...\n");
             req = OTServiceRefreshBearerToken (session, session->refreshToken, NULL);
             if (req)
                 {
                     if (req->status == SUCCESS)
                         {
-                            if (session->verboseMode) printf ("* Parse JSON...\n");
+                            if (session->verboseMode) fprintf (stderr, "* Parse JSON...\n");
 
                             struct OTJsonContainer *accessToken = NULL;
                             struct OTJsonContainer *timeFrame = NULL;
@@ -82,7 +83,8 @@ OTSessionRefresh (struct OTSessionContainer *session)
                                     session->accessToken = accessTokenString;
                                     session->expiresIn = currentTimeStamp + timeFrameNumber;
                                     /* Update config. */
-                                    if (session->verboseMode) printf ("* Write to config...\n");
+                                    if (session->verboseMode)
+                                        fprintf (stderr, "* Write to config...\n");
                                     OTPersistentCreate (session, session->persistentFileLocation);
                                 }
                             else

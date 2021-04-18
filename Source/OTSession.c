@@ -166,7 +166,7 @@ OTSessionCleanup (struct OTSessionContainer *session)
 {
     if (session)
         {
-            if (session->verboseMode) printf ("* Free OTSessionContainer\n");
+            if (session->verboseMode) fprintf (stderr, "* Free OTSessionContainer\n");
             free (session->clientId);
             free (session->clientSecret);
             curl_easy_cleanup (session->mainHttpHandle);

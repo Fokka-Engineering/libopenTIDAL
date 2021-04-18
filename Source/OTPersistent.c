@@ -42,20 +42,18 @@ OTPersistentCreate (const struct OTSessionContainer *const session, const char *
             char *stream;
 
             if (session->verboseMode)
-                printf ("* Create file-handle and create config at location.\n");
+                fprintf (stderr, "* Create file-handle and create config at location.\n");
 
             fp = fopen (location, "w");
-            if (!fp)
-                return -1;
+            if (!fp) return -1;
 
-            if (session->verboseMode)
-                printf ("* Create json stream.\n");
+            if (session->verboseMode) fprintf (stderr, "* Create json stream.\n");
 
             stream = OTPersistentStream (session);
             if (!stream)
                 {
                     if (session->verboseMode)
-                        printf ("* Failed to create json stream. Aborting...\n");
+                        fprintf (stderr, "* Failed to create json stream. Aborting...\n");
 
                     fclose (fp);
                     return -1;
@@ -89,14 +87,12 @@ OTPersistentStream (const struct OTSessionContainer *const session)
 
     /* Create json root object. */
     struct OTJsonContainer *json = OTJsonCreateObject ();
-    if (!json)
-        goto end;
+    if (!json) goto end;
 
     /* Create json objects. */
     authorisation = OTJsonCreateObject ();
     user = OTJsonCreateObject ();
-    if (!authorisation || !user)
-        goto end;
+    if (!authorisation || !user) goto end;
 
     /* If successful, the ownership of the pointer is transferred
      * to the OTJsonContainer */
@@ -107,64 +103,55 @@ OTPersistentStream (const struct OTSessionContainer *const session)
     if (session->accessToken)
         {
             accessToken = OTJsonCreateString (session->accessToken);
-            if (!accessToken)
-                goto end;
+            if (!accessToken) goto end;
             OTJsonAddItemToObject (authorisation, "accessToken", accessToken);
         }
     if (session->refreshToken)
         {
             refreshToken = OTJsonCreateString (session->refreshToken);
-            if (!refreshToken)
-                goto end;
+            if (!refreshToken) goto end;
             OTJsonAddItemToObject (authorisation, "refreshToken", refreshToken);
         }
     if (session->expiresIn)
         {
             expiresIn = OTJsonCreateNumber (session->expiresIn);
-            if (!expiresIn)
-                goto end;
+            if (!expiresIn) goto end;
             OTJsonAddItemToObject (authorisation, "expiresIn", expiresIn);
         }
     if (session->timeFrame)
         {
             timeFrame = OTJsonCreateNumber (session->timeFrame);
-            if (!timeFrame)
-                goto end;
+            if (!timeFrame) goto end;
             OTJsonAddItemToObject (authorisation, "timeFrame", timeFrame);
         }
     if (session->userId)
         {
             id = OTJsonCreateString (session->userId);
-            if (!id)
-                goto end;
+            if (!id) goto end;
             OTJsonAddItemToObject (user, "id", id);
         }
     if (session->countryCode)
         {
             countryCode = OTJsonCreateString (session->countryCode);
-            if (!countryCode)
-                goto end;
+            if (!countryCode) goto end;
             OTJsonAddItemToObject (user, "countryCode", countryCode);
         }
     if (session->locale)
         {
             locale = OTJsonCreateString (session->locale);
-            if (!locale)
-                goto end;
+            if (!locale) goto end;
             OTJsonAddItemToObject (user, "locale", locale);
         }
     if (session->audioQuality)
         {
             audioQuality = OTJsonCreateString (session->audioQuality);
-            if (!audioQuality)
-                goto end;
+            if (!audioQuality) goto end;
             OTJsonAddItemToObject (user, "audioQuality", audioQuality);
         }
     if (session->videoQuality)
         {
             videoQuality = OTJsonCreateString (session->videoQuality);
-            if (!videoQuality)
-                goto end;
+            if (!videoQuality) goto end;
             OTJsonAddItemToObject (user, "videoQuality", videoQuality);
         }
 
@@ -187,8 +174,7 @@ OTPersistentLoad (const struct OTSessionContainer *const session)
             size_t size = 0;
             char *ptr = NULL;
             fp = fopen (session->persistentFileLocation, "r");
-            if (!fp)
-                return NULL;
+            if (!fp) return NULL;
 
             fseek (fp, 0L, SEEK_END);
             size = ftell (fp);
@@ -225,8 +211,7 @@ OTPersistentParse (struct OTSessionContainer *const session, const char *stream)
     struct OTJsonContainer *json = OTJsonParse (stream);
     if (!json)
         {
-            if (session->verboseMode)
-                printf ("* Parsing configuration stream failed.\n");
+            if (session->verboseMode) fprintf (stderr, "* Parsing configuration stream failed.\n");
             status = -1;
             goto end;
         }
@@ -277,7 +262,7 @@ end:
     if (status == -1)
         {
             OTJsonDelete (json);
-            printf ("* Aborting configuration stream parsing...\n");
+            fprintf (stderr, "* Aborting configuration stream parsing...\n");
         }
     return status;
 }
