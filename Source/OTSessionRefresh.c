@@ -40,8 +40,7 @@ OTSessionRefresh (struct OTSessionContainer *session)
     if (session->verboseMode)
         printf ("* Compare OAuth2 accessToken timestamp with SystemRTC timestamp...\n");
 
-    if (session->restrictedMode)
-        goto end;
+    if (session->restrictedMode) goto end;
 
     /* Check if OAuth2 Bearer timestamp is in the future. */
     if (currentTimeStamp > session->expiresIn)
@@ -53,32 +52,37 @@ OTSessionRefresh (struct OTSessionContainer *session)
      */
     if (!(currentTimeStamp < session->expiresIn && (time_t)diffTimeStamp >= 300))
         {
-            if (session->verboseMode)
-                printf ("* Performing OTServiceRefreshBearerToken...\n");
+            if (session->verboseMode) printf ("* Performing OTServiceRefreshBearerToken...\n");
             req = OTServiceRefreshBearerToken (session, session->refreshToken, NULL);
             if (req)
                 {
                     if (req->status == SUCCESS)
                         {
+                            if (session->verboseMode) printf ("* Parse JSON...\n");
+
                             struct OTJsonContainer *accessToken = NULL;
                             struct OTJsonContainer *timeFrame = NULL;
                             char *accessTokenString = NULL;
                             time_t timeFrameNumber = 0;
+
                             /* Cleanup previous request. */
                             OTJsonDelete (session->renewalTree);
                             session->renewalTree = req->tree;
                             free (req);
 
-                            accessToken = OTJsonGetObjectItem (req->tree, "access_token");
+                            accessToken
+                                = OTJsonGetObjectItem (session->renewalTree, "access_token");
                             accessTokenString = OTJsonGetStringValue (accessToken);
-                            timeFrame = OTJsonGetObjectItem (req->tree, "expires_in");
+                            timeFrame = OTJsonGetObjectItem (session->renewalTree, "expires_in");
                             timeFrameNumber = OTJsonGetNumberValue (timeFrame);
+
                             if (accessToken && timeFrameNumber != 0)
                                 {
                                     status = SUCCESS;
                                     session->accessToken = accessTokenString;
                                     session->expiresIn = currentTimeStamp + timeFrameNumber;
                                     /* Update config. */
+                                    if (session->verboseMode) printf ("* Write to config...\n");
                                     OTPersistentCreate (session, session->persistentFileLocation);
                                 }
                             else

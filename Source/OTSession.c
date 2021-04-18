@@ -43,8 +43,7 @@ OTSessionInit (void)
 
     type = SESSION_CONTAINER;
     ptr = OTAllocContainer (type);
-    if (!ptr)
-        return NULL;
+    if (!ptr) return NULL;
     OTSessionContainerInit (ptr);
     /* One time libcurl global init. */
     curl_global_init (CURL_GLOBAL_ALL);
@@ -86,8 +85,7 @@ OTSessionClientPair (struct OTSessionContainer *const session, const char *const
 {
     session->clientId = strdup (clientId);
     session->clientSecret = strdup (clientSecret);
-    if (!session->clientId || !session->clientSecret)
-        return -1;
+    if (!session->clientId || !session->clientSecret) return -1;
     return 0;
 }
 
@@ -102,14 +100,11 @@ OTSessionLogin (struct OTSessionContainer *const session, const char *const loca
             char *stream;
 
             session->persistentFileLocation = strdup (location);
-            if (!session->persistentFileLocation)
-                return -1;
+            if (!session->persistentFileLocation) return -1;
             stream = OTPersistentLoad (session);
-            if (!stream)
-                return -1;
+            if (!stream) return -1;
             status = OTPersistentParse (session, stream);
-            if (status == 0)
-                session->restrictedMode = 0;
+            if (status == 0) session->restrictedMode = 0;
             free (stream);
         }
     return status;
@@ -171,8 +166,7 @@ OTSessionCleanup (struct OTSessionContainer *session)
 {
     if (session)
         {
-            if (session->verboseMode)
-                printf ("* Free OTSessionContainer\n");
+            if (session->verboseMode) printf ("* Free OTSessionContainer\n");
             free (session->clientId);
             free (session->clientSecret);
             curl_easy_cleanup (session->mainHttpHandle);

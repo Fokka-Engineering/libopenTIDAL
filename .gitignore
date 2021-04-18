@@ -54,4 +54,9 @@ persistent.json
 .DS_Store
 *.swp
 bin/
-persistent.json
+
+# CMake
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CMakeCache.txt

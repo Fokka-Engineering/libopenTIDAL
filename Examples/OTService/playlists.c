@@ -34,15 +34,17 @@ main (int argc, char *argv[])
     enum OTTypes type = CONTENT_CONTAINER;
     enum OTStatus statusPlaylist;
     session = OTSessionInit ();
-    if (!session)
+    if (!session) return -1;
+
+    if (!(OTSessionClientPair (session, "OmDtrzFgyVVL6uW56OnFA2COiabqm",
+                               "zxen1r3pO0hgtOC7j6twMo9UAqngGrmRiWpV7QC1zJ8=")
+          == 0))
         return -1;
 
-    if (!(OTSessionClientPair (session, "CLIENTID", "CLIENTSECRET") == 0))
-        return -1;
+    int status = OTSessionLogin (session, "/home/hugo/.config/openTIDAL/authrc");
+    if (status != 0) goto end;
 
-    int status = OTSessionLogin (session, "/Users/hugo/Desktop/persistent");
-    if (status != 0)
-        goto end;
+    session->verboseMode = 1;
 
     printf ("Proceed...\n");
 
