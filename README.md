@@ -6,7 +6,7 @@
 
 MIT License
 
->  Copyright (c) 2020 Hugo Melder and openTIDAL contributors
+>  Copyright (c) 2021 Hugo Melder
 >
 >  Permission is hereby granted, free of charge, to any person obtaining a copy
 >  of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ MIT License
 ## Usage
 
 ### Introduction
-openTIDAL is a TIDAL API wrapper written in ANSI C. It's lightweight, fast and easy to use.
+openTIDAL is a TIDAL API client library written in ANSI C. It's lightweight, fast and easy to use.
 
 After reverse-engineering the TIDAL API and documenting all endpoints, I had the idea to write a portable C library. The goal was to integrate the OAuth2 Device-Flow, auto-refreshing sessions and all endpoints. 
 
