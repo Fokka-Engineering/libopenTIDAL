@@ -229,9 +229,6 @@ Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
 
 ```
-$ git submodule init && git submodule update 
-```
-```
 $ mkdir build 
 ```
 ```
