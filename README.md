@@ -229,7 +229,7 @@ Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
 
 ```
-$ mkdir build 
+$ mkdir build && cd build 
 ```
 ```
 $ cmake .. && make install
