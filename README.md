@@ -102,6 +102,11 @@ if (content)
                     char *title = OTJsonGetObjectItemStringValue (innerItem, "title");
                     if (title)
                         printf ("Title: %s\n", title);
+
+                    /* The artifact id in the JSON is a number but we need an ASCII string. */
+                    char *id = OTJsonGetObjectItemStringValue (innerItem, "id");
+                    if (id)
+                        printf ("Id: %s\n", id);
                 }
             }
     }

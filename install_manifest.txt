@@ -1,2 +1,0 @@
-/usr/local/lib/libopenTIDAL.so
-/usr/local/include/openTIDAL/openTIDAL.h
