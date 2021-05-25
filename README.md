@@ -227,8 +227,15 @@ Currently the compilation has only been tested on macOS and GNU/Linux. Keep in m
 
 Use make to build the shared library (.so on GNU/Linux, .dylib on macOS).\
 The created library will be copied to the working directory.
+
 ```
-$ cmake CMakeList.txt && make
+$ git submodule init && git submodule update 
+```
+```
+$ mkdir build 
+```
+```
+$ cmake .. && make install
 ```
 Cleanup the working directory:
 ```
